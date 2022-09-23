@@ -4,7 +4,7 @@
 
 * Fork 自 [MiraculousB](https://github.com/MiraculousB)/**[TroveAutoFish](https://github.com/MiraculousB/TroveAutoFish)** （master分支） — 2020 年
 
-* 脚本功能：`自动钓鱼` `自动按键` `支持游戏多开` 
+* 脚本功能：`自动钓鱼`==(自动接任务)==  `自动按键`  `支持游戏多开` 
 
   ~~`防掉线`~~(包含在自动按键内) ~~`自动丢弃鞋子`~~(原功能测试不可用，暂未更新)
 
@@ -12,8 +12,8 @@
 
   > 查找教程：https://www.youtube.com/watch?v=FYzix68bxFA
 
-  * 账号指针偏移：`“Trove.exe” + 0xFDB95C + 0x10 + 0`
-  * 钓鱼判定：`“Trove.exe” + 0xFAB834 + 0x68 + 0xe4`
+  * 账号指针偏移：`“Trove.exe” + 0xFFE3C4 + 0x10 + 0`
+  * 钓鱼判定：`“Trove.exe” + 0xFCE29C + 0x68 + 0xe4`
     * 水：`+ 0x3c4`
     * 熔岩：`+ 0x898`
     * 巧克力：`+ 0x62c`

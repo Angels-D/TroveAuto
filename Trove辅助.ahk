@@ -2,9 +2,11 @@
 #SingleInstance,Prompt
 #NoTrayIcon
 global GameTitle := "Trove.exe"
-global FishAddress := "0xFAB834"
-global NameAddress := "0xFDB95C"
+global FishAddress := "0xFCE29C"
+global NameAddress := "0xFFE3C4"
+global TPAddress := ""
 global Fish_Key := "F"
+global Press_Key := "e"
 class Game{
     static Lists
     __New(id){
@@ -19,6 +21,7 @@ class Game{
         this.PlasmaAddress := this.GetAddressPlasma(FishAddress)
         this.Fish_Interval := 700
         this.AutoBtn_Interval := 10000
+        this.TP_Interval := 100
         ; this.AutoCall_Interval := 5000
         ; this.AutoCall_Text := "此处编辑喊话内容"
         this.AutoBtn_key := "End"
@@ -77,6 +80,7 @@ class Game{
                         NatualPress("%Fish_Key%")
                         Random, Wait, 2000, 3500
                         Sleep, `%Wait`%
+                        NatualPress("%Press_Key%")
                         break
                     }
                     if (FishingTimeCount++ > 50)
@@ -188,9 +192,10 @@ Gui, Add, Hotkey,vFish_Key,%Fish_Key%
 Gui, Add, Button,, 保存
 Gui, Tab, 关于
 Gui, Add, ActiveX, w100 h100 Center, % "mshtml:<img src='https://cdn.jsdelivr.net/gh/Angels-D/Angels-D.github.io/medias/avatar.jpg' style='width:100px;'/>"
-Gui, Add, Text,, 作者: AnglesD
-Gui, Add, Text,, 游戏ID: D_FairyTail
+Gui, Add, Text,, 作者: AnglesD  游戏ID: D_FairyTail
+Gui, Add, Text,cRed, 本软件完全开源免费，仅供学习使用！
 Gui, Add, Link,, 博客: `n<a href="https://Angels-D.github.io/">https://Angels-D.github.io/</a>
+Gui, Add, Link,, 源码: `n<a href="https://github.com/Angels-D/TroveAuto">https://github.com/Angels-D/TroveAuto</a>
 Gui, Add, Link,, 公会推广: `n<a target="_blank" href="https://qm.qq.com/cgi-bin/qm/qr?k=vOppyOHhd2WOrA6jJ9Yd-qi8EZQvHjnk&jump_from=webapi">AshesWithoutFire[群号:423933990]</a>
 Gui, Show
 Button刷新: ; Reload
