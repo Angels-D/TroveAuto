@@ -2,10 +2,10 @@
 #SingleInstance,Prompt
 #NoTrayIcon
 global GameTitle := "Trove.exe"
-global FishAddress := "0xFCE29C"
-global NameAddress := "0xFFE3C4"
+global FishAddress := "0x113268C"
+global NameAddress := "0x115EF64"
 global TPAddress := ""
-global Fish_Key := "F"
+global Fish_Key := "f"
 global Press_Key := "e"
 class Game{
     static Lists
@@ -19,11 +19,16 @@ class Game{
         this.LavaAddress := this.GetAddressLava(FishAddress)
         this.ChocoAddress := this.GetAddressChoco(FishAddress)
         this.PlasmaAddress := this.GetAddressPlasma(FishAddress)
+        this.StateWaterAddress := this.GetAddressStateWater(FishAddress)
+        this.StateLavaAddress := this.GetAddressStateLava(FishAddress)
+        this.StateChocoAddress := this.GetAddressStateChoco(FishAddress)
+        this.StatePlasmaAddress := this.GetAddressStatePlasma(FishAddress)
         this.Fish_Interval := 700
         this.AutoBtn_Interval := 10000
         this.TP_Interval := 100
         ; this.AutoCall_Interval := 5000
         ; this.AutoCall_Text := "此处编辑喊话内容"
+        this.AutoPress := False
         this.AutoBtn_key := "End"
         this.Action := "自动按键"
         this.Status := False
@@ -47,7 +52,12 @@ class Game{
         LavaAddress := this.LavaAddress
         ChocoAddress := this.ChocoAddress
         PlasmaAddress := this.PlasmaAddress
+        StateWaterAddress := this.StateWaterAddress
+        StateLavaAddress := this.StateLavaAddress
+        StateChocoAddress := this.StateChocoAddress
+        StatePlasmaAddress := this.StatePlasmaAddress
         BaseaAddress := this.BaseaAddress
+        AutoPress := this.AutoPress
         ThreadAHK =
         (
             #NoTrayIcon
@@ -67,26 +77,33 @@ class Game{
                 Return
             }
             Loop{
-                NatualPress("%Fish_Key%")
-                FishingTimeCount := 0
-                Loop{
-                    Sleep, 700
-                    CaughtWater := ReadMemoryINT("%WaterAddress%")
-                    CaughtLava := ReadMemoryINT("%LavaAddress%")
-                    CaughtChoco := ReadMemoryINT("%ChocoAddress%")
-                    CaughtPlasma := ReadMemoryINT("%PlasmaAddress%")
-                    if (CaughtWater || CaughtLava || CaughtChoco || CaughtPlasma) {
-                        Sleep, 500
-                        NatualPress("%Fish_Key%")
-                        Random, Wait, 2000, 3500
-                        Sleep, `%Wait`%
-                        NatualPress("%Press_Key%")
-                        break
-                    }
-                    if (FishingTimeCount++ > 50)
-                        break
-                }
                 Sleep, %Fish_Interval%
+                CaughtWater := ReadMemoryINT("%WaterAddress%")
+                CaughtLava := ReadMemoryINT("%LavaAddress%")
+                CaughtChoco := ReadMemoryINT("%ChocoAddress%")
+                CaughtPlasma := ReadMemoryINT("%PlasmaAddress%")
+                StateWater := ReadMemoryINT("%StateWaterAddress%")
+                StateLava := ReadMemoryINT("%StateLavaAddress%")
+                StateChoco := ReadMemoryINT("%StateChocoAddress%")
+                StatePlasma := ReadMemoryINT("%StatePlasmaAddress%")
+                if( !StateWater && !StateLava && !StateChoco && !StatePlasma ) {
+                    if (%AutoPress%){
+                        NatualPress("%Press_Key%")
+                        Sleep, 100
+                    }
+                    NatualPress("%Fish_Key%")
+                    Flag := true
+                }
+                if (CaughtWater || CaughtLava || CaughtChoco || CaughtPlasma) {
+                    if (Flag) {
+                        Sleep, 1000
+                        Flag := false
+                    }
+                    else {
+                        NatualPress("%Fish_Key%")
+                        Flag := true
+                    }
+                }
             }
             Return
         )
@@ -151,6 +168,30 @@ class Game{
         y3 := this.ReadMemoryINT(y2 + 0xe4)
         Return PlasmaAddress := (y3 + 0xb00)
     }
+    GetAddressStateWater(Address) {
+        y1 := this.ReadMemoryINT(this.BaseaAddress + Address)
+        y2 := this.ReadMemoryINT(y1 + 0x68)
+        y3 := this.ReadMemoryINT(y2 + 0xf4)
+        Return WaterAddress := (y3 + 0xBA0)
+    }
+    GetAddressStateLava(Address) {
+        y1 := this.ReadMemoryINT(this.BaseaAddress + Address)
+        y2 := this.ReadMemoryINT(y1 + 0x68)
+        y3 := this.ReadMemoryINT(y2 + 0xf4)
+        Return LavaAddress := (y3 + 0x938)
+    }
+    GetAddressStateChoco(Address) {
+        y1 := this.ReadMemoryINT(this.BaseaAddress + Address)
+        y2 := this.ReadMemoryINT(y1 + 0x68)
+        y3 := this.ReadMemoryINT(y2 + 0xf4)
+        Return ChocoAddress := (y3 + 0xE08)
+    }
+    GetAddressStatePlasma(Address){
+        y1 := this.ReadMemoryINT(this.BaseaAddress + Address)
+        y2 := this.ReadMemoryINT(y1 + 0x68)
+        y3 := this.ReadMemoryINT(y2 + 0xf4)
+        Return PlasmaAddress := (y3 + 0x6CC)
+    }
     getProcessBaseAddress(id) {
         Return DllCall( A_PtrSize = 4 ? "GetWindowLong" : "GetWindowLongPtr" , "Ptr", id , "Int", -6 , "Int64")
     }
@@ -177,6 +218,7 @@ Gui, Add, Text,, 脚本动作:
 Gui, Add, DropDownList, vSelectAction gSelectAction, 自动按键|钓鱼 ; |自动喊话
 Gui, Add, Text,, 频率(毫秒):
 Gui, Add, Edit,Number vInterval gInterval
+Gui, Add, CheckBox, vAutoPress gAutoPress, 自动接任务
 Gui, Add, Text,, 按键设置:
 Gui, Add, Hotkey, vAutoBtn_Key gAutoBtn_Key
 ; Gui, Add, Text,, 文本内容:
@@ -185,8 +227,12 @@ Gui, Add, Button,, 启动
 Gui, Tab, 设置
 Gui, Add, Text,, 游戏标题:
 Gui, Add, Edit,vGameTitle,%GameTitle%
+Gui, Add, Text,, 账号地址:
+Gui, Add, Edit,vNameddress,%NameAddress%
 Gui, Add, Text,, 钓鱼地址:
 Gui, Add, Edit,vFishAddress,%FishAddress%
+Gui, Add, Text,, 交互按键:
+Gui, Add, Hotkey,vPress_Key,%Press_Key%
 Gui, Add, Text,, 钓鱼按键:
 Gui, Add, Hotkey,vFish_Key,%Fish_Key%
 Gui, Add, Button,, 保存
@@ -202,12 +248,14 @@ Button刷新: ; Reload
     Game.GetID()
     GuiControl, Choose ,SelectGame,0
     GuiControl, Choose ,SelectAction,0
+    GuiControl,, AutoPress , 0
     GuiControl, Text ,Interval
     GuiControl, Text ,AutoBtn_Key
     GuiControl, Text ,AutoCall_Text
     GuiControl, Text, 关闭,启动
     GuiControl, Disable, SelectAction
     GuiControl, Disable, Interval
+    GuiControl, Disable ,AutoPress
     GuiControl, Disable, AutoBtn_Key
     GuiControl, Disable, AutoCall_Text
     GuiControl, Disable, 启动
@@ -219,6 +267,7 @@ SelectGame:
     GuiControl, Text, 关闭,启动
     GuiControl, Enable, SelectAction
     GuiControl, Enable, Interval
+    GuiControl, Disable ,AutoPress
     GuiControl, Disable, AutoBtn_Key
     GuiControl, Disable, AutoCall_Text
     GuiControl, Enable, 启动
@@ -230,8 +279,10 @@ SelectGame:
 SelectAction:
     GuiControlGet, SelectAction
     Game.Lists[SelectGame].Action := SelectAction
+    GuiControl, Disable ,AutoPress
     GuiControl, Disable, AutoBtn_Key
     GuiControl, Disable, AutoCall_Text
+    GuiControl,, AutoPress , % Game.Lists[SelectGame].AutoPress
     GuiControl, Text, AutoBtn_Key, % Game.Lists[SelectGame].AutoBtn_Key
     GuiControl, Text, AutoCall_Text, % Game.Lists[SelectGame].AutoCall_Text
     Switch SelectAction{
@@ -243,6 +294,8 @@ SelectAction:
     Case "钓鱼":
         Game.Lists[SelectGame].Func := ObjBindMethod(Game.Lists[SelectGame], "AutoFish")
         GuiControl, Text, Interval, % Game.Lists[SelectGame].Fish_Interval
+        If(!Game.Lists[SelectGame].Status) 
+            GuiControl, Enable, AutoPress
         ; Case "自动喊话":
         ;     Game.Lists[SelectGame].Func := ObjBindMethod(Game.Lists[SelectGame], "AutoCall")
         ;     GuiControl, Text, Interval, % Game.Lists[SelectGame].AutoCall_Interval
@@ -261,6 +314,10 @@ Interval:
         ;     Game.Lists[SelectGame].AutoCall_Interval := Interval
     }
 Return
+AutoPress:
+    GuiControlGet, AutoPress
+    Game.Lists[SelectGame].AutoPress := AutoPress
+Return
 AutoBtn_Key:
     GuiControlGet, AutoBtn_Key
     Game.Lists[SelectGame].AutoBtn_Key := AutoBtn_Key
@@ -276,10 +333,14 @@ Button启动:
         GuiControl, Enable, Interval
         Game.Lists[SelectGame].Status := False
         Func := Game.Lists[SelectGame].Func
-        If (SelectAction = "钓鱼")
+        If (SelectAction = "钓鱼"){
+            GuiControl, Enable ,AutoPress
             %Func%()
-        Else
+        }
+        Else{
+            GuiControl, Enable ,AutoBtn_Key
             SetTimer % Func,Delete
+        }
     }
     Else{
         GuiControl, Text, 启动,关闭
@@ -287,10 +348,14 @@ Button启动:
         GuiControl, Disable, Interval
         Game.Lists[SelectGame].Status := True
         Func := Game.Lists[SelectGame].Func
-        If (SelectAction = "钓鱼")
+        If (SelectAction = "钓鱼"){
+            GuiControl, Disable ,AutoPress
             %Func%()
-        Else
+        }
+        Else{
+            GuiControl, Disable ,AutoBtn_Key
             SetTimer % Func,% Interval
+        }
     }
 Return
 Button保存:
