@@ -3,7 +3,8 @@
 ## Auto-Hot-Key
 
 * Fork 自 [MiraculousB](https://github.com/MiraculousB)/**[TroveAutoFish](https://github.com/MiraculousB/TroveAutoFish)** （master分支） — 2020 年
-* 脚本功能：`自动钓鱼`==(自动接任务)==  `自动按键`  `支持游戏多开`
+  
+* 脚本功能：`自动钓鱼` ==(自动接任务)==  `自动按键`  `支持游戏多开` 
 
   ~~`防掉线`~~(包含在自动按键内) ~~`自动丢弃鞋子`~~(原功能测试不可用，暂未更新)
 * 原理：使用CE进行内存检测游戏账号和钓鱼判定
