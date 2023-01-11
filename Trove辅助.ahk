@@ -1,12 +1,13 @@
 ;@Ahk2Exe-UpdateManifest 2
 #SingleInstance,Prompt
 #NoTrayIcon
-global GameTitle := "Trove.exe"
-global FishAddress := "0x113268C"
-global NameAddress := "0x115EF64"
-global TPAddress := ""
-global Fish_Key := "f"
-global Press_Key := "e"
+global GameTitle, FishAddress, NameAddress, TPAddress, Fish_Key, Press_Key
+IniRead, FishAddress, config.ini, Address, Fish, 0x100CC44
+IniRead, NameAddress, config.ini, Address, Name, 0x1015D1C
+IniRead, TPAddress, config.ini, Address, TP
+IniRead, Fish_Key, config.ini, Key, Fish, f
+IniRead, Press_Key, config.ini, Address, Press, e
+IniRead, GameTitle, config.ini, Other, GameTitle, Trove.exe
 class Game{
     static Lists
     __New(id){
@@ -359,6 +360,12 @@ Button∆Ù∂Ø:
     }
 Return
 Button±£¥Ê:
+    IniWrite, % FishAddress, config.ini, Address, Fish
+    IniWrite, % NameAddress, config.ini, Address, Name
+    IniWrite, % TPAddress, config.ini, Address, TP
+    IniWrite, % Fish_Key, config.ini, Key, Fish
+    IniWrite, % Press_Key, config.ini, Address, Press
+    IniWrite, % GameTitle, config.ini, Other, GameTitle
     Gui,Submit, NoHide
 Return
 GuiClose:
