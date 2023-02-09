@@ -3,11 +3,16 @@
 ## Auto-Hot-Key
 
 * Fork 自 [MiraculousB](https://github.com/MiraculousB)/**[TroveAutoFish](https://github.com/MiraculousB/TroveAutoFish)** （master分支） — 2020 年
-* 脚本功能：`自动钓鱼`==(自动接任务)==  `自动按键`  `支持游戏多开`
+  
+* 脚本功能：`自动钓鱼`~~(自动接任务)~~  `自动按键`  `支持游戏多开` 
+  `自动攻击` `保持骑乘` `快速挖矿` `打破障碍` `地图放大` `视野调整`
 
   ~~`防掉线`~~(包含在自动按键内) ~~`自动丢弃鞋子`~~(原功能测试不可用，暂未更新)
+
 * 原理：使用CE进行内存检测游戏账号和钓鱼判定
 
+  > 各功能的CE参考：https://www.mpgh.net/forum/forumdisplay.php?f=848
+  >
   > 查找教程：https://www.youtube.com/watch?v=FYzix68bxFA
 
   * 账号指针偏移：`“Trove.exe” + 0x115EF64 + 0x10 + 0`
