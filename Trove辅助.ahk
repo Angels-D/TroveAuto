@@ -505,6 +505,16 @@ Button∆Ù∂Ø:
     }
 Return
 Button±£¥Ê:
+    IniWrite, % AttackAddress, config.ini, Address, Attack
+    IniWrite, % DismountAddress, config.ini, Address, Dismount
+    IniWrite, % MiningAddress, config.ini, Address, Mining
+    IniWrite, % MiningGeodeAddress, config.ini, Address, MiningGeode
+    IniWrite, % BreakblocksAddress, config.ini, Address, Breakblocks
+    IniWrite, % MapAddress, config.ini, Address, Map
+    IniWrite, % ZoomAddress, config.ini, Address, Zoom
+    IniWrite, % ClipCamAddress, config.ini, Address, ClipCam
+    IniWrite, % LockCamAddress, config.ini, Address, LockCam
+    IniWrite, % AnimationAddress, config.ini, Address, Animation
     IniWrite, % FishAddress, config.ini, Address, Fish
     IniWrite, % NameAddress, config.ini, Address, Name
     IniWrite, % TPAddress, config.ini, Address, TP
