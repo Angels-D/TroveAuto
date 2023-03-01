@@ -1,25 +1,27 @@
 ;@Ahk2Exe-UpdateManifest 2
 #SingleInstance,Prompt
 #NoTrayIcon
-global GameTitle, AttackAddress, DismountAddress, MiningAddress, MiningGeodeAddress
+SetTitleMatchMode, RegEx
+global GameTitle, GamePath, AttackAddress, DismountAddress, MiningAddress, MiningGeodeAddress
     , BreakblocksAddress, MapAddress, ZoomAddress, ClipCamAddress, LockCamAddress, AnimationAddress
     , FishAddress, NameAddress, TPAddress, Fish_Key, Press_Key
-IniRead, AttackAddress, config.ini, Address, Attack, 0x9E2278
-IniRead, DismountAddress, config.ini, Address, Dismount, 0x31BF7E
-IniRead, MiningAddress, config.ini, Address, Mining, 0x840BB8
-IniRead, MiningGeodeAddress, config.ini, Address, MiningGeode, 0x950DE7
-IniRead, BreakblocksAddress, config.ini, Address, Breakblocks, 0x920ED3
-IniRead, MapAddress, config.ini, Address, Map, 0x9016DD
-IniRead, ZoomAddress, config.ini, Address, Zoom, 0x948C36
-IniRead, ClipCamAddress, config.ini, Address, ClipCam, 0x94AC7A
-IniRead, LockCamAddress, config.ini, Address, LockCam, 0xACF535
-IniRead, AnimationAddress, config.ini, Address, Animation, 0x71B4F5
-IniRead, FishAddress, config.ini, Address, Fish, 0x100CC44
-IniRead, NameAddress, config.ini, Address, Name, 0x1015D1C
+IniRead, AttackAddress, config.ini, Address, Attack, 0xAED288
+IniRead, DismountAddress, config.ini, Address, Dismount, 0x42D6EE
+IniRead, MiningAddress, config.ini, Address, Mining, 0x9C3F78
+IniRead, MiningGeodeAddress, config.ini, Address, MiningGeode, 0x972147
+IniRead, BreakblocksAddress, config.ini, Address, Breakblocks, 0x9763C3
+IniRead, MapAddress, config.ini, Address, Map, 0x9F3E9D
+IniRead, ZoomAddress, config.ini, Address, Zoom, 0x8DE6E6
+IniRead, ClipCamAddress, config.ini, Address, ClipCam, 0x8E077A
+IniRead, LockCamAddress, config.ini, Address, LockCam, 0xACC295
+IniRead, AnimationAddress, config.ini, Address, Animation, 0x7F7155
+IniRead, FishAddress, config.ini, Address, Fish, 0x117B02C
+IniRead, NameAddress, config.ini, Address, Name, 0x11821FC
 IniRead, TPAddress, config.ini, Address, TP
 IniRead, Fish_Key, config.ini, Key, Fish, f
 IniRead, Press_Key, config.ini, Address, Press, e
 IniRead, GameTitle, config.ini, Other, GameTitle, Trove.exe
+IniRead, GamePath, config.ini, Other, GamePath
 class Game{
     static Lists
     __New(id){
@@ -237,7 +239,42 @@ class Game{
     }
 }
 Gui, New ,, Trove辅助
-Gui, Add, Tab3,, 面板|设置|关于 ; |监控|注册账号
+Gui, Add, Tab3,, 主页|面板|设置|关于 ; |监控|注册账号
+Gui, Tab, 主页
+Gui, Add, Button,, 获取游戏路径
+Gui, Add, Text,, 游戏路径:
+Gui, Add, Edit,vGamePath gButton保存,%GamePath%
+Gui, Add, Button,, 启动游戏
+Gui, Add, Text,, 
+(
+    说明: 当前使用Steam打开游戏会强制绑定
+    账号, 直接使用官方启动器即可跳过绑定
+)
+Gui, Add, Button,, Mods文件夹
+Gui, Add, Link,,
+(
+    说明: 本游戏支持模组, 可通过各公会群和
+    Steam创意工坊等渠道下载, Mod制作可使用
+    <a href="https://github.com/DazoTrove/TroveTools.NET/">TroveTools.NET</a>等工具
+)
+Gui, Add, Button,, ModCfgs文件夹
+Gui, Add, Link,, 
+(
+    说明: Cfgs用于保存某些Mod的配置信息,
+    一般位于<a href="file:///%A_AppData%\Trove\ModCfgs\">`%AppData`%\Trove\ModCfgs\</a>中
+)
+Gui, Add, Text,, 
+(
+    Mod使用教程: 后缀为.tmod的文件存放在Mods
+    文件夹, 后缀为.cfg的文件存放在ModCfgs
+    文件夹, 放置后重启游戏生效
+)
+Gui, Add, Link,, 
+(
+    附: 官方邮箱<a href="mailto:support@gamigo.com">support@gamigo.com</a>(通过此
+    邮箱询问交易问题、账号问题等内容,
+    注意使用英文描述)
+)
 Gui, Tab, 面板
 Gui, Add, Button,, 刷新
 Gui, Add, Text,, 玩家列表:
@@ -266,13 +303,11 @@ Gui, Tab, 设置
 Gui, Add, Text,, 游戏标题:
 Gui, Add, Edit,vGameTitle,%GameTitle%
 Gui, Add, Text,, 账号地址:
-Gui, Add, Edit,vNameddress,%NameAddress%
+Gui, Add, Edit,vNameAddress,%NameAddress%
 Gui, Add, Text,, 钓鱼地址:
 Gui, Add, Edit,vFishAddress,%FishAddress%
 Gui, Add, Text,, 自动攻击地址:
 Gui, Add, Edit,vAttackAddress,%AttackAddress%
-global GameTitle, AttackAddress, DismountAddress, MiningAddress, MiningGeodeAddress
-    , BreakblocksAddress, MapAddress, ZoomAddress, ClipCamAddress, LockCamAddress, AnimationAddress
 Gui, Add, Text,, 保持骑乘地址:
 Gui, Add, Edit,vDismountAddress,%DismountAddress%
 Gui, Add, Text,, 快速挖矿地址:
@@ -328,8 +363,29 @@ Button刷新: ; Reload
     GuiControl, Disable, Animation
     GuiControl, Disable, AutoBtn_Key
     GuiControl, Disable, AutoCall_Text
-    GuiControl, Disable, 启动
+    GuiControl, Disable, ^启动$
     Gui,Submit, NoHide
+Return
+Button获取游戏路径:
+    WinGet, GamePath, ProcessPath,ahk_exe i)%GameTitle%|Glyph.*
+    index := RegExMatch(GamePath, "i)^(.*?Trove)", GamePath)
+    if (index)
+        GuiControl,, GamePath, % GamePath%index%
+    else
+        MsgBox, 请运行游戏或登陆器以检测路径
+Return
+Button启动游戏:
+    Try Run, %GamePath%\GlyphClient.exe
+    Catch
+        MsgBox, 游戏启动失败, 请检查游戏路径
+Return
+ButtonMods文件夹:
+    Try Run, explore %GamePath%\Games\Trove\Live\mods
+    Catch
+        MsgBox, Mods文件夹打开失败, 请检查游戏路径
+Return
+ButtonModCfgs文件夹:
+    Run, explore %A_AppData%\Trove\ModCfgs\
 Return
 SelectGame:
     GuiControlGet, SelectGame
@@ -340,9 +396,9 @@ SelectGame:
     GuiControl, Disable ,AutoPress
     GuiControl, Disable, AutoBtn_Key
     GuiControl, Disable, AutoCall_Text
-    GuiControl, Enable, 启动
+    GuiControl, Enable, ^启动$
     If (Game.Lists[SelectGame].Status){
-        GuiControl, Text, 启动,关闭
+        GuiControl, Text, ^启动$,关闭
         GuiControl, Disable, SelectAction
         GuiControl, Disable, Interval
     }
@@ -489,7 +545,7 @@ Button启动:
         }
     }
     Else{
-        GuiControl, Text, 启动,关闭
+        GuiControl, Text, ^启动$,关闭
         GuiControl, Disable, SelectAction
         GuiControl, Disable, Interval
         Game.Lists[SelectGame].Status := True
@@ -505,6 +561,7 @@ Button启动:
     }
 Return
 Button保存:
+    Gui,Submit, NoHide
     IniWrite, % AttackAddress, config.ini, Address, Attack
     IniWrite, % DismountAddress, config.ini, Address, Dismount
     IniWrite, % MiningAddress, config.ini, Address, Mining
@@ -521,7 +578,7 @@ Button保存:
     IniWrite, % Fish_Key, config.ini, Key, Fish
     IniWrite, % Press_Key, config.ini, Address, Press
     IniWrite, % GameTitle, config.ini, Other, GameTitle
-    Gui,Submit, NoHide
+    IniWrite, % GamePath, config.ini, Other, GamePath
 Return
 GuiClose:
 ExitApp
