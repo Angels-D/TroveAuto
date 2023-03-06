@@ -1,584 +1,512 @@
+;@Ahk2Exe-SetLanguage Chinese_PRC
+;@Ahk2Exe-SetMainIcon Troveè¾…åŠ©.ico
 ;@Ahk2Exe-UpdateManifest 2
-#SingleInstance,Prompt
-#NoTrayIcon
-SetTitleMatchMode, RegEx
-global GameTitle, GamePath, AttackAddress, DismountAddress, MiningAddress, MiningGeodeAddress
-    , BreakblocksAddress, MapAddress, ZoomAddress, ClipCamAddress, LockCamAddress, AnimationAddress
-    , FishAddress, NameAddress, TPAddress, Fish_Key, Press_Key
-IniRead, AttackAddress, config.ini, Address, Attack, 0xAED288
-IniRead, DismountAddress, config.ini, Address, Dismount, 0x42D6EE
-IniRead, MiningAddress, config.ini, Address, Mining, 0x9C3F78
-IniRead, MiningGeodeAddress, config.ini, Address, MiningGeode, 0x972147
-IniRead, BreakblocksAddress, config.ini, Address, Breakblocks, 0x9763C3
-IniRead, MapAddress, config.ini, Address, Map, 0x9F3E9D
-IniRead, ZoomAddress, config.ini, Address, Zoom, 0x8DE6E6
-IniRead, ClipCamAddress, config.ini, Address, ClipCam, 0x8E077A
-IniRead, LockCamAddress, config.ini, Address, LockCam, 0xACC295
-IniRead, AnimationAddress, config.ini, Address, Animation, 0x7F7155
-IniRead, FishAddress, config.ini, Address, Fish, 0x117B02C
-IniRead, NameAddress, config.ini, Address, Name, 0x11821FC
-IniRead, TPAddress, config.ini, Address, TP
-IniRead, Fish_Key, config.ini, Key, Fish, f
-IniRead, Press_Key, config.ini, Address, Press, e
-IniRead, GameTitle, config.ini, Other, GameTitle, Trove.exe
-IniRead, GamePath, config.ini, Other, GamePath
+#SingleInstance Prompt
+; #NoTrayIcon
+SetTitleMatchMode("RegEx")
+
+config := _Config(
+    "config.ini",
+    Map("Global",Map(
+            "GameTitle","Trove.exe",
+            "GamePath","",
+        ),
+        "Key",Map(
+            ; "Press","e",
+            "Fish","f",
+        ),
+        "Address",Map(
+            "Attack","0xAED288",
+            "Dismount","0x42D6EE",
+            "Mining","0x9C3F78",
+            "MiningGeode","0x972147",
+            "Breakblocks","0x9763C3",
+            "Map","0x9F3E9D",
+            "Zoom","0x8DE6E6",
+            "ClipCam","0x8E077A",
+            "LockCam","0xACC295",
+            "Animation","0x7F7155",
+            "Fish","0x117B02C",
+            "Name","0x11821FC",
+            ; "TP","",
+        ),
+        "Address_Offset",Map(
+            "Name","0x10,0x0",
+            "Fish_Take_Water","0x68,0xE4,0x3C4",
+            "Fish_Take_Lava","0x68,0xE4,0x898",
+            "Fish_Take_Choco","0x68,0xE4,0x62C",
+            "Fish_Take_Plasma","0x68,0xE4,0xB00",
+            "Fish_State_Water","0x68,0xF4,0xBA0",
+            "Fish_State_Lava","0x68,0xF4,0x938",
+            "Fish_State_Choco","0x68,0xF4,0xE08",
+            "Fish_State_Plasma","0x68,0xF4,0x6CC",
+        ),
+        "Features_Change",Map(
+            "Attack","0xF0,0xF1",
+            "Dismount","0xEB,0x74",
+            "Mining","0xF0,0xF1",
+            "MiningGeode","0xF0,0xF1",
+            "Breakblocks","0x01,0x00",
+            "Map","0xEB,0x77",
+            "Zoom","0x57,0x5F",
+            "ClipCam","0x909090,0x0F,0x29,0x01",
+            "LockCam","0xEB,0x74",
+            "Animation","0x4C,0x44",  
+        ),
+    )
+)
+config.Load()
+
+MainGui := Gui("-DPIScale","Troveè¾…åŠ©")
+MainGui.Add("Tab3","vTab",["ä¸»é¡µ","é¢æ¿","è®¾ç½®","å…³äº"]) ; ç›‘æ§,æ³¨å†Œè´¦å·
+
+; ä¸»é¡µå†…å®¹
+MainGui["Tab"].UseTab("ä¸»é¡µ")
+MainGui.Add("Text","x+50","æ¸¸æˆè·¯å¾„:")
+MainGui.Add("Edit","w200 vGamePath",config.data["Global"]["GamePath"])
+MainGui.Add("Button","Section vGamePathBtn","è·å–æ¸¸æˆè·¯å¾„")
+MainGui.Add("Button","ys vGameStartBtn","å¯åŠ¨æ¸¸æˆ")
+MainGui.Add("Text","xs w200","è¯´æ˜: å½“å‰ä½¿ç”¨Steamæ‰“å¼€æ¸¸æˆä¼šå¼ºåˆ¶ç»‘å®šè´¦å·, ç›´æ¥ä½¿ç”¨å®˜æ–¹å¯åŠ¨å™¨å³å¯è·³è¿‡ç»‘å®š"
+)
+MainGui.Add("Button","w200 vModsPathBtn","Modsæ–‡ä»¶å¤¹")
+MainGui.Add("Link","w200","
+    (
+        è¯´æ˜: æœ¬æ¸¸æˆæ”¯æŒæ¨¡ç»„, å¯é€šè¿‡å„å…¬ä¼šç¾¤å’ŒSteamåˆ›æ„å·¥åŠç­‰æ¸ é“ä¸‹è½½, Modåˆ¶ä½œå¯ä½¿ç”¨
+        <a href="https://github.com/DazoTrove/TroveTools.NET/">TroveTools.NET</a>ç­‰å·¥å…·
+    )"
+)
+MainGui.Add("Button","w200 vModCfgsPathBtn","ModCfgsæ–‡ä»¶å¤¹")
+MainGui.Add("Link","w200",Format("è¯´æ˜: Cfgsç”¨äºä¿å­˜æŸäº›Modçš„é…ç½®ä¿¡æ¯,ä¸€èˆ¬ä½äº<a href=`"file:///{1}\Trove\ModCfgs\`">%AppData%\Trove\ModCfgs\</a>ä¸­",A_AppData))
+MainGui.Add("Text","w200","Modä½¿ç”¨æ•™ç¨‹: åç¼€ä¸º.tmodçš„æ–‡ä»¶å­˜æ”¾åœ¨Modsæ–‡ä»¶å¤¹, åç¼€ä¸º.cfgçš„æ–‡ä»¶å­˜æ”¾åœ¨ModCfgsæ–‡ä»¶å¤¹, æ”¾ç½®åé‡å¯æ¸¸æˆç”Ÿæ•ˆ")
+MainGui.Add("Link","w200","é™„: å®˜æ–¹é‚®ç®±<a href=`"mailto:support@gamigo.com`">support@gamigo.com</a>(é€šè¿‡æ­¤é‚®ç®±è¯¢é—®äº¤æ˜“é—®é¢˜ã€è´¦å·é—®é¢˜ç­‰å†…å®¹,æ³¨æ„ä½¿ç”¨è‹±æ–‡æè¿°")
+
+; é¢æ¿å†…å®¹
+MainGui["Tab"].UseTab("é¢æ¿")
+MainGui.Add("Button","x+40 y+80 w80 Section vRefreshBtn","åˆ·æ–°")
+MainGui.Add("Button","ys x+80 vStartBtn","å¯åŠ¨")
+MainGui.Add("Text","xs w70 Section","ç©å®¶åˆ—è¡¨:")
+MainGui.Add("DropDownList","ys w130 vSelectGame")
+MainGui.Add("Text","xs w70 Section","è„šæœ¬åŠ¨ä½œ:")
+MainGui.Add("DropDownList","ys w130 vSelectAction",["è‡ªåŠ¨æŒ‰é”®","é’“é±¼"]) ; è‡ªåŠ¨å–Šè¯
+MainGui.Add("Text","xs w100 Section","é¢‘ç‡(æ¯«ç§’):")
+MainGui.Add("Edit","ys w100 vInterval")
+for key,value in Map(
+        ; "AutoPress","è‡ªåŠ¨æ¥ä»»åŠ¡",
+        "Attack","è‡ªåŠ¨æ”»å‡»",
+        "Dismount","ä¿æŒéª‘ä¹˜",
+        "Mining","å¿«é€ŸæŒ–çŸ¿",
+        "MiningGeode","å¿«é€ŸæŒ–çŸ¿(æ™¶æ´)",
+        "Breakblocks","æ‰“ç ´éšœç¢",
+        "Map","åœ°å›¾æ”¾å¤§",
+        "Zoom","è§†é‡æ”¾å¤§",
+        "ClipCam","è§†è§’é®æŒ¡",
+        "LockCam","è§†è§’å›ºå®š",
+        "Animation","éšè—ç‰¹æ•ˆ",
+    )
+    MainGui.Add("CheckBox",(Mod(A_Index,2)?"xs Section":"ys") " w130 v" key,value)
+MainGui.Add("Text","xs w70 Section","æŒ‰é”®è®¾ç½®:")
+MainGui.Add("Hotkey","ys w130 vAutoBtn_Key")
+; MainGui.Add("Text",,"æ–‡æœ¬å†…å®¹:")
+; MainGui.Add("Hotkey","vAutoCall_Text")
+
+; è®¾ç½®å†…å®¹
+MainGui["Tab"].UseTab("è®¾ç½®")
+MainGui.Add("Text","x+50 w100 Section","æ¸¸æˆæ ‡é¢˜:")
+MainGui.Add("Edit","ys w100 vGameTitle",config.data["Global"]["GameTitle"])
+for key,value in Map(
+        "Name","è´¦å·",
+        "Fish","é’“é±¼",
+        "Attack","è‡ªåŠ¨æ”»å‡»",
+        "Dismount","ä¿æŒéª‘ä¹˜",
+        "Mining","å¿«é€ŸæŒ–çŸ¿",
+        "MiningGeode","å¿«é€ŸæŒ–çŸ¿(æ™¶æ´)",
+        "Breakblocks","æ‰“ç ´éšœç¢",
+        "Map","åœ°å›¾æ”¾å¤§",
+        "Zoom","è§†é‡æ”¾å¤§",
+        "ClipCam","è§†è§’é®æŒ¡",
+        "LockCam","è§†è§’å›ºå®š",
+        "Animation","éšè—ç‰¹æ•ˆ",
+    ){
+        MainGui.Add("Text","xs w100 Section",value "åœ°å€:")
+        MainGui.Add("Edit","ys w100 v" key "Address",config.data["Address"][key])
+    }
+; MainGui.Add("Text",,"äº¤äº’æŒ‰é”®:")
+; MainGui.Add("HotKey","vPressKey",config.data["Key"]["Press"])
+MainGui.Add("Text","xs w100 Section","é’“é±¼æŒ‰é”®:")
+MainGui.Add("HotKey","ys w100 vFishKey ",config.data["Key"]["Fish"])
+MainGui.Add("Button","xs w200 vSaveBtn","ä¿å­˜")
+
+; å…³äºå†…å®¹
+MainGui["Tab"].UseTab("å…³äº")
+MainGui.Add("ActiveX","w100 h100 y+80 Center",
+    "mshtml:<img src='https://cdn.jsdelivr.net/gh/Angels-D/Angels-D.github.io/medias/avatar.jpg' style='width:100px;'/>")
+MainGui.Add("Text",,"ä½œè€…: AnglesD æ¸¸æˆID: D_FairyTail")
+MainGui.Add("Text","cRed","æœ¬è½¯ä»¶å®Œå…¨å¼€æºå…è´¹, ä»…ä¾›å­¦ä¹ ä½¿ç”¨ï¼")
+MainGui.Add("Link",,"
+    (
+        åšå®¢: `n<a href="https://Angels-D.github.io/">https://Angels-D.github.io/</a>`n
+        æºç : `n<a href="https://github.com/Angels-D/TroveAuto">https://github.com/Angels-D/TroveAuto</a>`n
+        å…¬ä¼šæ¨å¹¿: `n<a target="_blank" href="https://qm.qq.com/cgi-bin/qm/qr?k=vOppyOHhd2WOrA6jJ9Yd-qi8EZQvHjnk&jump_from=webapi">AshesWithoutFire[ç¾¤å·:423933990]</a>
+    )"
+)
+
+; ç»‘å®šäº¤äº’
+MainGui["GamePathBtn"].OnEvent("Click",GetGamePath)
+MainGui["GameStartBtn"].OnEvent("Click",GameStart)
+MainGui["ModsPathBtn"].OnEvent("Click",OpenModsPath)
+MainGui["ModCfgsPathBtn"].OnEvent("Click",OpenModCfgsPath)
+MainGui["RefreshBtn"].OnEvent("Click",Refresh)
+MainGui["StartBtn"].OnEvent("Click",Start)
+MainGui["SaveBtn"].OnEvent("Click",Save)
+MainGui["SelectGame"].OnEvent("Change",SelectGame)
+MainGui["SelectAction"].OnEvent("Change",SelectAction)
+MainGui["Interval"].OnEvent("Change",Interval)
+MainGui["AutoBtn_Key"].OnEvent("Change",AutoBtn_Key)
+; MainGui["AutoCall_Text"].OnEvent("Change",AutoCall_Text)
+for key in ["Attack","Dismount","Mining","MiningGeode"
+        ,"Breakblocks","Map","Zoom","ClipCam","LockCam","Animation"]
+    MainGui[key].OnEvent("Click",Features)
+
+Refresh()
+MainGui.Show()
+
+; äº¤äº’å‡½æ•°
+GetGamePath(GuiCtrlObj, Info){
+    Try{
+        GamePath := WinGetProcessPath("ahk_exe i)" config.data["Global"]["GameTitle"] "|Glyph.*")
+        RegExMatch(GamePath, "i)^(.*?Trove)", &GamePath)
+        MainGui["GamePath"].Value := GamePath[0]
+    }
+    Catch
+        MsgBox("è¯·è¿è¡Œæ¸¸æˆæˆ–ç™»é™†å™¨ä»¥æ£€æµ‹è·¯å¾„")
+}
+GameStart(GuiCtrlObj, Info){
+    Try Run(Format("{1}\GlyphClient.exe",config.data["Global"]["GamePath"]))
+    Catch
+        MsgBox("æ¸¸æˆå¯åŠ¨å¤±è´¥, è¯·æ£€æŸ¥æ¸¸æˆè·¯å¾„")
+}
+OpenModsPath(GuiCtrlObj, Info){
+    Try Run(Format("explore {1}\Games\Trove\Live\mods",config.data["Global"]["GamePath"]))
+    Catch
+        MsgBox("Modsæ–‡ä»¶å¤¹æ‰“å¼€å¤±è´¥, è¯·æ£€æŸ¥æ¸¸æˆè·¯å¾„")
+}
+OpenModCfgsPath(GuiCtrlObj, Info){
+    Try Run(Format("explore {1}\Trove\ModCfgs\",A_AppData))
+    Catch
+        MsgBox("ModCfgsæ–‡ä»¶å¤¹æ‰“å¼€å¤±è´¥, è¯·æ£€æŸ¥æ–‡ä»¶å¤¹æ˜¯å¦å­˜åœ¨")
+}
+Refresh(GuiCtrlObj := unset, Info := unset){
+    Game.GetID()
+    for key in ["Attack","Dismount","Mining","MiningGeode"
+        ,"Breakblocks","Map","Zoom","ClipCam","LockCam","Animation"
+        ,"AutoBtn_Key","Interval","SelectAction","StartBtn"] ; AutoPress AutoCall_Text
+        MainGui[key].Enabled := False
+    for key in ["Attack","Dismount","Mining","MiningGeode"
+        ,"Breakblocks","Map","Zoom","ClipCam","LockCam","Animation"
+        ,"AutoBtn_Key","Interval","SelectAction","SelectGame"] ; AutoPress AutoCall_Text
+        Try MainGui[key].Value := ""
+        Catch
+            MainGui[key].Value := 0
+}
+Start(GuiCtrlObj, Info){
+    Func := Game.Lists[MainGui["SelectGame"].Text].Func
+    if(Game.Lists[MainGui["SelectGame"].Text].running){
+        MainGui["StartBtn"].Text := "å¯åŠ¨"
+        for key in ["SelectAction","Interval"]
+            MainGui[key].Enabled := True
+        Game.Lists[MainGui["SelectGame"].Text].running := False
+        switch MainGui["SelectAction"].Text {
+        Case "é’“é±¼":
+            ; MainGui["AutoPress"].Enabled := True
+            Func()
+        Default:
+            MainGui["AutoBtn_Key"].Enabled := True
+            SetTimer(Func,False)
+        }
+    }
+    else{
+        MainGui["StartBtn"].Text := "å…³é—­"
+        for key in ["SelectAction","Interval"]
+            MainGui[key].Enabled := False
+        Game.Lists[MainGui["SelectGame"].Text].running := True
+        switch MainGui["SelectAction"].Text {
+        Case "é’“é±¼":
+            ; MainGui["AutoPress"].Enabled := False
+            Func()
+        Default:
+            MainGui["AutoBtn_Key"].Enabled := False
+            SetTimer(Func,MainGui["Interval"].Value)
+        }
+    }
+}
+Save(GuiCtrlObj, Info){
+    for sect,data in config.data{
+        if(sect == "Address_Offset" or sect == "Features_Change")
+            Continue
+        for key in data
+            Try config.data[sect][key] := MainGui[key sect].Value
+            Catch
+                config.data[sect][key] := MainGui[key].Value
+    }
+    config.Save()
+}
+SelectGame(GuiCtrlObj, Info){
+    MainGui["SelectAction"].Text := Game.Lists[GuiCtrlObj.Text].action
+    MainGui["StartBtn"].Text := Game.Lists[GuiCtrlObj.Text].running ? "å…³é—­":"å¯åŠ¨"
+    for key in ["SelectAction","Interval","StartBtn"]
+        MainGui[key].Enabled := !Game.Lists[GuiCtrlObj.Text].running
+    SelectAction(MainGui["SelectAction"])
+}
+SelectAction(GuiCtrlObj, Info := unset){
+    Game.Lists[MainGui["SelectGame"].Text].action := GuiCtrlObj.Text
+    for key in ["Attack","Dismount","Mining","MiningGeode"
+        ,"Breakblocks","Map","Zoom","ClipCam","LockCam","Animation"]{
+        MainGui[key].Enabled := True
+        MainGui[key].Value := Game.Lists[MainGui["SelectGame"].Text].setting["Features"][key]
+    }
+    for key in ["AutoBtn_Key"] ; AutoPress AutoCall_Text
+        MainGui[key].Enabled := False
+    MainGui["AutoBtn_Key"].Value := Game.Lists[MainGui["SelectGame"].Text].setting["AutoBtn"]["key"]
+    ; MainGui["AutoCall_Text"].Value := Game.Lists[MainGui["SelectGame"].Text].setting["AutoCall_Text"]["text"]
+    Switch GuiCtrlObj.Text {
+    Case "è‡ªåŠ¨æŒ‰é”®":
+        Game.Lists[MainGui["SelectGame"].Text].Func := ObjBindMethod(Game.Lists[MainGui["SelectGame"].Text], "AutoBtn")
+        MainGui["Interval"].Value := Game.Lists[MainGui["SelectGame"].Text].setting["AutoBtn"]["interval"]
+        If(!Game.Lists[MainGui["SelectGame"].Text].running) 
+            MainGui["AutoBtn_Key"].Enabled := True
+    Case "é’“é±¼":
+        Game.Lists[MainGui["SelectGame"].Text].Func := ObjBindMethod(Game.Lists[MainGui["SelectGame"].Text], "AutoFish")
+        MainGui["Interval"].Value := Game.Lists[MainGui["SelectGame"].Text].setting["Fish"]["interval"]
+        ; If(!Game.Lists[MainGui["SelectGame"].Text].running) 
+        ;     MainGui["AutoPress"].Enabled := True
+    ; Case "è‡ªåŠ¨å–Šè¯":
+    ;     Game.Lists[MainGui["SelectGame"].Text].Func := ObjBindMethod(Game.Lists[MainGui["SelectGame"].Text], "AutCall")
+    ;     MainGui["Interval"].Value := Game.Lists[MainGui["SelectGame"].Text].setting["AutoCall"]["Interval"]
+    ;     If(!Game.Lists[MainGui["SelectGame"].Text].running) 
+    ;         MainGui["AutoCall_Text"].Enabled := True
+    }
+}
+Features(GuiCtrlObj, Info){
+    Game.Lists[MainGui["SelectGame"].Text].setting["Features"][GuiCtrlObj.Name] := GuiCtrlObj.Value
+    Switch GuiCtrlObj.Name {
+    Case "ClipCam":
+        if(GuiCtrlObj.Value)
+            Game.Lists[MainGui["SelectGame"].Text].WriteMemory(
+                config.data["Address"][GuiCtrlObj.Name],
+                StrSplit(config.data["Features_Change"][GuiCtrlObj.Name],",")[1],3
+            )
+        else
+            Loop 3
+                Game.Lists[MainGui["SelectGame"].Text].WriteMemory(
+                    config.data["Address"][GuiCtrlObj.Name] + A_Index - 1,
+                    StrSplit(config.data["Features_Change"][GuiCtrlObj.Name],",")[A_Index + 1],1
+                ) 
+    Default:
+        Game.Lists[MainGui["SelectGame"].Text].WriteMemory(
+            config.data["Address"][GuiCtrlObj.Name],
+            StrSplit(config.data["Features_Change"][GuiCtrlObj.Name],",")[GuiCtrlObj.Value?1:2],1
+        )    
+    }
+}
+Interval(GuiCtrlObj, Info){
+    Switch MainGui["SelectAction"].Text{
+    Case "è‡ªåŠ¨æŒ‰é”®":
+        Game.Lists[MainGui["SelectGame"].Text].setting["AutoBtn"]["Interval"] := Interval
+    Case "é’“é±¼":
+        Game.Lists[MainGui["SelectGame"].Text].setting["Fish"]["Interval"] := Interval
+        ; Case "è‡ªåŠ¨å–Šè¯":
+        ;     [Game.Lists[MainGui["SelectGame"].Text].setting["AutoCall"]["Interval"] := Interval
+    } 
+}
+AutoBtn_Key(GuiCtrlObj, Info){
+    Game.Lists[MainGui["SelectGame"].Text].setting["AutoBtn"]["key"] := GuiCtrlObj.Value
+}
+; AutoCall_Text(GuiCtrlObj, Info){
+;     Game.Lists[MainGui["SelectGame"].Text].setting["AutoCall_Text"]["Text"] := GuiCtrlObj.Text
+; }
+
+; æ ¸å¿ƒç±»
+
+; Config Class
+class _Config{
+    __New(path,data){
+        this.path := path
+        this.data := data
+    }
+    Load(path := unset){
+        path := IsSet(path) ? path : this.path
+        for sect,data in this.data
+            for key,value in data
+                this.data[sect][key] := IniRead(
+                    path,sect,key,this.data[sect][key])
+    }
+    Save(path := unset){
+        path := IsSet(path) ? path : this.path
+        for sect,data in this.data
+            for key,value in data
+                IniWrite(this.data[sect][key],path,sect,key)
+    }
+}
+
+; Game Class
 class Game{
-    static Lists
+    static Lists := Map()
+    action := "è‡ªåŠ¨æŒ‰é”®"
+    running := False
+    setting := Map(
+        "Features",Map(),
+        "Fish",Map(
+            "interval","700",
+            "take_address",Map(),
+            "state_address",Map(),
+        ),
+        "AutoBtn",Map(
+            "interval","10000",
+            "key","End",
+        ),
+        ; "AutoCall",Map(
+        ;     "interval","5000",
+        ;     "text","æ­¤å¤„ç¼–è¾‘å–Šè¯å†…å®¹",
+        ; ),
+    )
     __New(id){
-        WinGet, pid,PID,ahk_id %id%
         this.id := id
-        this.pid := pid
+        this.pid := WingetPID("ahk_id " id)
         this.BaseaAddress := this.getProcessBaseAddress(id)
-        this.name := this.GetName(NameAddress)
-        this.WaterAddress := this.GetAddressWater(FishAddress)
-        this.LavaAddress := this.GetAddressLava(FishAddress)
-        this.ChocoAddress := this.GetAddressChoco(FishAddress)
-        this.PlasmaAddress := this.GetAddressPlasma(FishAddress)
-        this.StateWaterAddress := this.GetAddressStateWater(FishAddress)
-        this.StateLavaAddress := this.GetAddressStateLava(FishAddress)
-        this.StateChocoAddress := this.GetAddressStateChoco(FishAddress)
-        this.StatePlasmaAddress := this.GetAddressStatePlasma(FishAddress)
-        this.Fish_Interval := 700
-        this.AutoBtn_Interval := 10000
-        this.TP_Interval := 100
-        ; this.AutoCall_Interval := 5000
-        ; this.AutoCall_Text := "´Ë´¦±à¼­º°»°ÄÚÈİ"
-        this.AutoPress := False
-        this.AutoAttack := False
-        this.AntiDismount := False
-        this.InstaMining := False
-        this.InstaMiningGeode := False
-        this.Breakblocks := False
-        this.MapCondition := False
-        this.ZoomCondition := False
-        this.ClipCam := False
-        this.LockCam := False
-        this.Animation := False
-        this.AutoBtn_key := "End"
-        this.Action := "×Ô¶¯°´¼ü"
-        this.Status := False
+        this.name := this.GetName(config.data["Address"]["Name"])
+        for key in ["Water","Lava","Choco","Plasma"] {
+            this.setting["Fish"]["take_address"][key] := this.GetAddressOffset(
+                config.data["Address"]["Fish"],StrSplit(config.data["Address_Offset"]["Fish_" "Take_" key],",")
+            )
+            this.setting["Fish"]["state_address"][key] := this.GetAddressOffset(
+                config.data["Address"]["Fish"],StrSplit(config.data["Address_Offset"]["Fish_" "State_" key],",")
+            )
+        }
+        for key in ["Attack","Dismount","Mining","MiningGeode"
+            ,"Breakblocks","Map","Zoom","ClipCam","LockCam","Animation",] ; AutoPress
+            this.setting["Features"][key] := False
         this.Func := ObjBindMethod(this, "AutoBtn")
-        this.Fish_Thread := AhkThread()
     }
     AutoBtn(){
-        this.NatualPress(this.AutoBtn_Key)
-        Return
+        this.NatualPress(this.setting["AutoBtn"]["key"])
     }
-    AutoCall(){
-        this.NatualPress("Enter")
-        ; Î´Íê¹¤
-        this.NatualPress("Enter")
-        Return
-    }
+    ; AutoCall(){
+    ;     this.NatualPress("Enter")
+    ;     ; æœªå®Œå·¥
+    ;     this.NatualPress("Enter")
+    ;     Return
+    ; }
     AutoFish(){
-        pid := this.pid
-        Fish_Interval := this.Fish_Interval
-        WaterAddress := this.WaterAddress
-        LavaAddress := this.LavaAddress
-        ChocoAddress := this.ChocoAddress
-        PlasmaAddress := this.PlasmaAddress
-        StateWaterAddress := this.StateWaterAddress
-        StateLavaAddress := this.StateLavaAddress
-        StateChocoAddress := this.StateChocoAddress
-        StatePlasmaAddress := this.StatePlasmaAddress
-        BaseaAddress := this.BaseaAddress
-        AutoPress := this.AutoPress
-        ThreadAHK =
+        for key,value in this.setting["Fish"]["take_address"]
+            Take_Address .= value ","
+        for key,value in this.setting["Fish"]["state_address"]
+            State_Address .= value ","
+        ThreadAHK := Format("
         (
             #NoTrayIcon
-            ReadMemoryINT(MADDRESS) {
-                VarSetCapacity(MVALUE,4,0)
-                ProcessHandle := DllCall("OpenProcess", "Int", 24, "Char", 0, "UInt", %pid%, "UInt")
-                DllCall("ReadProcessMemory", "UInt", ProcessHandle, "Ptr", MADDRESS, "Int*", MVALUE, "UInt", 4)
-                Return MVALUE
+            ReadMemoryINT(MADDRESS,PID) {
+                MVALUE := Buffer(4,0)
+                ProcessHandle := DllCall("OpenProcess", "Int", 24, "Char", 0, "UInt", PID, "UInt")
+                DllCall("ReadProcessMemory", "UInt", ProcessHandle, "Ptr", MADDRESS, "Ptr", MVALUE, "UInt", 4)
+                Return NumGet(Mvalue,"Int")
             }
-            NatualPress(npbtn) {
-                ControlSend, , {`%npbtn`% down}, ahk_pid %pid%
-                Random, SleepTime, 66, 122
-                Sleep, `%SleepTime`%
-                ControlSend, , {`%npbtn`% up}, ahk_pid %pid%
-                Random, SleepTime, 66, 122
-                Sleep, `%SleepTime`%
-                Return
+            NatualPress(npbtn,pid) {
+                ControlSend("{" npbtn " down}",, "ahk_pid " pid)
+                Sleep(Random(66, 122))
+                ControlSend("{" npbtn " up}",, "ahk_pid " pid)
+                Sleep(Random(66, 122))
             }
-            Loop{
-                Sleep, %Fish_Interval%
-                CaughtWater := ReadMemoryINT("%WaterAddress%")
-                CaughtLava := ReadMemoryINT("%LavaAddress%")
-                CaughtChoco := ReadMemoryINT("%ChocoAddress%")
-                CaughtPlasma := ReadMemoryINT("%PlasmaAddress%")
-                StateWater := ReadMemoryINT("%StateWaterAddress%")
-                StateLava := ReadMemoryINT("%StateLavaAddress%")
-                StateChoco := ReadMemoryINT("%StateChocoAddress%")
-                StatePlasma := ReadMemoryINT("%StatePlasmaAddress%")
-                if( !StateWater && !StateLava && !StateChoco && !StatePlasma ) {
-                    if (%AutoPress%){
-                        NatualPress("%Press_Key%")
-                        Sleep, 100
-                    }
-                    NatualPress("%Fish_Key%")
-                    Flag := true
-                }
-                if (CaughtWater || CaughtLava || CaughtChoco || CaughtPlasma) {
-                    if (Flag) {
-                        Sleep, 1000
-                        Flag := false
-                    }
-                    else {
-                        NatualPress("%Fish_Key%")
+            Running(Pid,FishKey,Interval,Take_Address,State_Address){
+                Loop{
+                    Sleep(Interval)
+                    TakeFlag := False
+                    StateFlag := False
+                    for key in Take_Address
+                        TakeFlag |= ReadMemoryINT(key,Pid)
+                    for key in State_Address
+                        StateFlag |= ReadMemoryINT(key,Pid)
+                    if(!StateFlag) {
+                        ; if (AutoPress){
+                        ;     NatualPress(PressKey,Pid)
+                        ;     Sleep(100)
+                        ; }
+                        NatualPress(FishKey,Pid)
                         Flag := true
                     }
+                    if (TakeFlag) {
+                        if (Flag) {
+                            Sleep(1000)
+                            Flag := false
+                        }
+                        else {
+                            NatualPress(FishKey,Pid)
+                            Flag := true
+                        }
+                    }
                 }
             }
-            Return
-        )
-        this.Fish_Thread.AhkTerminate()
-        If (this.Status)
-            this.Fish_Thread := AhkThread(ThreadAHK)
-        Return
+            Running({1},"{2}",{3},[{4}],[{5}])
+        )"
+            ,this.pid,config.data["Key"]["Fish"],this.setting["Fish"]["interval"],Take_Address,State_Address)
+        Try this.thread.ahkTerminate()
+        If (this.running)
+            this.thread := NewThread(ThreadAHK)
+    }
+    static GetID(){
+        for Key,Value in Game.Lists{
+            Value.running := False
+            Func := Value.Func
+            SetTimer(Func,False)
+            Try Value.thread.ahkTerminate()
+        }
+        Game.Lists := Map()
+        MainGui["SelectGame"].Delete()
+        GameIDs := WinGetList("ahk_exe " config.data["Global"]["GameTitle"])
+        for key in GameIDs{
+            theGame := Game(key)
+            Game.Lists[theGame.name] := theGame
+            MainGui["SelectGame"].Add([theGame.name])
+        }
     }
     NatualPress(npbtn) {
-        pid := this.pid
-        ControlSend, , {%npbtn% down}, ahk_pid %pid%
-        Random, SleepTime, 66, 122
-        Sleep, %SleepTime%
-        ControlSend, , {%npbtn% up}, ahk_pid %pid%
-        Random, SleepTime, 66, 122
-        Sleep, %SleepTime%
-        Return
-    }
-    GetID(){
-        For Key,Value in Game.Lists{
-            Func := Value.Func
-            SetTimer % Func,Off
-        }
-        Game.Lists := Object()
-        WinGet, GameIDs,List,ahk_exe %GameTitle%
-        GuiControl,, SelectGame , |
-        Loop, %GameIDs%{
-            GameID := GameIDs%A_Index%
-            NowGame := new Game(GameID)
-            NowName := NowGame.name
-            ObjRawSet(Game.Lists, NowGame.name,NowGame )
-            GuiControl,, SelectGame , %NowName% 
-        }
-        Return
+        ControlSend("{" npbtn " down}",, "ahk_pid " this.pid)
+        Sleep(Random(66, 122))
+        ControlSend("{" npbtn " up}",, "ahk_pid " this.pid)
+        Sleep(Random(66, 122))
     }
     GetName(Address){
-        y1 := this.ReadMemoryINT(this.BaseaAddress + Address)
-        y2 := this.ReadMemoryINT(y1 + 0x10)
-        Return Name := this.ReadMemoryStr(y2)
+        Address := this.GetAddressOffset(Address,StrSplit(config.data["Address_Offset"]["Name"],","))
+        Return this.ReadMemory(Address,"Str")
     }
-    GetAddressWater(Address) {
-        y1 := this.ReadMemoryINT(this.BaseaAddress + Address)
-        y2 := this.ReadMemoryINT(y1 + 0x68)
-        y3 := this.ReadMemoryINT(y2 + 0xe4)
-        Return WaterAddress := (y3 + 0x3c4)
-    }
-    GetAddressLava(Address) {
-        y1 := this.ReadMemoryINT(this.BaseaAddress + Address)
-        y2 := this.ReadMemoryINT(y1 + 0x68)
-        y3 := this.ReadMemoryINT(y2 + 0xe4)
-        Return LavaAddress := (y3 + 0x898)
-    }
-    GetAddressChoco(Address) {
-        y1 := this.ReadMemoryINT(this.BaseaAddress + Address)
-        y2 := this.ReadMemoryINT(y1 + 0x68)
-        y3 := this.ReadMemoryINT(y2 + 0xe4)
-        Return ChocoAddress := (y3 + 0x62c)
-    }
-    GetAddressPlasma(Address){
-        y1 := this.ReadMemoryINT(this.BaseaAddress + Address)
-        y2 := this.ReadMemoryINT(y1 + 0x68)
-        y3 := this.ReadMemoryINT(y2 + 0xe4)
-        Return PlasmaAddress := (y3 + 0xb00)
-    }
-    GetAddressStateWater(Address) {
-        y1 := this.ReadMemoryINT(this.BaseaAddress + Address)
-        y2 := this.ReadMemoryINT(y1 + 0x68)
-        y3 := this.ReadMemoryINT(y2 + 0xf4)
-        Return WaterAddress := (y3 + 0xBA0)
-    }
-    GetAddressStateLava(Address) {
-        y1 := this.ReadMemoryINT(this.BaseaAddress + Address)
-        y2 := this.ReadMemoryINT(y1 + 0x68)
-        y3 := this.ReadMemoryINT(y2 + 0xf4)
-        Return LavaAddress := (y3 + 0x938)
-    }
-    GetAddressStateChoco(Address) {
-        y1 := this.ReadMemoryINT(this.BaseaAddress + Address)
-        y2 := this.ReadMemoryINT(y1 + 0x68)
-        y3 := this.ReadMemoryINT(y2 + 0xf4)
-        Return ChocoAddress := (y3 + 0xE08)
-    }
-    GetAddressStatePlasma(Address){
-        y1 := this.ReadMemoryINT(this.BaseaAddress + Address)
-        y2 := this.ReadMemoryINT(y1 + 0x68)
-        y3 := this.ReadMemoryINT(y2 + 0xf4)
-        Return PlasmaAddress := (y3 + 0x6CC)
+    GetAddressOffset(Address,Offset){
+        Address := this.ReadMemory(this.BaseaAddress + Address,"Int")
+        Loop Offset.Length - 1
+            Address := this.ReadMemory(Address + Offset[A_Index],"Int")
+        Return Address + Offset[-1]
     }
     getProcessBaseAddress(id) {
         Return DllCall( A_PtrSize = 4 ? "GetWindowLong" : "GetWindowLongPtr" , "Ptr", id , "Int", -6 , "Int64")
     }
-    ReadMemoryINT(MADDRESS) {
-        VarSetCapacity(MVALUE,4,0)
+    ReadMemory(Maddress,Readtype,Len := unset) {
         ProcessHandle := DllCall("OpenProcess", "Int", 24, "Char", 0, "UInt", this.pid, "UInt")
-        DllCall("ReadProcessMemory", "UInt", ProcessHandle, "Ptr", MADDRESS, "Int*", MVALUE, "UInt", 4)
-        Return MVALUE
+        if(Readtype == "Int"){
+            Len := IsSet(Len)?Len:4
+            Mvalue := Buffer(Len,0)
+            DllCall("ReadProcessMemory", "UInt", ProcessHandle, "Ptr", Maddress, "Ptr", Mvalue, "UInt", Len)
+            Return NumGet(Mvalue,"Int")
+        }
+        else if(Readtype == "Str"){
+            Len := IsSet(Len)?Len:15
+            Mvalue := Buffer(Len,0)
+            ProcessHandle := DllCall("OpenProcess", "Int", 24, "Char", 0, "UInt", this.pid, "UInt")
+            DllCall("ReadProcessMemory", "UInt", ProcessHandle, "Ptr", Maddress, "Ptr", Mvalue, "UInt", Len)
+            Return StrGet(Mvalue,"utf-8")
+        }
+        throw ValueError("é”™è¯¯çš„è¯»å–ç±»å‹", -1, Readtype)
     }
-    ReadMemoryStr(MADDRESS) {
-        VarSetCapacity(MVALUE,15,0)
-        ProcessHandle := DllCall("OpenProcess", "Int", 24, "Char", 0, "UInt", this.pid, "UInt")
-        DllCall("ReadProcessMemory", "UInt", ProcessHandle, "Ptr", MADDRESS, "Str", MVALUE, "UInt", 15)
-        Return StrGet(&MVALUE,"utf-8")
-    }
-    WriteMemory(Address,Value,len) {
-        VarSetCapacity(MVALUE, len, Value)
+    WriteMemory(Address,Value,Len) {
+        Mvalue := Buffer(Len, Value)
         ProcessHandle := DllCall("OpenProcess", "Int", 0x38, "Char", 0, "UInt", this.pid, "UInt")
-        Return DllCall("WriteProcessMemory", "UInt", ProcessHandle, "Ptr", this.BaseaAddress + Address, "Ptr", &MVALUE, "UInt", len)
+        Return DllCall("WriteProcessMemory", "UInt", ProcessHandle, "Ptr", this.BaseaAddress + Address, "Ptr", Mvalue, "UInt", Len)
     }
 }
-Gui, New ,, Trove¸¨Öú
-Gui, Add, Tab3,, Ö÷Ò³|Ãæ°å|ÉèÖÃ|¹ØÓÚ ; |¼à¿Ø|×¢²áÕËºÅ
-Gui, Tab, Ö÷Ò³
-Gui, Add, Button,, »ñÈ¡ÓÎÏ·Â·¾¶
-Gui, Add, Text,, ÓÎÏ·Â·¾¶:
-Gui, Add, Edit,vGamePath gButton±£´æ,%GamePath%
-Gui, Add, Button,, Æô¶¯ÓÎÏ·
-Gui, Add, Text,, 
-(
-    ËµÃ÷: µ±Ç°Ê¹ÓÃSteam´ò¿ªÓÎÏ·»áÇ¿ÖÆ°ó¶¨
-    ÕËºÅ, Ö±½ÓÊ¹ÓÃ¹Ù·½Æô¶¯Æ÷¼´¿ÉÌø¹ı°ó¶¨
-)
-Gui, Add, Button,, ModsÎÄ¼ş¼Ğ
-Gui, Add, Link,,
-(
-    ËµÃ÷: ±¾ÓÎÏ·Ö§³ÖÄ£×é, ¿ÉÍ¨¹ı¸÷¹«»áÈººÍ
-    Steam´´Òâ¹¤·»µÈÇşµÀÏÂÔØ, ModÖÆ×÷¿ÉÊ¹ÓÃ
-    <a href="https://github.com/DazoTrove/TroveTools.NET/">TroveTools.NET</a>µÈ¹¤¾ß
-)
-Gui, Add, Button,, ModCfgsÎÄ¼ş¼Ğ
-Gui, Add, Link,, 
-(
-    ËµÃ÷: CfgsÓÃÓÚ±£´æÄ³Ğ©ModµÄÅäÖÃĞÅÏ¢,
-    Ò»°ãÎ»ÓÚ<a href="file:///%A_AppData%\Trove\ModCfgs\">`%AppData`%\Trove\ModCfgs\</a>ÖĞ
-)
-Gui, Add, Text,, 
-(
-    ModÊ¹ÓÃ½Ì³Ì: ºó×ºÎª.tmodµÄÎÄ¼ş´æ·ÅÔÚMods
-    ÎÄ¼ş¼Ğ, ºó×ºÎª.cfgµÄÎÄ¼ş´æ·ÅÔÚModCfgs
-    ÎÄ¼ş¼Ğ, ·ÅÖÃºóÖØÆôÓÎÏ·ÉúĞ§
-)
-Gui, Add, Link,, 
-(
-    ¸½: ¹Ù·½ÓÊÏä<a href="mailto:support@gamigo.com">support@gamigo.com</a>(Í¨¹ı´Ë
-    ÓÊÏäÑ¯ÎÊ½»Ò×ÎÊÌâ¡¢ÕËºÅÎÊÌâµÈÄÚÈİ,
-    ×¢ÒâÊ¹ÓÃÓ¢ÎÄÃèÊö)
-)
-Gui, Tab, Ãæ°å
-Gui, Add, Button,, Ë¢ĞÂ
-Gui, Add, Text,, Íæ¼ÒÁĞ±í:
-Gui, Add, DropDownList, vSelectGame gSelectGame
-Gui, Add, Text,, ½Å±¾¶¯×÷:
-Gui, Add, DropDownList, vSelectAction gSelectAction, ×Ô¶¯°´¼ü|µöÓã ; |×Ô¶¯º°»°
-Gui, Add, Text,, ÆµÂÊ(ºÁÃë):
-Gui, Add, Edit,Number vInterval gInterval
-Gui, Add, CheckBox, vAutoPress gAutoPress, ×Ô¶¯½ÓÈÎÎñ
-Gui, Add, CheckBox, vAutoAttack gAutoAttack, ×Ô¶¯¹¥»÷
-Gui, Add, CheckBox, vAntiDismount gAntiDismount, ±£³ÖÆï³Ë
-Gui, Add, CheckBox, vInstaMining gInstaMining, ¿ìËÙÍÚ¿ó
-Gui, Add, CheckBox, vInstaMiningGeode gInstaMiningGeode, ¿ìËÙÍÚ¿ó(¾§¶´)
-Gui, Add, CheckBox, vBreakblocks gBreakblocks, ´òÆÆÕÏ°­
-Gui, Add, CheckBox, vMapCondition gMapCondition, µØÍ¼·Å´ó
-Gui, Add, CheckBox, vZoomCondition gZoomCondition, ÊÓÒ°·Å´ó
-Gui, Add, CheckBox, vClipCam gClipCam, ÊÓ½ÇÕÚµ²
-Gui, Add, CheckBox, vLockCam gLockCam, ÊÓ½Ç¹Ì¶¨
-Gui, Add, CheckBox, vAnimation gAnimation, Òş²ØÌØĞ§
-Gui, Add, Text,, °´¼üÉèÖÃ:
-Gui, Add, Hotkey, vAutoBtn_Key gAutoBtn_Key
-; Gui, Add, Text,, ÎÄ±¾ÄÚÈİ:
-; Gui, Add, Edit,vAutoCall_Text gAutoCall_Text
-Gui, Add, Button,, Æô¶¯
-Gui, Tab, ÉèÖÃ
-Gui, Add, Text,, ÓÎÏ·±êÌâ:
-Gui, Add, Edit,vGameTitle,%GameTitle%
-Gui, Add, Text,, ÕËºÅµØÖ·:
-Gui, Add, Edit,vNameAddress,%NameAddress%
-Gui, Add, Text,, µöÓãµØÖ·:
-Gui, Add, Edit,vFishAddress,%FishAddress%
-Gui, Add, Text,, ×Ô¶¯¹¥»÷µØÖ·:
-Gui, Add, Edit,vAttackAddress,%AttackAddress%
-Gui, Add, Text,, ±£³ÖÆï³ËµØÖ·:
-Gui, Add, Edit,vDismountAddress,%DismountAddress%
-Gui, Add, Text,, ¿ìËÙÍÚ¿óµØÖ·:
-Gui, Add, Edit,vMiningAddress,%MiningAddress%
-Gui, Add, Text,, ¿ìËÙÍÚ¿ó(¾§¶´)µØÖ·:
-Gui, Add, Edit,vMiningGeodeAddress,%MiningGeodeAddress%
-Gui, Add, Text,, ´òÆÆÕÏ°­µØÖ·:
-Gui, Add, Edit,vBreakblocksAddress,%BreakblocksAddress%
-Gui, Add, Text,, µØÍ¼·Å´óµØÖ·:
-Gui, Add, Edit,vMapAddress,%MapAddress%
-Gui, Add, Text,, ÊÓÒ°·Å´óµØÖ·:
-Gui, Add, Edit,vZoomAddress,%ZoomAddress%
-Gui, Add, Text,, ÊÓ½ÇÕÚµ²µØÖ·:
-Gui, Add, Edit,vClipCamAddress,%ClipCamAddress%
-Gui, Add, Text,, ÊÓ½Ç¹Ì¶¨µØÖ·:
-Gui, Add, Edit,vLockCamAddress,%LockCamAddress%
-Gui, Add, Text,, Òş²ØÌØĞ§µØÖ·:
-Gui, Add, Edit,vAnimationAddress,%AnimationAddress%
-Gui, Add, Text,, ½»»¥°´¼ü:
-Gui, Add, Hotkey,vPress_Key,%Press_Key%
-Gui, Add, Text,, µöÓã°´¼ü:
-Gui, Add, Hotkey,vFish_Key,%Fish_Key%
-Gui, Add, Button,, ±£´æ
-Gui, Tab, ¹ØÓÚ
-Gui, Add, ActiveX, w100 h100 Center, % "mshtml:<img src='https://cdn.jsdelivr.net/gh/Angels-D/Angels-D.github.io/medias/avatar.jpg' style='width:100px;'/>"
-Gui, Add, Text,, ×÷Õß: AnglesD  ÓÎÏ·ID: D_FairyTail
-Gui, Add, Text,cRed, ±¾Èí¼şÍêÈ«¿ªÔ´Ãâ·Ñ£¬½ö¹©Ñ§Ï°Ê¹ÓÃ£¡
-Gui, Add, Link,, ²©¿Í: `n<a href="https://Angels-D.github.io/">https://Angels-D.github.io/</a>
-Gui, Add, Link,, Ô´Âë: `n<a href="https://github.com/Angels-D/TroveAuto">https://github.com/Angels-D/TroveAuto</a>
-Gui, Add, Link,, ¹«»áÍÆ¹ã: `n<a target="_blank" href="https://qm.qq.com/cgi-bin/qm/qr?k=vOppyOHhd2WOrA6jJ9Yd-qi8EZQvHjnk&jump_from=webapi">AshesWithoutFire[ÈººÅ:423933990]</a>
-Gui, Show
-ButtonË¢ĞÂ: ; Reload
-    Game.GetID()
-    GuiControl, Choose ,SelectGame,0
-    GuiControl, Choose ,SelectAction,0
-    GuiControl,, AutoPress , 0
-    GuiControl, Text ,Interval
-    GuiControl, Text ,AutoBtn_Key
-    GuiControl, Text ,AutoCall_Text
-    GuiControl, Text, ¹Ø±Õ,Æô¶¯
-    GuiControl, Disable, SelectAction
-    GuiControl, Disable, Interval
-    GuiControl, Disable, AutoPress
-    GuiControl, Disable, AutoAttack
-    GuiControl, Disable, AntiDismount
-    GuiControl, Disable, InstaMining
-    GuiControl, Disable, InstaMiningGeode
-    GuiControl, Disable, Breakblocks
-    GuiControl, Disable, MapCondition
-    GuiControl, Disable, ZoomCondition
-    GuiControl, Disable, ClipCam
-    GuiControl, Disable, LockCam
-    GuiControl, Disable, Animation
-    GuiControl, Disable, AutoBtn_Key
-    GuiControl, Disable, AutoCall_Text
-    GuiControl, Disable, ^Æô¶¯$
-    Gui,Submit, NoHide
-Return
-Button»ñÈ¡ÓÎÏ·Â·¾¶:
-    WinGet, GamePath, ProcessPath,ahk_exe i)%GameTitle%|Glyph.*
-    index := RegExMatch(GamePath, "i)^(.*?Trove)", GamePath)
-    if (index)
-        GuiControl,, GamePath, % GamePath%index%
-    else
-        MsgBox, ÇëÔËĞĞÓÎÏ·»òµÇÂ½Æ÷ÒÔ¼ì²âÂ·¾¶
-Return
-ButtonÆô¶¯ÓÎÏ·:
-    Try Run, %GamePath%\GlyphClient.exe
-    Catch
-        MsgBox, ÓÎÏ·Æô¶¯Ê§°Ü, Çë¼ì²éÓÎÏ·Â·¾¶
-Return
-ButtonModsÎÄ¼ş¼Ğ:
-    Try Run, explore %GamePath%\Games\Trove\Live\mods
-    Catch
-        MsgBox, ModsÎÄ¼ş¼Ğ´ò¿ªÊ§°Ü, Çë¼ì²éÓÎÏ·Â·¾¶
-Return
-ButtonModCfgsÎÄ¼ş¼Ğ:
-    Run, explore %A_AppData%\Trove\ModCfgs\
-Return
-SelectGame:
-    GuiControlGet, SelectGame
-    GuiControl, ChooseString, SelectAction, % Game.Lists[SelectGame].Action
-    GuiControl, Text, ¹Ø±Õ,Æô¶¯
-    GuiControl, Enable, SelectAction
-    GuiControl, Enable, Interval
-    GuiControl, Disable ,AutoPress
-    GuiControl, Disable, AutoBtn_Key
-    GuiControl, Disable, AutoCall_Text
-    GuiControl, Enable, ^Æô¶¯$
-    If (Game.Lists[SelectGame].Status){
-        GuiControl, Text, ^Æô¶¯$,¹Ø±Õ
-        GuiControl, Disable, SelectAction
-        GuiControl, Disable, Interval
-    }
-SelectAction:
-    GuiControlGet, SelectAction
-    Game.Lists[SelectGame].Action := SelectAction
-    GuiControl, Enable, AutoAttack
-    GuiControl, Enable, AntiDismount
-    GuiControl, Enable, InstaMining
-    GuiControl, Enable, InstaMiningGeode
-    GuiControl, Enable, Breakblocks
-    GuiControl, Enable, MapCondition
-    GuiControl, Enable, ZoomCondition
-    GuiControl, Enable, ClipCam
-    GuiControl, Enable, LockCam
-    GuiControl, Enable, Animation
-    GuiControl, Disable, AutoPress
-    GuiControl, Disable, AutoBtn_Key
-    GuiControl, Disable, AutoCall_Text
-    GuiControl,, AutoPress , % Game.Lists[SelectGame].AutoPress
-    GuiControl,, AutoAttack , % Game.Lists[SelectGame].AutoAttack
-    GuiControl,, AntiDismount , % Game.Lists[SelectGame].AntiDismount
-    GuiControl,, InstaMining , % Game.Lists[SelectGame].InstaMining
-    GuiControl,, InstaMiningGeode , % Game.Lists[SelectGame].InstaMiningGeode
-    GuiControl,, Breakblocks , % Game.Lists[SelectGame].Breakblocks
-    GuiControl,, MapCondition , % Game.Lists[SelectGame].MapCondition
-    GuiControl,, ZoomCondition , % Game.Lists[SelectGame].ZoomCondition
-    GuiControl,, ClipCam , % Game.Lists[SelectGame].ClipCam
-    GuiControl,, LockCam , % Game.Lists[SelectGame].LockCam
-    GuiControl,, Animation , % Game.Lists[SelectGame].Animation
-    GuiControl, Text, AutoBtn_Key, % Game.Lists[SelectGame].AutoBtn_Key
-    GuiControl, Text, AutoCall_Text, % Game.Lists[SelectGame].AutoCall_Text
-    Switch SelectAction{
-    Case "×Ô¶¯°´¼ü":
-        Game.Lists[SelectGame].Func := ObjBindMethod(Game.Lists[SelectGame], "AutoBtn")
-        GuiControl, Text, Interval, % Game.Lists[SelectGame].AutoBtn_Interval
-        If(!Game.Lists[SelectGame].Status) 
-            GuiControl, Enable, AutoBtn_Key
-    Case "µöÓã":
-        Game.Lists[SelectGame].Func := ObjBindMethod(Game.Lists[SelectGame], "AutoFish")
-        GuiControl, Text, Interval, % Game.Lists[SelectGame].Fish_Interval
-        If(!Game.Lists[SelectGame].Status) 
-            GuiControl, Enable, AutoPress
-        ; Case "×Ô¶¯º°»°":
-        ;     Game.Lists[SelectGame].Func := ObjBindMethod(Game.Lists[SelectGame], "AutoCall")
-        ;     GuiControl, Text, Interval, % Game.Lists[SelectGame].AutoCall_Interval
-        ;     If(!Game.Lists[SelectGame].Status) 
-        ;         GuiControl, Enable, AutoCall_Text
-    }
-Return
-Interval:
-    GuiControlGet, Interval
-    Switch SelectAction{
-    Case "×Ô¶¯°´¼ü":
-        Game.Lists[SelectGame].AutoBtn_Interval := Interval
-    Case "µöÓã":
-        Game.Lists[SelectGame].Fish_Interval := Interval
-        ; Case "×Ô¶¯º°»°":
-        ;     Game.Lists[SelectGame].AutoCall_Interval := Interval
-    }
-Return
-AutoPress:
-    GuiControlGet, AutoPress
-    Game.Lists[SelectGame].AutoPress := AutoPress
-Return
-AutoAttack:
-    GuiControlGet, AutoAttack
-    Game.Lists[SelectGame].AutoAttack := AutoAttack
-    Game.Lists[SelectGame].WriteMemory(AttackAddress,AutoAttack?0xF0:0xF1,1)
-Return
-AntiDismount:
-    GuiControlGet, AntiDismount
-    Game.Lists[SelectGame].AntiDismount := AntiDismount
-    Game.Lists[SelectGame].WriteMemory(DismountAddress,AntiDismount?0xEB:0x74,1)
-Return
-InstaMining:
-    GuiControlGet, InstaMining
-    Game.Lists[SelectGame].InstaMining := InstaMining
-    Game.Lists[SelectGame].WriteMemory(MiningAddress,InstaMining?0xF0:0xF1,1)
-Return
-InstaMiningGeode:
-    GuiControlGet, InstaMiningGeode
-    Game.Lists[SelectGame].InstaMiningGeode := InstaMiningGeode
-    Game.Lists[SelectGame].WriteMemory(MiningGeodeAddress,InstaMiningGeode?0xF0:0xF1,1)
-Return
-Breakblocks:
-    GuiControlGet, Breakblocks
-    Game.Lists[SelectGame].Breakblocks := Breakblocks
-    Game.Lists[SelectGame].WriteMemory(BreakblocksAddress,Breakblocks?0x01:0x00,1)
-Return
-MapCondition:
-    GuiControlGet, MapCondition
-    Game.Lists[SelectGame].MapCondition := MapCondition
-    Game.Lists[SelectGame].WriteMemory(MapAddress,MapCondition?0xEB:0x77,1)
-Return
-ZoomCondition:
-    GuiControlGet, ZoomCondition
-    Game.Lists[SelectGame].ZoomCondition := ZoomCondition
-    Game.Lists[SelectGame].WriteMemory(ZoomAddress,ZoomCondition?0x57:0x5F,1)
-Return
-ClipCam:
-    GuiControlGet, ClipCam
-    Game.Lists[SelectGame].ClipCam := ClipCam
-    if(ClipCam)
-        Game.Lists[SelectGame].WriteMemory(ClipCamAddress,0x909090,3)
-    else{
-        Game.Lists[SelectGame].WriteMemory(ClipCamAddress,0x0F,1)
-        Game.Lists[SelectGame].WriteMemory(ClipCamAddress + 1,0x29,1)
-        Game.Lists[SelectGame].WriteMemory(ClipCamAddress + 2,0x01,1)
-    }
-Return
-LockCam:
-    GuiControlGet, LockCam
-    Game.Lists[SelectGame].LockCam := LockCam
-    Game.Lists[SelectGame].WriteMemory(LockCamAddress,LockCam?0xEB:0x74,1)
-Return
-Animation:
-    GuiControlGet, Animation
-    Game.Lists[SelectGame].Animation := Animation
-    Game.Lists[SelectGame].WriteMemory(AnimationAddress,Animation?0x4C:0x44,1)
-Return
-AutoBtn_Key:
-    GuiControlGet, AutoBtn_Key
-    Game.Lists[SelectGame].AutoBtn_Key := AutoBtn_Key
-Return
-AutoCall_Text:
-    GuiControlGet, AutoCall_Text
-    Game.Lists[SelectGame].AutoCall_Text := AutoCall_Text
-Return
-ButtonÆô¶¯:
-    If (Game.Lists[SelectGame].Status){
-        GuiControl, Text, ¹Ø±Õ,Æô¶¯
-        GuiControl, Enable, SelectAction
-        GuiControl, Enable, Interval
-        Game.Lists[SelectGame].Status := False
-        Func := Game.Lists[SelectGame].Func
-        If (SelectAction = "µöÓã"){
-            GuiControl, Enable ,AutoPress
-            %Func%()
-        }
-        Else{
-            GuiControl, Enable ,AutoBtn_Key
-            SetTimer % Func,Delete
-        }
-    }
-    Else{
-        GuiControl, Text, ^Æô¶¯$,¹Ø±Õ
-        GuiControl, Disable, SelectAction
-        GuiControl, Disable, Interval
-        Game.Lists[SelectGame].Status := True
-        Func := Game.Lists[SelectGame].Func
-        If (SelectAction = "µöÓã"){
-            GuiControl, Disable ,AutoPress
-            %Func%()
-        }
-        Else{
-            GuiControl, Disable ,AutoBtn_Key
-            SetTimer % Func,% Interval
-        }
-    }
-Return
-Button±£´æ:
-    Gui,Submit, NoHide
-    IniWrite, % AttackAddress, config.ini, Address, Attack
-    IniWrite, % DismountAddress, config.ini, Address, Dismount
-    IniWrite, % MiningAddress, config.ini, Address, Mining
-    IniWrite, % MiningGeodeAddress, config.ini, Address, MiningGeode
-    IniWrite, % BreakblocksAddress, config.ini, Address, Breakblocks
-    IniWrite, % MapAddress, config.ini, Address, Map
-    IniWrite, % ZoomAddress, config.ini, Address, Zoom
-    IniWrite, % ClipCamAddress, config.ini, Address, ClipCam
-    IniWrite, % LockCamAddress, config.ini, Address, LockCam
-    IniWrite, % AnimationAddress, config.ini, Address, Animation
-    IniWrite, % FishAddress, config.ini, Address, Fish
-    IniWrite, % NameAddress, config.ini, Address, Name
-    IniWrite, % TPAddress, config.ini, Address, TP
-    IniWrite, % Fish_Key, config.ini, Key, Fish
-    IniWrite, % Press_Key, config.ini, Address, Press
-    IniWrite, % GameTitle, config.ini, Other, GameTitle
-    IniWrite, % GamePath, config.ini, Other, GamePath
-Return
-GuiClose:
-ExitApp
