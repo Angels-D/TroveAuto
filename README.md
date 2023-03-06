@@ -1,6 +1,6 @@
 # Trove自动脚本
 
-## Auto-Hot-Key
+## Auto-Hot-Key (v2 H)
 
 * Fork 自 [MiraculousB](https://github.com/MiraculousB)/**[TroveAutoFish](https://github.com/MiraculousB/TroveAutoFish)** （master分支） — 2020 年
   
@@ -26,7 +26,7 @@
   * 钓鱼状态判定：`“Trove.exe” + 0x113268C + 0x68 + 0xF4`
     
     * 水：`+ 0xBA0`
-    * 熔岩：`+ 0xBA0`
+    * 熔岩：`+ 0x938`
     * 巧克力：`+ 0xE08`
     * 等离子体：`+ 0x6CC`
 

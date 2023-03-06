@@ -1,0 +1,3451 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CheatTable CheatEngineTableVersion="42">
+  <CheatEntries>
+    <CheatEntry>
+      <ID>5283</ID>
+      <Description>"TroverHacks - Trove - Version 4.6 - 28/05/22"</Description>
+      <Color>8000FF</Color>
+      <GroupHeader>1</GroupHeader>
+      <CheatEntries>
+        <CheatEntry>
+          <ID>5273</ID>
+          <Description>"Player"</Description>
+          <Color>FF0000</Color>
+          <GroupHeader>1</GroupHeader>
+          <CheatEntries>
+            <CheatEntry>
+              <ID>5270</ID>
+              <Description>"5% Chance Return POT (on fast use) - Final"</Description>
+              <Color>4080FF</Color>
+              <VariableType>Auto Assembler Script</VariableType>
+              <AssemblerScript>{ Game   : Trove.exe
+  Version: 
+  Date   : 2021-12-16
+  Author : CHANCE retturn port
+
+  This script does blah blah blah
+}
+
+[ENABLE]
+
+aobscanmodule(INJECT,trove.exe,74 XX C7 45 F4 00 00 00 00 90 8B 46 10 8B 4D FC 8B 5E 14 89 45 F0 8D 45 F0 50 8D 45 E0 50) // should be unique
+alloc(newmem,$1000)
+
+label(code)
+label(return)
+
+newmem:
+
+code:
+  db 74
+
+INJECT:
+  db EB
+return:
+registersymbol(INJECT)
+
+[DISABLE]
+
+INJECT:
+  db 74
+
+unregistersymbol(INJECT)
+dealloc(newmem)
+
+{
+// ORIGINAL CODE - INJECTION POINT: trove.exe+588466
+
+trove.exe+588449: 56                    - push esi
+trove.exe+58844A: 57                    - push edi
+trove.exe+58844B: 89 5D F8              - mov [ebp-08],ebx
+trove.exe+58844E: 8D 83 30 01 00 00     - lea eax,[ebx+00000130]
+trove.exe+588454: 8B C8                 - mov ecx,eax
+trove.exe+588456: 89 45 FC              - mov [ebp-04],eax
+trove.exe+588459: E8 72 0C B5 FF        - call trove.AK::MemoryMgr::IsInitialized+4330
+trove.exe+58845E: 8B 73 6C              - mov esi,[ebx+6C]
+trove.exe+588461: 8D 7B 64              - lea edi,[ebx+64]
+trove.exe+588464: 3B F7                 - cmp esi,edi
+// ---------- INJECTING HERE ----------
+trove.exe+588466: 74 3C                 - je trove.exe+5884A4
+// ---------- DONE INJECTING  ----------
+trove.exe+588468: C7 45 F4 00 00 00 00  - mov [ebp-0C],00000000
+trove.exe+58846F: 90                    - nop 
+trove.exe+588470: 8B 46 10              - mov eax,[esi+10]
+trove.exe+588473: 8B 4D FC              - mov ecx,[ebp-04]
+trove.exe+588476: 8B 5E 14              - mov ebx,[esi+14]
+trove.exe+588479: 89 45 F0              - mov [ebp-10],eax
+trove.exe+58847C: 8D 45 F0              - lea eax,[ebp-10]
+trove.exe+58847F: 50                    - push eax
+trove.exe+588480: 8D 45 E0              - lea eax,[ebp-20]
+trove.exe+588483: 50                    - push eax
+}
+</AssemblerScript>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>328</ID>
+              <Description>"Jump min  - Final"</Description>
+              <Color>4080FF</Color>
+              <VariableType>Auto Assembler Script</VariableType>
+              <AssemblerScript>[ENABLE]
+
+aobscanmodule(jumper,trove.exe,FF 46 3C 68) // should be unique
+alloc(newmem,$1000)
+
+label(code)
+
+newmem:
+
+code:
+  db FF 46
+
+jumper:
+ db FF 4E
+ return:
+registersymbol(jumper)
+
+[DISABLE]
+
+jumper:
+  db FF 46
+
+unregistersymbol(jumper)
+dealloc(newmem)
+</AssemblerScript>
+              <Hotkeys>
+                <Hotkey>
+                  <Action>Activate</Action>
+                  <Keys>
+                    <Key>112</Key>
+                  </Keys>
+                  <ID>0</ID>
+                </Hotkey>
+              </Hotkeys>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>994</ID>
+              <Description>"Jump Speed - Final"</Description>
+              <Color>4080FF</Color>
+              <VariableType>Auto Assembler Script</VariableType>
+              <AssemblerScript>[ENABLE]
+
+aobscanmodule(jump,trove.exe,0F 28 05 XX XX XX XX XX 29 40 40) // should be unique
+alloc(newmem,$1000)
+
+label(code)
+label(return)
+
+newmem:
+
+code:
+  db 0F 28 05
+  jmp return
+
+jump:
+  db 0F 28 0D
+return:
+registersymbol(jump)
+
+[DISABLE]
+
+jump:
+  db 0F 28 05
+
+unregistersymbol(jump)
+dealloc(newmem)
+
+</AssemblerScript>
+              <Hotkeys>
+                <Hotkey>
+                  <Action>Toggle Activation</Action>
+                  <Keys>
+                    <Key>17</Key>
+                    <Key>80</Key>
+                  </Keys>
+                  <ID>0</ID>
+                </Hotkey>
+              </Hotkeys>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>338</ID>
+              <Description>"Anti Dismount - Final"</Description>
+              <Color>4080FF</Color>
+              <VariableType>Auto Assembler Script</VariableType>
+              <AssemblerScript>[ENABLE]
+
+aobscanmodule(nodismount,trove.exe,74 XX 8B 07 8B CF 6A 00 6A 00 FF 50 60) // should be unique
+alloc(newmem,$1000)
+
+label(code)
+label(return)
+
+newmem:
+
+code:
+  db 74
+
+nodismount:
+  db EB
+
+return:
+registersymbol(nodismount)
+
+[DISABLE]
+
+nodismount:
+  db 74
+
+unregistersymbol(nodismount)
+dealloc(newmem)
+</AssemblerScript>
+              <Hotkeys>
+                <Hotkey>
+                  <Action>Toggle Activation</Action>
+                  <Keys>
+                    <Key>115</Key>
+                  </Keys>
+                  <ID>0</ID>
+                </Hotkey>
+              </Hotkeys>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>153</ID>
+              <Description>"Infinity Dogde (Hotkey) - Final"</Description>
+              <Color>4080FF</Color>
+              <VariableType>Auto Assembler Script</VariableType>
+              <AssemblerScript>[ENABLE]
+
+aobscanmodule(DODGE,trove.exe,DF F1 DD D8 73 12 56) // should be unique
+alloc(newmem,$1000)
+
+label(code)
+label(return)
+
+newmem:
+
+code:
+db DF F1
+jmp return
+
+DODGE:
+db DF F0
+return:
+registersymbol(DODGE)
+
+[DISABLE]
+
+DODGE:
+db DF F1
+
+unregistersymbol(DODGE)
+dealloc(newmem)
+</AssemblerScript>
+              <Hotkeys>
+                <Hotkey>
+                  <Action>Toggle Activation</Action>
+                  <Keys>
+                    <Key>114</Key>
+                  </Keys>
+                  <ID>0</ID>
+                </Hotkey>
+              </Hotkeys>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>166</ID>
+              <Description>"Anti-AFK - Final"</Description>
+              <Color>4080FF</Color>
+              <VariableType>Auto Assembler Script</VariableType>
+              <AssemblerScript>[ENABLE]
+aobscanmodule(AntiAFK,trove.exe,55 8B EC 83 E4 F8 D9 EE 83 EC 58)
+alloc(newmem,$1000)
+label(code)
+label(return)
+newmem:
+code:
+  ret
+  push ebp
+  mov ebp,esp
+  and esp,-08
+  jmp return
+AntiAFK:
+  jmp newmem
+  nop
+return:
+registersymbol(AntiAFK)
+[DISABLE]
+AntiAFK:
+  db 55 8B EC 83 E4 F8
+unregistersymbol(AntiAFK)
+dealloc(newmem)
+</AssemblerScript>
+              <Hotkeys>
+                <Hotkey>
+                  <Action>Activate</Action>
+                  <Keys>
+                    <Key>119</Key>
+                  </Keys>
+                  <ID>0</ID>
+                </Hotkey>
+              </Hotkeys>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>331</ID>
+              <Description>"Zoom hack  - Final"</Description>
+              <Color>4080FF</Color>
+              <VariableType>Auto Assembler Script</VariableType>
+              <AssemblerScript>{ Game   : Trove.exe
+  Version: 
+  Date   : 2020-07-08
+  Author : nnb
+
+  This script does blah blah blah
+}
+
+[ENABLE]
+
+
+aobscanmodule(INJECT,trove.exe,F3 0F 11 5F 2C) // should be unique
+alloc(newmem,$1000)
+
+label(code)
+label(return)
+
+newmem:
+
+code:
+  movss [edi+2C],xmm3
+  jmp return
+
+INJECT:
+  movss [edi+2C],xmm2
+return:
+registersymbol(INJECT)
+
+[DISABLE]
+
+INJECT:
+  db F3 0F 11 5F 2C
+
+unregistersymbol(INJECT)
+dealloc(newmem)
+
+{
+// ORIGINAL CODE - INJECTION POINT: "trove.exe"+A11833
+
+"trove.exe"+A1180A: 0F 57 DB              -  xorps xmm3,xmm3
+"trove.exe"+A1180D: F3 0F 59 57 38        -  mulss xmm2,[edi+38]
+"trove.exe"+A11812: F3 0F 10 C8           -  movss xmm1,xmm0
+"trove.exe"+A11816: F3 0F 10 47 34        -  movss xmm0,[edi+34]
+"trove.exe"+A1181B: F3 0F 58 57 2C        -  addss xmm2,dword ptr [edi+2C]
+"trove.exe"+A11820: F3 0F 10 DA           -  movss xmm3,xmm2
+"trove.exe"+A11824: F3 0F 5F D9           -  maxss xmm3,xmm1
+"trove.exe"+A11828: 0F 57 C9              -  xorps xmm1,xmm1
+"trove.exe"+A1182B: F3 0F 10 C8           -  movss xmm1,xmm0
+"trove.exe"+A1182F: F3 0F 5D D9           -  minss xmm3,xmm1
+// ---------- INJECTING HERE ----------
+"trove.exe"+A11833: F3 0F 11 5F 2C        -  movss [edi+2C],xmm3
+// ---------- DONE INJECTING  ----------
+"trove.exe"+A11838: 75 1D                 -  jne trove.exe+A11857
+"trove.exe"+A1183A: 8D 4F E0              -  lea ecx,[edi-20]
+"trove.exe"+A1183D: E8 BE 19 00 00        -  call trove.exe+A13200
+"trove.exe"+A11842: D8 05 F8 85 DC 01     -  fadd dword ptr [trove.exe+C185F8]
+"trove.exe"+A11848: 51                    -  push ecx
+"trove.exe"+A11849: 8B 8F 14 01 00 00     -  mov ecx,[edi+00000114]
+"trove.exe"+A1184F: D9 1C 24              -  fstp dword ptr [esp]
+"trove.exe"+A11852: E8 A9 D9 A4 FF        -  call trove.exe+45F200
+"trove.exe"+A11857: 5F                    -  pop edi
+"trove.exe"+A11858: 5E                    -  pop esi
+}
+</AssemblerScript>
+              <Hotkeys>
+                <Hotkey>
+                  <Action>Toggle Activation</Action>
+                  <Keys>
+                    <Key>117</Key>
+                  </Keys>
+                  <ID>0</ID>
+                </Hotkey>
+              </Hotkeys>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>6348</ID>
+              <Description>"Auto Attack Basic - Final"</Description>
+              <Color>0080FF</Color>
+              <VariableType>Auto Assembler Script</VariableType>
+              <AssemblerScript>{ Game   : Trove.exe
+  Version: 
+  Date   : 2021-12-19
+  Author : Cliente
+
+  This script does blah blah blah
+}
+
+[ENABLE]
+
+aobscanmodule(INJECT,trove.exe,DF F1 DD D8 72 1F) // should be unique
+alloc(newmem,$1000)
+
+label(code)
+label(return)
+
+newmem:
+
+code:
+  db DF F1
+
+INJECT:
+  db DF F0
+return:
+registersymbol(INJECT)
+
+[DISABLE]
+
+INJECT:
+  db DF F1
+
+unregistersymbol(INJECT)
+dealloc(newmem)
+
+{
+// ORIGINAL CODE - INJECTION POINT: trove.exe+902D47
+
+trove.exe+902D21: 8B F1              - mov esi,ecx
+trove.exe+902D23: E8 38 A3 29 00     - call trove.exe+B9D060
+trove.exe+902D28: FF 35 C0 EE 9C 01  - push [trove.exe+E3EEC0]
+trove.exe+902D2E: 8B 8E 68 06 00 00  - mov ecx,[esi+00000668]
+trove.exe+902D34: E8 C7 4A BD FF     - call trove.exe+4D7800
+trove.exe+902D39: 8B C8              - mov ecx,eax
+trove.exe+902D3B: 85 C9              - test ecx,ecx
+trove.exe+902D3D: 74 2D              - je trove.exe+902D6C
+trove.exe+902D3F: D9 EE              - fldz 
+trove.exe+902D41: DD 86 D8 01 00 00  - fld qword ptr [esi+000001D8]
+// ---------- INJECTING HERE ----------
+trove.exe+902D47: DF F1              - fcomip st(0),st(1)
+// ---------- DONE INJECTING  ----------
+trove.exe+902D49: DD D8              - fstp st(0)
+trove.exe+902D4B: 72 1F              - jb trove.exe+902D6C
+trove.exe+902D4D: E8 DE F7 A9 FF     - call trove.AK::SoundEngine::ResetListenersToDefault+BDF0
+trove.exe+902D52: 84 C0              - test al,al
+trove.exe+902D54: 75 16              - jne trove.exe+902D6C
+trove.exe+902D56: 8B 06              - mov eax,[esi]
+trove.exe+902D58: 8B CE              - mov ecx,esi
+trove.exe+902D5A: 6A 1C              - push 1C
+trove.exe+902D5C: FF 50 54           - call dword ptr [eax+54]
+trove.exe+902D5F: 83 F8 FF           - cmp eax,-01
+}
+</AssemblerScript>
+            </CheatEntry>
+          </CheatEntries>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>5274</ID>
+          <Description>"Fly"</Description>
+          <Color>FF00FF</Color>
+          <GroupHeader>1</GroupHeader>
+          <CheatEntries>
+            <CheatEntry>
+              <ID>832</ID>
+              <Description>"Easy Glide - Final"</Description>
+              <Color>4080FF</Color>
+              <VariableType>Auto Assembler Script</VariableType>
+              <AssemblerScript>{ Game   : Trove.exe
+  Version: 
+  Date   : 2021-12-14
+  Author : EASY Glide
+
+  This script does blah blah blah
+}
+
+[ENABLE]
+
+aobscanmodule(INJECT,trove.exe,D9 C9 DF F1 DD D8 76 24) // should be unique
+alloc(newmem,$1000)
+
+label(code)
+label(return)
+
+newmem:
+
+code:
+  db D9 C9
+
+INJECT:
+  db D9 C8
+return:
+registersymbol(INJECT)
+
+[DISABLE]
+
+INJECT:
+  db D9 C9
+
+unregistersymbol(INJECT)
+dealloc(newmem)
+
+{
+// ORIGINAL CODE - INJECTION POINT: trove.exe+B9D141
+
+trove.exe+B9D118: DD 87 98 01 00 00  - fld qword ptr [edi+00000198]
+trove.exe+B9D11E: DF F1              - fcomip st(0),st(1)
+trove.exe+B9D120: 76 4D              - jna trove.exe+B9D16F
+trove.exe+B9D122: 8B 8F 68 06 00 00  - mov ecx,[edi+00000668]
+trove.exe+B9D128: DD D8              - fstp st(0)
+trove.exe+B9D12A: DD 87 98 01 00 00  - fld qword ptr [edi+00000198]
+trove.exe+B9D130: DD 5C 24 10        - fstp qword ptr [esp+10]
+trove.exe+B9D134: E8 77 3F A8 FF     - call trove.exe+6210B0
+trove.exe+B9D139: DC 64 24 10        - fsub qword ptr [esp+10]
+trove.exe+B9D13D: D9 44 24 0C        - fld dword ptr [esp+0C]
+// ---------- INJECTING HERE ----------
+trove.exe+B9D141: D9 C9              - fxch st(1)
+// ---------- DONE INJECTING  ----------
+trove.exe+B9D143: DF F1              - fcomip st(0),st(1)
+trove.exe+B9D145: DD D8              - fstp st(0)
+trove.exe+B9D147: 76 24              - jna trove.exe+B9D16D
+trove.exe+B9D149: FF 35 1C F2 C7 01  - push [trove.exe+E3F21C]
+trove.exe+B9D14F: 8B 8F 68 06 00 00  - mov ecx,[edi+00000668]
+trove.exe+B9D155: E8 A6 A6 93 FF     - call trove.exe+4D7800
+trove.exe+B9D15A: 8B C8              - mov ecx,eax
+trove.exe+B9D15C: E8 BF 66 E2 FF     - call trove.exe+9C3820
+trove.exe+B9D161: DD 05 80 EC BE 01  - fld qword ptr [trove.exe+DAEC80]
+trove.exe+B9D167: DD 9F 98 01 00 00  - fstp qword ptr [edi+00000198]
+}
+</AssemblerScript>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>3698</ID>
+              <Description>"Glider Never Down - Final"</Description>
+              <Color>4080FF</Color>
+              <VariableType>Auto Assembler Script</VariableType>
+              <AssemblerScript>define(address,0087D78F)
+define(bytes,D8 0D 0C 4E FD 00)
+
+[ENABLE]
+aobScanModule(MyCheat2, Trove.exe, D80DXXXXXXXXD9EED9C9DBF1DDD9)
+assert(MyCheat2, D8 0D)
+registerSymbol(MyCheat2)
+
+alloc(newmem, 0x100)
+
+label(code)
+label(return)
+
+label(SavedBytes)
+registerSymbol(SavedBytes)
+
+label(newValue)
+
+newmem:
+	code:
+		fmul dword ptr [newValue]
+		jmp return
+	SavedBytes:
+		readMem(MyCheat2, 6)
+	newValue:
+		dd (float)99
+
+MyCheat2:
+	jmp newmem
+	nop
+	return:
+
+[DISABLE]
+
+MyCheat2:
+	readMem(SavedBytes, 6)
+
+dealloc(newmem)
+unregisterSymbol(MyCheat2)
+unregisterSymbol(SavedBytes)
+</AssemblerScript>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>4</ID>
+              <Description>"Fly Trove (Hotkeys)"</Description>
+              <ShowAsSigned>0</ShowAsSigned>
+              <Color>0080FF</Color>
+              <VariableType>Float</VariableType>
+              <Address>"trove.exe"+01013A10</Address>
+              <Offsets>
+                <Offset>94</Offset>
+                <Offset>4</Offset>
+                <Offset>C4</Offset>
+                <Offset>28</Offset>
+                <Offset>8</Offset>
+              </Offsets>
+              <Hotkeys>
+                <Hotkey>
+                  <Action>Activate</Action>
+                  <Keys>
+                    <Key>45</Key>
+                  </Keys>
+                  <ID>1</ID>
+                </Hotkey>
+                <Hotkey>
+                  <Action>Deactivate</Action>
+                  <Keys>
+                    <Key>46</Key>
+                  </Keys>
+                  <ID>2</ID>
+                </Hotkey>
+                <Hotkey>
+                  <Action>Set Value</Action>
+                  <Keys>
+                    <Key>45</Key>
+                  </Keys>
+                  <Value>10</Value>
+                  <ID>0</ID>
+                </Hotkey>
+              </Hotkeys>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>18</ID>
+              <Description>"Fly Speed X (Hotkeys)"</Description>
+              <ShowAsSigned>0</ShowAsSigned>
+              <Color>0080FF</Color>
+              <VariableType>Float</VariableType>
+              <Address>"trove.exe"+01013A10</Address>
+              <Offsets>
+                <Offset>98</Offset>
+                <Offset>4</Offset>
+                <Offset>C4</Offset>
+                <Offset>28</Offset>
+                <Offset>8</Offset>
+              </Offsets>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>206</ID>
+              <Description>"Fly Speed Z (Hotkeys)"</Description>
+              <ShowAsSigned>0</ShowAsSigned>
+              <Color>0080FF</Color>
+              <VariableType>Float</VariableType>
+              <Address>"trove.exe"+01013A10</Address>
+              <Offsets>
+                <Offset>90</Offset>
+                <Offset>4</Offset>
+                <Offset>C4</Offset>
+                <Offset>28</Offset>
+                <Offset>8</Offset>
+              </Offsets>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>102</ID>
+              <Description>"Gravity Hack (Hotkeys)"</Description>
+              <ShowAsSigned>0</ShowAsSigned>
+              <Color>4080FF</Color>
+              <VariableType>4 Bytes</VariableType>
+              <Address>"trove.exe"+01013A10</Address>
+              <Offsets>
+                <Offset>B8</Offset>
+                <Offset>4</Offset>
+                <Offset>C4</Offset>
+                <Offset>11C</Offset>
+                <Offset>10</Offset>
+              </Offsets>
+              <Hotkeys>
+                <Hotkey>
+                  <Action>Set Value</Action>
+                  <Keys>
+                    <Key>33</Key>
+                  </Keys>
+                  <Value>3233207040</Value>
+                  <ID>0</ID>
+                </Hotkey>
+                <Hotkey>
+                  <Action>Activate</Action>
+                  <Keys>
+                    <Key>33</Key>
+                  </Keys>
+                  <ID>1</ID>
+                </Hotkey>
+                <Hotkey>
+                  <Action>Set Value</Action>
+                  <Keys>
+                    <Key>34</Key>
+                  </Keys>
+                  <Value>3253207040</Value>
+                  <ID>2</ID>
+                </Hotkey>
+                <Hotkey>
+                  <Action>Deactivate</Action>
+                  <Keys>
+                    <Key>34</Key>
+                  </Keys>
+                  <ID>3</ID>
+                </Hotkey>
+              </Hotkeys>
+            </CheatEntry>
+          </CheatEntries>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>5272</ID>
+          <Description>"Lasermancy"</Description>
+          <Color>FF0080</Color>
+          <GroupHeader>1</GroupHeader>
+          <CheatEntries>
+            <CheatEntry>
+              <ID>652</ID>
+              <Description>"Insta Mining 0 - 300 laser All Blocks - Final"</Description>
+              <Color>0080FF</Color>
+              <VariableType>Auto Assembler Script</VariableType>
+              <AssemblerScript>[ENABLE]
+
+aobscanmodule(Trover,trove.exe,DF F1 DD D8 72 61) // should be unique
+alloc(newmem,$1000)
+
+label(code)
+label(return)
+
+newmem:
+
+code:
+  db DF F1
+  jmp return
+
+Trover:
+  db DF F0
+return:
+registersymbol(Trover)
+
+[DISABLE]
+
+Trover:
+  db DF F1
+
+unregistersymbol(Trover)
+dealloc(newmem)
+
+{
+</AssemblerScript>
+              <Hotkeys>
+                <Hotkey>
+                  <Action>Toggle Activation</Action>
+                  <Keys>
+                    <Key>120</Key>
+                  </Keys>
+                  <ID>0</ID>
+                </Hotkey>
+              </Hotkeys>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>653</ID>
+              <Description>"Inta Mining 300+ Laser &gt; Normal Blocks / Nitro / Shape / cinabrio - Final"</Description>
+              <Color>0080FF</Color>
+              <VariableType>Auto Assembler Script</VariableType>
+              <AssemblerScript>[ENABLE]
+
+aobscanmodule(INJECT,trove.exe,77 02 8B C7 DD 00 DD 17 DF F1 DD D8 72 61) // should be unique
+alloc(newmem,$1000)
+
+label(code)
+label(return)
+
+newmem:
+
+code:
+  db 77 02
+  jmp return
+
+INJECT:
+ db 72 02
+return:
+registersymbol(INJECT)
+
+[DISABLE]
+
+INJECT:
+  db 77 02
+
+unregistersymbol(INJECT)
+dealloc(newmem)
+</AssemblerScript>
+              <Hotkeys>
+                <Hotkey>
+                  <Action>Toggle Activation</Action>
+                  <Keys>
+                    <Key>121</Key>
+                  </Keys>
+                  <ID>0</ID>
+                </Hotkey>
+              </Hotkeys>
+            </CheatEntry>
+          </CheatEntries>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>6358</ID>
+          <Description>"Geode Cave"</Description>
+          <Color>FF8080</Color>
+          <GroupHeader>1</GroupHeader>
+          <CheatEntries>
+            <CheatEntry>
+              <ID>165</ID>
+              <Description>"Lasermancy Geode (Omni Tool) - Final"</Description>
+              <Color>0080FF</Color>
+              <VariableType>Auto Assembler Script</VariableType>
+              <AssemblerScript>[ENABLE]
+
+aobscanmodule(Beam,trove.exe,DF F1 DD D8 72 35 8D) // should be unique
+alloc(newmem,$1000)
+
+label(code)
+label(return)
+
+newmem:
+
+code:
+  db DF F1
+  jmp return
+
+Beam:
+  db DF F0
+return:
+registersymbol(Beam)
+
+[DISABLE]
+Beam:
+  db DF F1
+
+unregistersymbol(Beam)
+dealloc(newmem)
+
+{
+</AssemblerScript>
+              <Hotkeys>
+                <Hotkey>
+                  <Action>Toggle Activation</Action>
+                  <Keys>
+                    <Key>113</Key>
+                  </Keys>
+                  <ID>0</ID>
+                </Hotkey>
+              </Hotkeys>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>238</ID>
+              <Description>"Fly Geode Boots - Final"</Description>
+              <Color>0080FF</Color>
+              <VariableType>Auto Assembler Script</VariableType>
+              <AssemblerScript>{ Game   : Trove.exe
+  Version: 
+  Date   : 2021-12-21
+  Author : fly Geode Boots
+
+  This script does blah blah blah
+}
+
+[ENABLE]
+
+aobscanmodule(INJECT,trove.exe,74 xx 8B 0D xx xx xx xx 89 48 40 8B 0D xx xx xx xx 89 48 44 C7 40 60 00 00 00 00 FF 35 xx xx xx xx) // should be unique
+alloc(newmem,$1000)
+
+label(code)
+label(return)
+
+newmem:
+
+code:
+  db 74
+
+INJECT:
+  db EB
+return:
+registersymbol(INJECT)
+
+[DISABLE]
+
+INJECT:
+  db 74
+
+unregistersymbol(INJECT)
+dealloc(newmem)
+
+{
+// ORIGINAL CODE - INJECTION POINT: trove.exe+56D17B
+
+trove.exe+56D158: 8B F9                 - mov edi,ecx
+trove.exe+56D15A: 89 7D F4              - mov [ebp-0C],edi
+trove.exe+56D15D: E8 CE FB D6 FF        - call trove.AK::SoundEngine::RegisterGameObj+390
+trove.exe+56D162: 8B D8                 - mov ebx,eax
+trove.exe+56D164: 85 DB                 - test ebx,ebx
+trove.exe+56D166: 0F 84 58 01 00 00     - je trove.exe+56D2C4
+trove.exe+56D16C: FF 35 00 F1 9C 01     - push [trove.exe+E3F100]
+trove.exe+56D172: 8B CB                 - mov ecx,ebx
+trove.exe+56D174: E8 87 A6 F6 FF        - call trove.exe+4D7800
+trove.exe+56D179: 85 C0                 - test eax,eax
+// ---------- INJECTING HERE ----------
+trove.exe+56D17B: 74 19                 - je trove.exe+56D196
+// ---------- DONE INJECTING  ----------
+trove.exe+56D17D: 8B 0D D0 AE BA 01     - mov ecx,[trove.exe+101AED0]
+trove.exe+56D183: 89 48 40              - mov [eax+40],ecx
+trove.exe+56D186: 8B 0D D4 AE BA 01     - mov ecx,[trove.exe+101AED4]
+trove.exe+56D18C: 89 48 44              - mov [eax+44],ecx
+trove.exe+56D18F: C7 40 60 00 00 00 00  - mov [eax+60],00000000
+trove.exe+56D196: FF 35 D8 F3 9C 01     - push [trove.exe+E3F3D8]
+trove.exe+56D19C: 8B CB                 - mov ecx,ebx
+trove.exe+56D19E: E8 5D A6 F6 FF        - call trove.exe+4D7800
+trove.exe+56D1A3: 85 C0                 - test eax,eax
+trove.exe+56D1A5: 74 11                 - je trove.exe+56D1B8
+}
+</AssemblerScript>
+            </CheatEntry>
+          </CheatEntries>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>5275</ID>
+          <Description>"Map"</Description>
+          <Color>0000FF</Color>
+          <GroupHeader>1</GroupHeader>
+          <CheatEntries>
+            <CheatEntry>
+              <ID>2</ID>
+              <Description>"Map Hack (On M ) - Final"</Description>
+              <Color>0080FF</Color>
+              <VariableType>Auto Assembler Script</VariableType>
+              <AssemblerScript>[ENABLE]
+
+aobscanmodule(INJECT,trove.exe,77 XX B8 XX XX XX XX F3 0F 10 08 F3 0F 11 89 XX XX XX XX 8B 89 A8 00 00 00 85 C9 74 XX) // should be unique
+alloc(newmem,$1000)
+
+label(code)
+label(return)
+
+newmem:
+
+code:
+db 77 05
+jmp return
+
+INJECT:
+db EB
+return:
+registersymbol(INJECT)
+
+[DISABLE]
+
+INJECT:
+db 77 05
+
+unregistersymbol(INJECT)
+dealloc(newmem)
+</AssemblerScript>
+              <Hotkeys>
+                <Hotkey>
+                  <Action>Toggle Activation</Action>
+                  <Keys>
+                    <Key>17</Key>
+                    <Key>77</Key>
+                  </Keys>
+                  <ID>0</ID>
+                </Hotkey>
+              </Hotkeys>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>1029</ID>
+              <Description>"Perfect X Ray - Final"</Description>
+              <Color>4080FF</Color>
+              <VariableType>Auto Assembler Script</VariableType>
+              <AssemblerScript>[ENABLE]
+
+aobscanmodule(INJECT,trove.exe,F3 0F 10 48 28 0F C6 C0 00 0F 28 D1 F3 0F 59 15 XX XX XX XX 0F 29 44 24 10) // should be unique
+alloc(newmem,$1000)
+
+label(code)
+label(return)
+
+newmem:
+
+code:
+  db F3 0F 10 48
+  jmp return
+
+INJECT:
+  db F3 0F 10 40
+return:
+registersymbol(INJECT)
+
+[DISABLE]
+
+INJECT:
+  db F3 0F 10 48
+
+unregistersymbol(INJECT)
+dealloc(newmem)
+</AssemblerScript>
+              <Hotkeys>
+                <Hotkey>
+                  <Action>Toggle Activation</Action>
+                  <Keys>
+                    <Key>116</Key>
+                  </Keys>
+                  <ID>0</ID>
+                </Hotkey>
+              </Hotkeys>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>3675</ID>
+              <Description>"Fov Script - Final"</Description>
+              <Color>4080FF</Color>
+              <VariableType>Auto Assembler Script</VariableType>
+              <AssemblerScript>[ENABLE]
+
+aobscanmodule(FOVV,trove.exe,F3 0F 10 41 28 F3 0F 59 05 XX XX XX XX 8B 4D F4) // should be unique
+alloc(newmem,$1000)
+
+label(code)
+label(return)
+
+newmem:
+
+code:
+  db F3 0F 10 41 28 F3 0F 59 05
+  jmp return
+
+FOVV:
+  db F3 0F 10 41 28 F3 0F 59 0D
+return:
+registersymbol(FOVV)
+
+[DISABLE]
+
+FOVV:
+  db F3 0F 10 41 28 F3 0F 59 05
+
+unregistersymbol(FOVV)
+dealloc(newmem)
+</AssemblerScript>
+              <Hotkeys>
+                <Hotkey>
+                  <Action>Toggle Activation</Action>
+                  <Keys>
+                    <Key>17</Key>
+                    <Key>70</Key>
+                  </Keys>
+                  <ID>0</ID>
+                </Hotkey>
+              </Hotkeys>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>16</ID>
+              <Description>"Max View"</Description>
+              <ShowAsSigned>0</ShowAsSigned>
+              <Color>0000FF</Color>
+              <VariableType>Float</VariableType>
+              <Address>"trove.exe"+00FE15DC</Address>
+              <Offsets>
+                <Offset>28</Offset>
+              </Offsets>
+              <Hotkeys>
+                <Hotkey>
+                  <Action>Set Value</Action>
+                  <Keys>
+                    <Key>122</Key>
+                  </Keys>
+                  <Value>500</Value>
+                  <ID>0</ID>
+                </Hotkey>
+                <Hotkey>
+                  <Action>Set Value</Action>
+                  <Keys>
+                    <Key>17</Key>
+                    <Key>122</Key>
+                  </Keys>
+                  <Value>210</Value>
+                  <ID>1</ID>
+                </Hotkey>
+              </Hotkeys>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>22</ID>
+              <Description>"Grama"</Description>
+              <ShowAsSigned>0</ShowAsSigned>
+              <Color>0000FF</Color>
+              <VariableType>Float</VariableType>
+              <Address>"trove.exe"+00FE15DC</Address>
+              <Offsets>
+                <Offset>4</Offset>
+              </Offsets>
+              <Hotkeys>
+                <Hotkey>
+                  <Action>Set Value</Action>
+                  <Keys>
+                    <Key>17</Key>
+                    <Key>122</Key>
+                  </Keys>
+                  <Value>96</Value>
+                  <ID>0</ID>
+                </Hotkey>
+                <Hotkey>
+                  <Action>Set Value</Action>
+                  <Keys>
+                    <Key>122</Key>
+                  </Keys>
+                  <Value>500</Value>
+                  <ID>1</ID>
+                </Hotkey>
+              </Hotkeys>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>23</ID>
+              <Description>"Object"</Description>
+              <ShowAsSigned>0</ShowAsSigned>
+              <Color>0000FF</Color>
+              <VariableType>Float</VariableType>
+              <Address>"trove.exe"+00FE15DC</Address>
+              <Offsets>
+                <Offset>8</Offset>
+              </Offsets>
+              <Hotkeys>
+                <Hotkey>
+                  <Action>Set Value</Action>
+                  <Keys>
+                    <Key>122</Key>
+                  </Keys>
+                  <Value>500</Value>
+                  <ID>0</ID>
+                </Hotkey>
+                <Hotkey>
+                  <Action>Set Value</Action>
+                  <Keys>
+                    <Key>17</Key>
+                    <Key>122</Key>
+                  </Keys>
+                  <Value>150</Value>
+                  <ID>1</ID>
+                </Hotkey>
+              </Hotkeys>
+            </CheatEntry>
+          </CheatEntries>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>5276</ID>
+          <Description>"Speed"</Description>
+          <Color>008000</Color>
+          <GroupHeader>1</GroupHeader>
+          <CheatEntries>
+            <CheatEntry>
+              <ID>3695</ID>
+              <Description>"Speed 2x"</Description>
+              <Color>0080FF</Color>
+              <VariableType>Auto Assembler Script</VariableType>
+              <AssemblerScript>define(address,trove.AK::SoundEngine::GetBufferStatusForPinnedEvent+37C5)
+define(bytes,D8 0D 60 07 A2 01)
+
+[ENABLE]
+aobScanModule(MyCheat1, Trove.exe, D80DXXXXXXXXD95DFC74XXF30F1086XXXXXXXXF30F5945FCF30F1145FC)
+assert(MyCheat1, D8 0D)
+registerSymbol(MyCheat1)
+
+alloc(newmem, 0x100)
+
+label(code)
+label(return)
+
+label(SavedBytes)
+registerSymbol(SavedBytes)
+
+label(newValue)
+
+newmem:
+	code:
+		fmul dword ptr [newValue]
+		jmp return
+	SavedBytes:
+		readMem(MyCheat1, 6)
+	newValue:
+		dd (float)0.2
+
+MyCheat1:
+	jmp newmem
+	nop
+	return:
+
+[DISABLE]
+
+MyCheat1:
+	readMem(SavedBytes, 6)
+
+dealloc(newmem)
+unregisterSymbol(MyCheat1)
+unregisterSymbol(SavedBytes)
+</AssemblerScript>
+              <Hotkeys>
+                <Hotkey>
+                  <Action>Toggle Activation</Action>
+                  <Keys>
+                    <Key>16</Key>
+                  </Keys>
+                  <ID>0</ID>
+                </Hotkey>
+              </Hotkeys>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>3697</ID>
+              <Description>"Speed 3x"</Description>
+              <Color>0080FF</Color>
+              <VariableType>Auto Assembler Script</VariableType>
+              <AssemblerScript>define(address,trove.AK::SoundEngine::GetBufferStatusForPinnedEvent+37C5)
+define(bytes,D8 0D 60 07 A2 01)
+
+[ENABLE]
+aobScanModule(MyCheat1, Trove.exe, D80DXXXXXXXXD95DFC74XXF30F1086XXXXXXXXF30F5945FCF30F1145FC)
+assert(MyCheat1, D8 0D)
+registerSymbol(MyCheat1)
+
+alloc(newmem, 0x100)
+
+label(code)
+label(return)
+
+label(SavedBytes)
+registerSymbol(SavedBytes)
+
+label(newValue)
+
+newmem:
+	code:
+		fmul dword ptr [newValue]
+		jmp return
+	SavedBytes:
+		readMem(MyCheat1, 6)
+	newValue:
+		dd (float)0.3
+
+MyCheat1:
+	jmp newmem
+	nop
+	return:
+
+[DISABLE]
+
+MyCheat1:
+	readMem(SavedBytes, 6)
+
+dealloc(newmem)
+unregisterSymbol(MyCheat1)
+unregisterSymbol(SavedBytes)
+</AssemblerScript>
+              <Hotkeys>
+                <Hotkey>
+                  <Action>Toggle Activation</Action>
+                  <Keys>
+                    <Key>103</Key>
+                  </Keys>
+                  <ID>0</ID>
+                </Hotkey>
+              </Hotkeys>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>3696</ID>
+              <Description>"Speed 4x"</Description>
+              <Color>0080FF</Color>
+              <VariableType>Auto Assembler Script</VariableType>
+              <AssemblerScript>define(address,trove.AK::SoundEngine::GetBufferStatusForPinnedEvent+37C5)
+define(bytes,D8 0D 60 07 A2 01)
+
+[ENABLE]
+aobScanModule(MyCheat1, Trove.exe, D80DXXXXXXXXD95DFC74XXF30F1086XXXXXXXXF30F5945FCF30F1145FC)
+assert(MyCheat1, D8 0D)
+registerSymbol(MyCheat1)
+
+alloc(newmem, 0x100)
+
+label(code)
+label(return)
+
+label(SavedBytes)
+registerSymbol(SavedBytes)
+
+label(newValue)
+
+newmem:
+	code:
+		fmul dword ptr [newValue]
+		jmp return
+	SavedBytes:
+		readMem(MyCheat1, 6)
+	newValue:
+		dd (float)0.4
+
+MyCheat1:
+	jmp newmem
+	nop
+	return:
+
+[DISABLE]
+
+MyCheat1:
+	readMem(SavedBytes, 6)
+
+dealloc(newmem)
+unregisterSymbol(MyCheat1)
+unregisterSymbol(SavedBytes)
+</AssemblerScript>
+              <Hotkeys>
+                <Hotkey>
+                  <Action>Toggle Activation</Action>
+                  <Keys>
+                    <Key>104</Key>
+                  </Keys>
+                  <ID>0</ID>
+                </Hotkey>
+              </Hotkeys>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>24</ID>
+              <Description>"Speed Hack ( Via Status)"</Description>
+              <ShowAsSigned>0</ShowAsSigned>
+              <Color>0080FF</Color>
+              <VariableType>4 Bytes</VariableType>
+              <Address>"trove.exe"+01013A10</Address>
+              <Offsets>
+                <Offset>1BC</Offset>
+                <Offset>178</Offset>
+                <Offset>80</Offset>
+                <Offset>28</Offset>
+                <Offset>0</Offset>
+              </Offsets>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>5297</ID>
+              <Description>"Boat Speed"</Description>
+              <Options moActivateChildrenAsWell="1" moDeactivateChildrenAsWell="1"/>
+              <Color>0080FF</Color>
+              <VariableType>Auto Assembler Script</VariableType>
+              <AssemblerScript>{ Game   : Trove.exe
+  Version: 
+  Date   : 2021-12-19
+  Author : Cliente
+
+  This script does blah blah blah
+}
+
+[ENABLE]
+
+aobscanmodule(INJECT,trove.exe,74 xx 57 FF 35 xx xx xx xx E8 xx xx xx xx 8B F8 85 FF 74 xx 6A 02 8B CF E8 xx xx xx xx 8B 17 8B CF FF xx xx) // should be unique
+alloc(newmem,$1000)
+
+label(code)
+label(return)
+
+newmem:
+
+code:
+  db 74
+
+INJECT:
+  db EB
+return:
+registersymbol(INJECT)
+
+[DISABLE]
+
+INJECT:
+  db 74
+
+unregistersymbol(INJECT)
+dealloc(newmem)
+
+{
+// ORIGINAL CODE - INJECTION POINT: trove.exe+528EC8
+
+trove.exe+528EBA: CC                 - int 3 
+trove.exe+528EBB: CC                 - int 3 
+trove.exe+528EBC: CC                 - int 3 
+trove.exe+528EBD: CC                 - int 3 
+trove.exe+528EBE: CC                 - int 3 
+trove.exe+528EBF: CC                 - int 3 
+trove.exe+528EC0: 56                 - push esi
+trove.exe+528EC1: 8B F1              - mov esi,ecx
+trove.exe+528EC3: 8B 4E 30           - mov ecx,[esi+30]
+trove.exe+528EC6: 85 C9              - test ecx,ecx
+// ---------- INJECTING HERE ----------
+trove.exe+528EC8: 74 3A              - je trove.exe+528F04
+// ---------- DONE INJECTING  ----------
+trove.exe+528ECA: 57                 - push edi
+trove.exe+528ECB: FF 35 D8 F3 9C 01  - push [trove.exe+E3F3D8]
+trove.exe+528ED1: E8 2A E9 FA FF     - call trove.exe+4D7800
+trove.exe+528ED6: 8B F8              - mov edi,eax
+trove.exe+528ED8: 85 FF              - test edi,edi
+trove.exe+528EDA: 74 27              - je trove.exe+528F03
+trove.exe+528EDC: 6A 02              - push 02
+trove.exe+528EDE: 8B CF              - mov ecx,edi
+trove.exe+528EE0: E8 CB 3A 0E 00     - call trove.exe+60C9B0
+trove.exe+528EE5: 8B 17              - mov edx,[edi]
+}
+</AssemblerScript>
+              <CheatEntries>
+                <CheatEntry>
+                  <ID>6350</ID>
+                  <Description>"Boat Speed"</Description>
+                  <Color>0080FF</Color>
+                  <VariableType>Auto Assembler Script</VariableType>
+                  <AssemblerScript>{ Game   : Trove.exe
+  Version: 
+  Date   : 2021-12-19
+  Author : Cliente
+
+  This script does blah blah blah
+}
+
+[ENABLE]
+
+aobscanmodule(INJECT,trove.exe,74 xx 8A 88 80 00 00 00 80 C9 08 0F B6 C9 51 8B C8) // should be unique
+alloc(newmem,$1000)
+
+label(code)
+label(return)
+
+newmem:
+
+code:
+  db 74
+
+INJECT:
+  db EB
+return:
+registersymbol(INJECT)
+
+[DISABLE]
+
+INJECT:
+  db 74
+
+unregistersymbol(INJECT)
+dealloc(newmem)
+
+{
+// ORIGINAL CODE - INJECTION POINT: trove.exe+528F18
+
+trove.exe+528EF7: 8B CF                 - mov ecx,edi
+trove.exe+528EF9: FF 50 28              - call dword ptr [eax+28]
+trove.exe+528EFC: 83 8F 5C 01 00 00 04  - or dword ptr [edi+0000015C],04
+trove.exe+528F03: 5F                    - pop edi
+trove.exe+528F04: 8B 4E 30              - mov ecx,[esi+30]
+trove.exe+528F07: 85 C9                 - test ecx,ecx
+trove.exe+528F09: 74 23                 - je trove.exe+528F2E
+trove.exe+528F0B: FF 35 00 F1 9C 01     - push [trove.exe+E3F100]
+trove.exe+528F11: E8 EA E8 FA FF        - call trove.exe+4D7800
+trove.exe+528F16: 85 C0                 - test eax,eax
+// ---------- INJECTING HERE ----------
+trove.exe+528F18: 74 14                 - je trove.exe+528F2E
+// ---------- DONE INJECTING  ----------
+trove.exe+528F1A: 8A 88 80 00 00 00     - mov cl,[eax+00000080]
+trove.exe+528F20: 80 C9 08              - or cl,08
+trove.exe+528F23: 0F B6 C9              - movzx ecx,cl
+trove.exe+528F26: 51                    - push ecx
+trove.exe+528F27: 8B C8                 - mov ecx,eax
+trove.exe+528F29: E8 82 03 1C 00        - call trove.exe+6E92B0
+trove.exe+528F2E: 8B CE                 - mov ecx,esi
+trove.exe+528F30: E8 DB 0D 00 00        - call trove.exe+529D10
+trove.exe+528F35: C6 86 88 00 00 00 01  - mov byte ptr [esi+00000088],01
+trove.exe+528F3C: 5E                    - pop esi
+}
+</AssemblerScript>
+                </CheatEntry>
+              </CheatEntries>
+            </CheatEntry>
+          </CheatEntries>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>5277</ID>
+          <Description>"Chams / Glow Enemies"</Description>
+          <Color>C08000</Color>
+          <GroupHeader>1</GroupHeader>
+          <CheatEntries>
+            <CheatEntry>
+              <ID>5262</ID>
+              <Description>"Chams Monster / Object Red - Final"</Description>
+              <Color>0000FF</Color>
+              <VariableType>Auto Assembler Script</VariableType>
+              <AssemblerScript>{ Game   : Trove.exe
+  Version: 
+  Date   : 2021-12-09
+  Author : Cliente
+
+  This script does blah blah blah
+}
+
+[ENABLE]
+
+aobscanmodule(INJECT,trove.exe,F3 0F 10 04 XX XX XX XX XX XX C1 C1 E8 08 83 E0 0F F3 0F 11 45 E0 F3 0F 10 04 XX XX XX XX XX 8B C1 C1 E8 04 83 E0 0F F3 0F 11 45 E4 83 E1 0F F3 0F 10 04 XX XX XX XX XX F3 0F 11 45 E8 F3 0F 10 04 XX XX XX XX XX F3 0F 11 45 EC 0F 28 45 E0 0F 29 07) // should be unique
+alloc(newmem,$1000)
+
+label(code)
+label(return)
+
+newmem:
+
+code:
+  db F3 0F 10 04
+
+INJECT:
+  db F3 0F 10 0C
+return:
+registersymbol(INJECT)
+
+[DISABLE]
+
+INJECT:
+  db F3 0F 10 04
+
+unregistersymbol(INJECT)
+dealloc(newmem)
+
+{
+// ORIGINAL CODE - INJECTION POINT: trove.exe+8B34CA
+
+trove.exe+8B34AF: 89 4A 04                    - mov [edx+04],ecx
+trove.exe+8B34B2: 8B 4D FC                    - mov ecx,[ebp-04]
+trove.exe+8B34B5: 89 42 08                    - mov [edx+08],eax
+trove.exe+8B34B8: 8B 46 18                    - mov eax,[esi+18]
+trove.exe+8B34BB: FF D0                       - call eax
+trove.exe+8B34BD: 85 C0                       - test eax,eax
+trove.exe+8B34BF: 74 5B                       - je trove.exe+8B351C
+trove.exe+8B34C1: 0F B7 48 02                 - movzx ecx,word ptr [eax+02]
+trove.exe+8B34C5: 8B C1                       - mov eax,ecx
+trove.exe+8B34C7: C1 E8 0C                    - shr eax,0C
+// ---------- INJECTING HERE ----------
+trove.exe+8B34CA: F3 0F 10 04 85 E0 95 EB 00  - movss xmm0,[eax*4+trove.exe+E995E0]
+// ---------- DONE INJECTING  ----------
+trove.exe+8B34D3: 8B C1                       - mov eax,ecx
+trove.exe+8B34D5: C1 E8 08                    - shr eax,08
+trove.exe+8B34D8: 83 E0 0F                    - and eax,0F
+trove.exe+8B34DB: F3 0F 11 45 E0              - movss [ebp-20],xmm0
+trove.exe+8B34E0: F3 0F 10 04 85 E0 95 EB 00  - movss xmm0,[eax*4+trove.exe+E995E0]
+trove.exe+8B34E9: 8B C1                       - mov eax,ecx
+trove.exe+8B34EB: C1 E8 04                    - shr eax,04
+trove.exe+8B34EE: 83 E0 0F                    - and eax,0F
+trove.exe+8B34F1: F3 0F 11 45 E4              - movss [ebp-1C],xmm0
+trove.exe+8B34F6: 83 E1 0F                    - and ecx,0F
+}
+</AssemblerScript>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>5263</ID>
+              <Description>"Chams Monster / Object Green - Final"</Description>
+              <Color>008000</Color>
+              <VariableType>Auto Assembler Script</VariableType>
+              <AssemblerScript>{ Game   : Trove.exe
+  Version: 
+  Date   : 2021-12-09
+  Author : Cliente
+
+  This script does blah blah blah
+}
+
+[ENABLE]
+
+aobscanmodule(INJECT,trove.exe,F3 0F 11 45 E4 83 E1 0F F3 0F 10 04 XX XX XX XX XX F3 0F 11 45 E8 F3 0F 10 04 XX XX XX XX XX F3 0F 11 45 EC 0F 28 45 E0 0F 29 07 8B C7 5F 5E 8B E5 5D 8B E3 5B) // should be unique
+alloc(newmem,$1000)
+
+label(code)
+label(return)
+
+newmem:
+
+code:
+  db F3 0F 11 45
+
+INJECT:
+  db F3 0F 11 4D
+return:
+registersymbol(INJECT)
+
+[DISABLE]
+
+INJECT:
+  db F3 0F 11 45
+
+unregistersymbol(INJECT)
+dealloc(newmem)
+
+{
+// ORIGINAL CODE - INJECTION POINT: trove.exe+8B34F1
+
+trove.exe+8B34C7: C1 E8 0C                    - shr eax,0C
+trove.exe+8B34CA: F3 0F 10 04 85 E0 95 EB 00  - movss xmm0,[eax*4+trove.exe+E995E0]
+trove.exe+8B34D3: 8B C1                       - mov eax,ecx
+trove.exe+8B34D5: C1 E8 08                    - shr eax,08
+trove.exe+8B34D8: 83 E0 0F                    - and eax,0F
+trove.exe+8B34DB: F3 0F 11 45 E0              - movss [ebp-20],xmm0
+trove.exe+8B34E0: F3 0F 10 04 85 E0 95 EB 00  - movss xmm0,[eax*4+trove.exe+E995E0]
+trove.exe+8B34E9: 8B C1                       - mov eax,ecx
+trove.exe+8B34EB: C1 E8 04                    - shr eax,04
+trove.exe+8B34EE: 83 E0 0F                    - and eax,0F
+// ---------- INJECTING HERE ----------
+trove.exe+8B34F1: F3 0F 11 45 E4              - movss [ebp-1C],xmm0
+// ---------- DONE INJECTING  ----------
+trove.exe+8B34F6: 83 E1 0F                    - and ecx,0F
+trove.exe+8B34F9: F3 0F 10 04 85 E0 95 EB 00  - movss xmm0,[eax*4+trove.exe+E995E0]
+trove.exe+8B3502: F3 0F 11 45 E8              - movss [ebp-18],xmm0
+trove.exe+8B3507: F3 0F 10 04 8D E0 95 EB 00  - movss xmm0,[ecx*4+trove.exe+E995E0]
+trove.exe+8B3510: F3 0F 11 45 EC              - movss [ebp-14],xmm0
+trove.exe+8B3515: 0F 28 45 E0                 - movaps xmm0,[ebp-20]
+trove.exe+8B3519: 0F 29 07                    - movaps [edi],xmm0
+trove.exe+8B351C: 8B C7                       - mov eax,edi
+trove.exe+8B351E: 5F                          - pop edi
+trove.exe+8B351F: 5E                          - pop esi
+}
+</AssemblerScript>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>5264</ID>
+              <Description>"Chams Monster / Object Blue - Final"</Description>
+              <Color>FF0000</Color>
+              <VariableType>Auto Assembler Script</VariableType>
+              <AssemblerScript>{ Game   : Trove.exe
+  Version: 
+  Date   : 2021-12-09
+  Author : Cliente
+
+  This script does blah blah blah
+}
+
+[ENABLE]
+
+aobscanmodule(INJECT,trove.exe,F3 0F 11 45 E8 F3 0F 10 04 XX XX XX XX XX F3 0F 11 45 EC 0F 28 45 E0 0F 29 07 8B C7 5F 5E 8B E5 5D 8B E3 5B) // should be unique
+alloc(newmem,$1000)
+
+label(code)
+label(return)
+
+newmem:
+
+code:
+  db F3 0F 11 45
+
+INJECT:
+  db F3 0F 11 4D
+return:
+registersymbol(INJECT)
+
+[DISABLE]
+
+INJECT:
+  db F3 0F 11 45
+
+unregistersymbol(INJECT)
+dealloc(newmem)
+
+{
+// ORIGINAL CODE - INJECTION POINT: trove.exe+8B3502
+
+trove.exe+8B34D5: C1 E8 08                    - shr eax,08
+trove.exe+8B34D8: 83 E0 0F                    - and eax,0F
+trove.exe+8B34DB: F3 0F 11 45 E0              - movss [ebp-20],xmm0
+trove.exe+8B34E0: F3 0F 10 04 85 E0 95 EB 00  - movss xmm0,[eax*4+trove.exe+E995E0]
+trove.exe+8B34E9: 8B C1                       - mov eax,ecx
+trove.exe+8B34EB: C1 E8 04                    - shr eax,04
+trove.exe+8B34EE: 83 E0 0F                    - and eax,0F
+trove.exe+8B34F1: F3 0F 11 45 E4              - movss [ebp-1C],xmm0
+trove.exe+8B34F6: 83 E1 0F                    - and ecx,0F
+trove.exe+8B34F9: F3 0F 10 04 85 E0 95 EB 00  - movss xmm0,[eax*4+trove.exe+E995E0]
+// ---------- INJECTING HERE ----------
+trove.exe+8B3502: F3 0F 11 45 E8              - movss [ebp-18],xmm0
+// ---------- DONE INJECTING  ----------
+trove.exe+8B3507: F3 0F 10 04 8D E0 95 EB 00  - movss xmm0,[ecx*4+trove.exe+E995E0]
+trove.exe+8B3510: F3 0F 11 45 EC              - movss [ebp-14],xmm0
+trove.exe+8B3515: 0F 28 45 E0                 - movaps xmm0,[ebp-20]
+trove.exe+8B3519: 0F 29 07                    - movaps [edi],xmm0
+trove.exe+8B351C: 8B C7                       - mov eax,edi
+trove.exe+8B351E: 5F                          - pop edi
+trove.exe+8B351F: 5E                          - pop esi
+trove.exe+8B3520: 8B E5                       - mov esp,ebp
+trove.exe+8B3522: 5D                          - pop ebp
+trove.exe+8B3523: 8B E3                       - mov esp,ebx
+}
+</AssemblerScript>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>5266</ID>
+              <Description>"Chams Monster / White - Final"</Description>
+              <Color>4080FF</Color>
+              <VariableType>Auto Assembler Script</VariableType>
+              <AssemblerScript>{ Game   : Trove.exe
+  Version: 
+  Date   : 2021-12-09
+  Author : white
+
+  This script does blah blah blah
+}
+
+[ENABLE]
+
+aobscanmodule(INJECT,trove.exe,0F 29 07 8B C7 5F 5E 8B E5 5D 8B) // should be unique
+alloc(newmem,$1000)
+
+label(code)
+label(return)
+
+newmem:
+
+code:
+  db 0F 29 07
+
+INJECT:
+  db 0F 29 0F
+return:
+registersymbol(INJECT)
+
+[DISABLE]
+
+INJECT:
+  db 0F 29 07
+
+unregistersymbol(INJECT)
+dealloc(newmem)
+
+{
+// ORIGINAL CODE - INJECTION POINT: trove.exe+8B3519
+
+trove.exe+8B34E9: 8B C1                       - mov eax,ecx
+trove.exe+8B34EB: C1 E8 04                    - shr eax,04
+trove.exe+8B34EE: 83 E0 0F                    - and eax,0F
+trove.exe+8B34F1: F3 0F 11 45 E4              - movss [ebp-1C],xmm0
+trove.exe+8B34F6: 83 E1 0F                    - and ecx,0F
+trove.exe+8B34F9: F3 0F 10 04 85 E0 95 EB 00  - movss xmm0,[eax*4+trove.exe+E995E0]
+trove.exe+8B3502: F3 0F 11 45 E8              - movss [ebp-18],xmm0
+trove.exe+8B3507: F3 0F 10 04 8D E0 95 EB 00  - movss xmm0,[ecx*4+trove.exe+E995E0]
+trove.exe+8B3510: F3 0F 11 45 EC              - movss [ebp-14],xmm0
+trove.exe+8B3515: 0F 28 45 E0                 - movaps xmm0,[ebp-20]
+// ---------- INJECTING HERE ----------
+trove.exe+8B3519: 0F 29 07                    - movaps [edi],xmm0
+// ---------- DONE INJECTING  ----------
+trove.exe+8B351C: 8B C7                       - mov eax,edi
+trove.exe+8B351E: 5F                          - pop edi
+trove.exe+8B351F: 5E                          - pop esi
+trove.exe+8B3520: 8B E5                       - mov esp,ebp
+trove.exe+8B3522: 5D                          - pop ebp
+trove.exe+8B3523: 8B E3                       - mov esp,ebx
+trove.exe+8B3525: 5B                          - pop ebx
+trove.exe+8B3526: C3                          - ret 
+trove.exe+8B3527: CC                          - int 3 
+trove.exe+8B3528: CC                          - int 3 
+}
+</AssemblerScript>
+            </CheatEntry>
+          </CheatEntries>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>6359</ID>
+          <Description>"Color Chat Name"</Description>
+          <Color>FF0080</Color>
+          <GroupHeader>1</GroupHeader>
+          <CheatEntries>
+            <CheatEntry>
+              <ID>409</ID>
+              <Description>"Blue"</Description>
+              <Color>FF8000</Color>
+              <VariableType>Auto Assembler Script</VariableType>
+              <AssemblerScript>{ Game   : Trove.exe
+  Version: 
+  Date   : 2022-01-11
+  Author : Nick Azul
+
+  This script does blah blah blah
+}
+
+[ENABLE]
+
+aobscanmodule(INJECT,trove.exe,F3 0F 2C C0 88 45 F8) // should be unique
+alloc(newmem,$1000)
+
+label(code)
+label(return)
+
+newmem:
+
+code:
+  db F3 0F 2C C0
+
+INJECT:
+  db F3 0F 2C C1
+return:
+registersymbol(INJECT)
+
+[DISABLE]
+
+INJECT:
+  db F3 0F 2C C0
+
+unregistersymbol(INJECT)
+dealloc(newmem)
+
+{
+// ORIGINAL CODE - INJECTION POINT: trove.exe+B85F71
+
+trove.exe+B85F4C: E8 0F C3 92 FF           - call trove.exe+4B2260
+trove.exe+B85F51: 8B 73 10                 - mov esi,[ebx+10]
+trove.exe+B85F54: 83 C4 04                 - add esp,04
+trove.exe+B85F57: 8B 00                    - mov eax,[eax]
+trove.exe+B85F59: EB 4C                    - jmp trove.exe+B85FA7
+trove.exe+B85F5B: 8B 73 10                 - mov esi,[ebx+10]
+trove.exe+B85F5E: F3 0F 10 0D 88 94 46 01  - movss xmm1,[trove.exe+F59488]
+trove.exe+B85F66: 0F B6 06                 - movzx eax,byte ptr [esi]
+trove.exe+B85F69: F3 0F 2A C0              - cvtsi2ss xmm0,eax
+trove.exe+B85F6D: F3 0F 59 C1              - mulss xmm0,xmm1
+// ---------- INJECTING HERE ----------
+trove.exe+B85F71: F3 0F 2C C0              - cvttss2si eax,xmm0
+// ---------- DONE INJECTING  ----------
+trove.exe+B85F75: 88 45 F8                 - mov [ebp-08],al
+trove.exe+B85F78: 0F B6 46 01              - movzx eax,byte ptr [esi+01]
+trove.exe+B85F7C: F3 0F 2A C0              - cvtsi2ss xmm0,eax
+trove.exe+B85F80: F3 0F 59 C1              - mulss xmm0,xmm1
+trove.exe+B85F84: F3 0F 2C C0              - cvttss2si eax,xmm0
+trove.exe+B85F88: 88 45 F9                 - mov [ebp-07],al
+trove.exe+B85F8B: 0F B6 46 02              - movzx eax,byte ptr [esi+02]
+trove.exe+B85F8F: F3 0F 2A C0              - cvtsi2ss xmm0,eax
+trove.exe+B85F93: F3 0F 59 C1              - mulss xmm0,xmm1
+trove.exe+B85F97: F3 0F 2C C0              - cvttss2si eax,xmm0
+}
+</AssemblerScript>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>410</ID>
+              <Description>"Pink"</Description>
+              <Color>FF00FF</Color>
+              <VariableType>Auto Assembler Script</VariableType>
+              <AssemblerScript>{ Game   : Trove.exe
+  Version: 
+  Date   : 2022-01-11
+  Author : rosa
+
+  This script does blah blah blah
+}
+
+[ENABLE]
+
+aobscanmodule(INJECT,trove.exe,F3 0F 2C C0 88 45 F9) // should be unique
+alloc(newmem,$1000)
+
+label(code)
+label(return)
+
+newmem:
+
+code:
+  db F3 0F 2C C0
+
+INJECT:
+  db F3 0F 2C C1
+return:
+registersymbol(INJECT)
+
+[DISABLE]
+
+INJECT:
+  db F3 0F 2C C0
+
+unregistersymbol(INJECT)
+dealloc(newmem)
+
+{
+// ORIGINAL CODE - INJECTION POINT: trove.exe+B85F84
+
+trove.exe+B85F5B: 8B 73 10                 - mov esi,[ebx+10]
+trove.exe+B85F5E: F3 0F 10 0D 88 94 46 01  - movss xmm1,[trove.exe+F59488]
+trove.exe+B85F66: 0F B6 06                 - movzx eax,byte ptr [esi]
+trove.exe+B85F69: F3 0F 2A C0              - cvtsi2ss xmm0,eax
+trove.exe+B85F6D: F3 0F 59 C1              - mulss xmm0,xmm1
+trove.exe+B85F71: F3 0F 2C C0              - cvttss2si eax,xmm0
+trove.exe+B85F75: 88 45 F8                 - mov [ebp-08],al
+trove.exe+B85F78: 0F B6 46 01              - movzx eax,byte ptr [esi+01]
+trove.exe+B85F7C: F3 0F 2A C0              - cvtsi2ss xmm0,eax
+trove.exe+B85F80: F3 0F 59 C1              - mulss xmm0,xmm1
+// ---------- INJECTING HERE ----------
+trove.exe+B85F84: F3 0F 2C C0              - cvttss2si eax,xmm0
+// ---------- DONE INJECTING  ----------
+trove.exe+B85F88: 88 45 F9                 - mov [ebp-07],al
+trove.exe+B85F8B: 0F B6 46 02              - movzx eax,byte ptr [esi+02]
+trove.exe+B85F8F: F3 0F 2A C0              - cvtsi2ss xmm0,eax
+trove.exe+B85F93: F3 0F 59 C1              - mulss xmm0,xmm1
+trove.exe+B85F97: F3 0F 2C C0              - cvttss2si eax,xmm0
+trove.exe+B85F9B: 88 45 FA                 - mov [ebp-06],al
+trove.exe+B85F9E: 8A 46 03                 - mov al,[esi+03]
+trove.exe+B85FA1: 88 45 FB                 - mov [ebp-05],al
+trove.exe+B85FA4: 8B 45 F8                 - mov eax,[ebp-08]
+trove.exe+B85FA7: 83 3F 01                 - cmp dword ptr [edi],01
+}
+</AssemblerScript>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>411</ID>
+              <Description>"Green"</Description>
+              <Color>008000</Color>
+              <VariableType>Auto Assembler Script</VariableType>
+              <AssemblerScript>{ Game   : Trove.exe
+  Version: 
+  Date   : 2022-01-11
+  Author : verde
+
+  This script does blah blah blah
+}
+
+[ENABLE]
+
+aobscanmodule(INJECT,trove.exe,F3 0F 2C C0 88 45 FA) // should be unique
+alloc(newmem,$1000)
+
+label(code)
+label(return)
+
+newmem:
+
+code:
+  db F3 0F 2C C0
+
+INJECT:
+  db F3 0F 2C C1
+return:
+registersymbol(INJECT)
+
+[DISABLE]
+
+INJECT:
+  db F3 0F 2C C0
+
+unregistersymbol(INJECT)
+dealloc(newmem)
+
+{
+// ORIGINAL CODE - INJECTION POINT: trove.exe+B85F97
+
+trove.exe+B85F71: F3 0F 2C C0           - cvttss2si eax,xmm0
+trove.exe+B85F75: 88 45 F8              - mov [ebp-08],al
+trove.exe+B85F78: 0F B6 46 01           - movzx eax,byte ptr [esi+01]
+trove.exe+B85F7C: F3 0F 2A C0           - cvtsi2ss xmm0,eax
+trove.exe+B85F80: F3 0F 59 C1           - mulss xmm0,xmm1
+trove.exe+B85F84: F3 0F 2C C0           - cvttss2si eax,xmm0
+trove.exe+B85F88: 88 45 F9              - mov [ebp-07],al
+trove.exe+B85F8B: 0F B6 46 02           - movzx eax,byte ptr [esi+02]
+trove.exe+B85F8F: F3 0F 2A C0           - cvtsi2ss xmm0,eax
+trove.exe+B85F93: F3 0F 59 C1           - mulss xmm0,xmm1
+// ---------- INJECTING HERE ----------
+trove.exe+B85F97: F3 0F 2C C0           - cvttss2si eax,xmm0
+// ---------- DONE INJECTING  ----------
+trove.exe+B85F9B: 88 45 FA              - mov [ebp-06],al
+trove.exe+B85F9E: 8A 46 03              - mov al,[esi+03]
+trove.exe+B85FA1: 88 45 FB              - mov [ebp-05],al
+trove.exe+B85FA4: 8B 45 F8              - mov eax,[ebp-08]
+trove.exe+B85FA7: 83 3F 01              - cmp dword ptr [edi],01
+trove.exe+B85FAA: 89 45 FC              - mov [ebp-04],eax
+trove.exe+B85FAD: 89 45 E8              - mov [ebp-18],eax
+trove.exe+B85FB0: C7 45 D0 00 00 00 00  - mov [ebp-30],00000000
+trove.exe+B85FB7: C7 45 D4 00 00 00 00  - mov [ebp-2C],00000000
+trove.exe+B85FBE: C7 45 D8 00 00 00 00  - mov [ebp-28],00000000
+}
+</AssemblerScript>
+            </CheatEntry>
+          </CheatEntries>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>5278</ID>
+          <Description>"No-Clip"</Description>
+          <GroupHeader>1</GroupHeader>
+          <CheatEntries>
+            <CheatEntry>
+              <ID>3693</ID>
+              <Description>"No Clip (need hotkey) - Final"</Description>
+              <Options moActivateChildrenAsWell="1" moDeactivateChildrenAsWell="1"/>
+              <Color>4080FF</Color>
+              <VariableType>Auto Assembler Script</VariableType>
+              <AssemblerScript>[ENABLE]
+
+aobscanmodule(INJECT,trove.exe,0F 84 F0 05 00 00 0F 28 45 E0 0F 28 65 D0) // should be unique
+alloc(newmem,$1000)
+
+label(code)
+label(return)
+
+newmem:
+
+code:
+  db 0F 84
+  jmp return
+
+INJECT:
+  db 0F 87
+return:
+registersymbol(INJECT)
+
+[DISABLE]
+
+INJECT:
+  db 0F 84
+
+unregistersymbol(INJECT)
+dealloc(newmem)
+</AssemblerScript>
+              <Hotkeys>
+                <Hotkey>
+                  <Action>Toggle Activation</Action>
+                  <Keys>
+                    <Key>192</Key>
+                  </Keys>
+                  <ID>0</ID>
+                  <ActivateSound>Activate</ActivateSound>
+                  <DeactivateSound>Deactivate</DeactivateSound>
+                </Hotkey>
+              </Hotkeys>
+              <CheatEntries>
+                <CheatEntry>
+                  <ID>5268</ID>
+                  <Description>"No Clip Down (need hotkey) - Final"</Description>
+                  <Color>4080FF</Color>
+                  <VariableType>Auto Assembler Script</VariableType>
+                  <AssemblerScript>{ Game   : Trove.exe
+  Version: 
+  Date   : 2021-12-13
+  Author : Cliente
+
+  This script does blah blah blah
+}
+
+[ENABLE]
+
+aobscanmodule(INJECT,trove.exe,DE E9 DD 1C 24 E8 xx xx xx xx E8 xx xx xx xx 0F 28 07 0F 29 45 B0 F3 0F 10 45 B4 0F C6 C0 00 0F 29 45 B0) // should be unique
+alloc(newmem,$1000)
+
+label(code)
+label(return)
+
+newmem:
+
+code:
+  db DE E9
+
+INJECT:
+  db DE E8
+return:
+registersymbol(INJECT)
+
+[DISABLE]
+
+INJECT:
+  db DE E9
+
+unregistersymbol(INJECT)
+dealloc(newmem)
+
+{
+// ORIGINAL CODE - INJECTION POINT: trove.AK::SoundEngine::GetBufferStatusForPinnedEvent+874
+
+trove.AK::SoundEngine::GetBufferStatusForPinnedEvent+859: 56              - push esi
+trove.AK::SoundEngine::GetBufferStatusForPinnedEvent+85A: 57              - push edi
+trove.AK::SoundEngine::GetBufferStatusForPinnedEvent+85B: 8B 7B 08        - mov edi,[ebx+08]
+trove.AK::SoundEngine::GetBufferStatusForPinnedEvent+85E: 83 EC 08        - sub esp,08
+trove.AK::SoundEngine::GetBufferStatusForPinnedEvent+861: 89 4D DC        - mov [ebp-24],ecx
+trove.AK::SoundEngine::GetBufferStatusForPinnedEvent+864: 0F 28 07        - movaps xmm0,[edi]
+trove.AK::SoundEngine::GetBufferStatusForPinnedEvent+867: 0F C6 C0 00     - shufps xmm0,xmm0,00
+trove.AK::SoundEngine::GetBufferStatusForPinnedEvent+86B: 0F 29 45 B0     - movaps [ebp-50],xmm0
+trove.AK::SoundEngine::GetBufferStatusForPinnedEvent+86F: D9 45 B0        - fld dword ptr [ebp-50]
+trove.AK::SoundEngine::GetBufferStatusForPinnedEvent+872: D9 E8           - fld1 
+// ---------- INJECTING HERE ----------
+trove.AK::SoundEngine::GetBufferStatusForPinnedEvent+874: DE E9           - fsubp st(1),st(0)
+// ---------- DONE INJECTING  ----------
+trove.AK::SoundEngine::GetBufferStatusForPinnedEvent+876: DD 1C 24        - fstp qword ptr [esp]
+trove.AK::SoundEngine::GetBufferStatusForPinnedEvent+879: E8 24 74 B6 00  - call trove.exe+D6EB52
+trove.AK::SoundEngine::GetBufferStatusForPinnedEvent+87E: E8 8D 61 B6 00  - call trove.exe+D6D8C0
+trove.AK::SoundEngine::GetBufferStatusForPinnedEvent+883: 0F 28 07        - movaps xmm0,[edi]
+trove.AK::SoundEngine::GetBufferStatusForPinnedEvent+886: 0F 29 45 B0     - movaps [ebp-50],xmm0
+trove.AK::SoundEngine::GetBufferStatusForPinnedEvent+88A: F3 0F 10 45 B4  - movss xmm0,[ebp-4C]
+trove.AK::SoundEngine::GetBufferStatusForPinnedEvent+88F: 0F C6 C0 00     - shufps xmm0,xmm0,00
+trove.AK::SoundEngine::GetBufferStatusForPinnedEvent+893: 0F 29 45 B0     - movaps [ebp-50],xmm0
+trove.AK::SoundEngine::GetBufferStatusForPinnedEvent+897: D9 45 B0        - fld dword ptr [ebp-50]
+trove.AK::SoundEngine::GetBufferStatusForPinnedEvent+89A: D9 E8           - fld1 
+}
+</AssemblerScript>
+                  <Hotkeys>
+                    <Hotkey>
+                      <Action>Toggle Activation</Action>
+                      <Keys>
+                        <Key>192</Key>
+                      </Keys>
+                      <ID>0</ID>
+                    </Hotkey>
+                  </Hotkeys>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>6355</ID>
+                  <Description>"No Clip Super - Final"</Description>
+                  <Color>4080FF</Color>
+                  <VariableType>Auto Assembler Script</VariableType>
+                  <AssemblerScript>{ Game   : Trove.exe
+  Version: 
+  Date   : 2021-12-29
+  Author : No clip super
+
+  This script does blah blah blah
+}
+
+[ENABLE]
+
+aobscanmodule(INJECT,trove.exe,74 2D FF 73 14) // should be unique
+alloc(newmem,$1000)
+
+label(code)
+label(return)
+
+newmem:
+
+code:
+  db 74
+
+INJECT:
+  db EB
+
+return:
+registersymbol(INJECT)
+
+[DISABLE]
+
+INJECT:
+  db 74
+
+unregistersymbol(INJECT)
+dealloc(newmem)
+
+{
+// ORIGINAL CODE - INJECTION POINT: trove.exe+6890FD
+
+trove.exe+6890DB: 74 12                 - je trove.exe+6890EF
+trove.exe+6890DD: 0F 28 85 10 FF FF FF  - movaps xmm0,[ebp-000000F0]
+trove.exe+6890E4: 0F 29 00              - movaps [eax],xmm0
+trove.exe+6890E7: 0F 28 45 B0           - movaps xmm0,[ebp-50]
+trove.exe+6890EB: 0F 29 40 10           - movaps [eax+10],xmm0
+trove.exe+6890EF: 83 47 04 20           - add dword ptr [edi+04],20
+trove.exe+6890F3: 8B 47 04              - mov eax,[edi+04]
+trove.exe+6890F6: 2B 07                 - sub eax,[edi]
+trove.exe+6890F8: C1 F8 05              - sar eax,05
+trove.exe+6890FB: 85 C0                 - test eax,eax
+// ---------- INJECTING HERE ----------
+trove.exe+6890FD: 74 2D                 - je trove.exe+68912C
+// ---------- DONE INJECTING  ----------
+trove.exe+6890FF: FF 73 14              - push [ebx+14]
+trove.exe+689102: 8B 47 04              - mov eax,[edi+04]
+trove.exe+689105: 2B 07                 - sub eax,[edi]
+trove.exe+689107: 8B 73 08              - mov esi,[ebx+08]
+trove.exe+68910A: 8B 4D FC              - mov ecx,[ebp-04]
+trove.exe+68910D: C1 F8 05              - sar eax,05
+trove.exe+689110: 50                    - push eax
+trove.exe+689111: FF 37                 - push [edi]
+trove.exe+689113: FF 73 10              - push [ebx+10]
+trove.exe+689116: FF 73 0C              - push [ebx+0C]
+}
+</AssemblerScript>
+                  <Hotkeys>
+                    <Hotkey>
+                      <Action>Toggle Activation</Action>
+                      <Keys>
+                        <Key>192</Key>
+                      </Keys>
+                      <ID>0</ID>
+                    </Hotkey>
+                  </Hotkeys>
+                </CheatEntry>
+              </CheatEntries>
+            </CheatEntry>
+          </CheatEntries>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>5280</ID>
+          <Description>"Gun Freezy Air (on attack monster)"</Description>
+          <Color>400080</Color>
+          <GroupHeader>1</GroupHeader>
+          <CheatEntries>
+            <CheatEntry>
+              <ID>1</ID>
+              <Description>"Gun Freeze Air - Final"</Description>
+              <Options moActivateChildrenAsWell="1" moDeactivateChildrenAsWell="1"/>
+              <Color>4080FF</Color>
+              <VariableType>Auto Assembler Script</VariableType>
+              <AssemblerScript>[ENABLE]
+
+aobscanmodule(Gun2,trove.exe,55 8B EC 51 F3 0F 10 81 D8 00 00 00 0F 2F 05) // should be unique
+alloc(newmem,$1000)
+
+label(code)
+label(return)
+
+newmem:
+
+code:
+  push ebp
+  mov ebp,esp
+  push ecx
+  movss xmm0,[ecx+000000D8]
+  jmp return
+
+Gun2:
+  push ebp
+  mov ebp,esp
+  push ecx
+  movss xmm0,[ecx+000000AC]
+return:
+registersymbol(Gun2)
+
+[DISABLE]
+
+Gun2:
+  db 55 8B EC 51 F3 0F 10 81 D8 00 00 00
+
+unregistersymbol(Gun2)
+dealloc(newmem)
+</AssemblerScript>
+              <Hotkeys>
+                <Hotkey>
+                  <Action>Toggle Activation</Action>
+                  <Keys>
+                    <Key>4</Key>
+                  </Keys>
+                  <ID>0</ID>
+                </Hotkey>
+              </Hotkeys>
+              <CheatEntries>
+                <CheatEntry>
+                  <ID>57</ID>
+                  <Description>"Gun Hack No damage (need hotkey)  - Final"</Description>
+                  <Color>4080FF</Color>
+                  <VariableType>Auto Assembler Script</VariableType>
+                  <AssemblerScript>[ENABLE]
+
+aobscanmodule(Gun,trove.exe,F3 0F 10 89 D4 00 00 00 0F 57) // should be unique
+alloc(newmem,$1000)
+
+label(code)
+label(return)
+
+newmem:
+
+code:
+  movss xmm1,[ecx+000000D4]
+  jmp return
+
+Gun:
+ movss xmm0,[ecx+000000AC]
+
+return:
+registersymbol(Gun)
+
+[DISABLE]
+
+Gun:
+  db F3 0F 10 89 D4 00 00 00
+
+unregistersymbol(Gun)
+dealloc(newmem)
+
+{
+// ORIGINAL CODE - INJECTION POINT: "trove.exe"+65921F
+
+"trove.exe"+65920C: CC                       -  int 3 
+"trove.exe"+65920D: CC                       -  int 3 
+"trove.exe"+65920E: CC                       -  int 3 
+"trove.exe"+65920F: CC                       -  int 3 
+"trove.exe"+659210: 55                       -  push ebp
+"trove.exe"+659211: 8B EC                    -  mov ebp,esp
+"trove.exe"+659213: 51                       -  push ecx
+"trove.exe"+659214: 8B 81 68 01 00 00        -  mov eax,[ecx+00000168]
+"trove.exe"+65921A: 83 E8 02                 -  sub eax,02
+"trove.exe"+65921D: 74 30                    -  je trove.exe+65924F
+// ---------- INJECTING HERE ----------
+"trove.exe"+65921F: F3 0F 10 89 D4 00 00 00  -  movss xmm1,[ecx+000000D4]
+// ---------- DONE INJECTING  ----------
+"trove.exe"+659227: 0F 57 C0                 -  xorps xmm0,xmm0
+"trove.exe"+65922A: 0F 2F C1                 -  comiss xmm0,xmm1
+"trove.exe"+65922D: 72 0C                    -  jb trove.exe+65923B
+"trove.exe"+65922F: F3 0F 11 4D FC           -  movss [ebp-04],xmm1
+"trove.exe"+659234: D9 45 FC                 -  fld dword ptr [ebp-04]
+"trove.exe"+659237: 8B E5                    -  mov esp,ebp
+"trove.exe"+659239: 5D                       -  pop ebp
+"trove.exe"+65923A: C3                       -  ret 
+"trove.exe"+65923B: F3 0F 10 05 A4 F5 E1 00  -  movss xmm0,[trove.exe+D8F5A4]
+"trove.exe"+659243: F3 0F 11 45 FC           -  movss [ebp-04],xmm0
+}
+</AssemblerScript>
+                  <Hotkeys>
+                    <Hotkey>
+                      <Action>Toggle Activation</Action>
+                      <Keys>
+                        <Key>4</Key>
+                      </Keys>
+                      <ID>0</ID>
+                    </Hotkey>
+                  </Hotkeys>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>1028</ID>
+                  <Description>"Slow Fall Gun (need hotkey) - Final"</Description>
+                  <Color>4080FF</Color>
+                  <VariableType>Auto Assembler Script</VariableType>
+                  <AssemblerScript>[ENABLE]
+
+aobscanmodule(slow1,trove.exe,F3 0F 10 05 XX XX XX XX F3 0F 11 45 FC D9 45 FC 8B E5 5D C3 D9 05 XX XX XX XX) // should be unique
+alloc(newmem,$1000)
+
+label(code)
+label(return)
+
+newmem:
+
+code:
+  db F3 0F 10 05
+  jmp return
+
+slow1:
+  db F3 0F 10 0D
+return:
+registersymbol(slow1)
+
+[DISABLE]
+
+slow1:
+  db F3 0F 10 05
+
+unregistersymbol(slow1)
+dealloc(newmem)
+</AssemblerScript>
+                  <Hotkeys>
+                    <Hotkey>
+                      <Action>Toggle Activation</Action>
+                      <Keys>
+                        <Key>4</Key>
+                      </Keys>
+                      <ID>0</ID>
+                    </Hotkey>
+                  </Hotkeys>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>1030</ID>
+                  <Description>"Slow Fall Gun 2 (need hotkey) - Final"</Description>
+                  <Color>4080FF</Color>
+                  <VariableType>Auto Assembler Script</VariableType>
+                  <AssemblerScript>[ENABLE]
+
+aobscanmodule(slow2,trove.exe,F3 0F 10 05 xx xx xx xx F3 0F 11 45 FC D9 45 FC 8B E5 5D C3 CC CC CC CC CC CC CC 8B 44 24 04 8B 4C 24 0C 8B 54 24 08) // should be unique
+alloc(newmem,$1000)
+
+label(code)
+label(return)
+
+newmem:
+
+code:
+  db F3 0F 10 05
+  jmp return
+
+slow2:
+  db F3 0F 10 0D
+return:
+registersymbol(slow2)
+
+[DISABLE]
+
+slow2:
+  db F3 0F 10 05
+
+unregistersymbol(slow2)
+dealloc(newmem)
+</AssemblerScript>
+                  <Hotkeys>
+                    <Hotkey>
+                      <Action>Toggle Activation</Action>
+                      <Keys>
+                        <Key>4</Key>
+                      </Keys>
+                      <ID>0</ID>
+                    </Hotkey>
+                  </Hotkeys>
+                </CheatEntry>
+              </CheatEntries>
+            </CheatEntry>
+          </CheatEntries>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>5279</ID>
+          <Description>"Player Position / Teleport"</Description>
+          <Color>00FF00</Color>
+          <GroupHeader>1</GroupHeader>
+          <CheatEntries>
+            <CheatEntry>
+              <ID>0</ID>
+              <Description>"Trove Teleport Up/Down (HotKey)"</Description>
+              <ShowAsSigned>0</ShowAsSigned>
+              <Color>0080FF</Color>
+              <VariableType>Float</VariableType>
+              <Address>"trove.exe"+01013A10</Address>
+              <Offsets>
+                <Offset>64</Offset>
+                <Offset>4</Offset>
+                <Offset>C4</Offset>
+                <Offset>28</Offset>
+                <Offset>0</Offset>
+              </Offsets>
+              <Hotkeys>
+                <Hotkey>
+                  <Action>Increase Value</Action>
+                  <Keys>
+                    <Key>38</Key>
+                  </Keys>
+                  <Value>3</Value>
+                  <ID>0</ID>
+                </Hotkey>
+              </Hotkeys>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>5</ID>
+              <Description>"Trove Teleport Z"</Description>
+              <ShowAsSigned>0</ShowAsSigned>
+              <Color>0080FF</Color>
+              <VariableType>Float</VariableType>
+              <Address>"trove.exe"+01013A10</Address>
+              <Offsets>
+                <Offset>68</Offset>
+                <Offset>4</Offset>
+                <Offset>C4</Offset>
+                <Offset>11C</Offset>
+                <Offset>4</Offset>
+              </Offsets>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>6</ID>
+              <Description>"Trove Teleport  X"</Description>
+              <ShowAsSigned>0</ShowAsSigned>
+              <Color>0080FF</Color>
+              <VariableType>Float</VariableType>
+              <Address>"trove.exe"+01013A10</Address>
+              <Offsets>
+                <Offset>60</Offset>
+                <Offset>4</Offset>
+                <Offset>C4</Offset>
+                <Offset>11C</Offset>
+                <Offset>10</Offset>
+              </Offsets>
+            </CheatEntry>
+          </CheatEntries>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>5271</ID>
+          <Description>"Misc / Etc"</Description>
+          <Color>4080FF</Color>
+          <GroupHeader>1</GroupHeader>
+          <CheatEntries>
+            <CheatEntry>
+              <ID>2122</ID>
+              <Description>"Giant Monsters"</Description>
+              <Color>4080FF</Color>
+              <VariableType>Auto Assembler Script</VariableType>
+              <AssemblerScript>{ Game   : Trove.exe
+  Version: 
+  Date   : 2021-12-18
+  Author : MONstros gigantes
+
+  This script does blah blah blah
+}
+
+[ENABLE]
+
+aobscanmodule(INJECT,trove.exe,F3 0F 10 44 24 14 0F C6 C0 00 0F 29 46) // should be unique
+alloc(newmem,$1000)
+
+label(code)
+label(return)
+
+newmem:
+
+code:
+  movss xmm0,[esp+14]
+
+
+INJECT:
+  movss xmm1,[esp+14]
+return:
+registersymbol(INJECT)
+
+[DISABLE]
+
+INJECT:
+  db F3 0F 10 44
+
+unregistersymbol(INJECT)
+dealloc(newmem)
+
+{
+// ORIGINAL CODE - INJECTION POINT: trove.exe+8AA107
+
+trove.exe+8AA0DA: 8B B7 20 01 00 00     - mov esi,[edi+00000120]
+trove.exe+8AA0E0: 50                    - push eax
+trove.exe+8AA0E1: E8 FA 48 8E FF        - call trove.AK::SoundEngine::PrepareGameSyncs+800
+trove.exe+8AA0E6: 8B 4C 24 14           - mov ecx,[esp+14]
+trove.exe+8AA0EA: 0F 28 00              - movaps xmm0,[eax]
+trove.exe+8AA0ED: 0F 29 46 10           - movaps [esi+10],xmm0
+trove.exe+8AA0F1: 83 8E D4 00 00 00 40  - or dword ptr [esi+000000D4],40
+trove.exe+8AA0F8: 8B B7 20 01 00 00     - mov esi,[edi+00000120]
+trove.exe+8AA0FE: E8 5D 55 85 FF        - call trove.AK::SoundEngine::SetSpeakerAngles+4460
+trove.exe+8AA103: D9 5C 24 14           - fstp dword ptr [esp+14]
+// ---------- INJECTING HERE ----------
+trove.exe+8AA107: F3 0F 10 44 24 14     - movss xmm0,[esp+14]
+// ---------- DONE INJECTING  ----------
+trove.exe+8AA10D: 0F C6 C0 00           - shufps xmm0,xmm0,00
+trove.exe+8AA111: 0F 29 46 30           - movaps [esi+30],xmm0
+trove.exe+8AA115: 83 8E D4 00 00 00 40  - or dword ptr [esi+000000D4],40
+trove.exe+8AA11C: 80 BF 6D 01 00 00 00  - cmp byte ptr [edi+0000016D],00
+trove.exe+8AA123: 0F 84 D8 01 00 00     - je trove.exe+8AA301
+trove.exe+8AA129: 8B 0D BC 1D B0 01     - mov ecx,[trove.exe+F71DBC]
+trove.exe+8AA12F: 68 7C ED A7 01        - push trove.exe+EEED7C
+trove.exe+8AA134: 8B 01                 - mov eax,[ecx]
+trove.exe+8AA136: FF 50 14              - call dword ptr [eax+14]
+trove.exe+8AA139: 8B CF                 - mov ecx,edi
+}
+</AssemblerScript>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>5300</ID>
+              <Description>"Boat on ground"</Description>
+              <Color>0080FF</Color>
+              <VariableType>Auto Assembler Script</VariableType>
+              <AssemblerScript>{ Game   : Trove.exe
+  Version: 
+  Date   : 2021-12-19
+  Author : Cliente
+
+  This script does blah blah blah
+}
+
+[ENABLE]
+
+aobscanmodule(INJECT,trove.exe,EB XX 32 C0 84 DB 74 XX 84 C0 74 XX 8B CF E8 XX XX XX XX 8B 17 8B CF 50 6A 00 FF 52 60 8B 4E 30 85 C9 74 XX FF 35 XX XX XX XX E8 XX XX XX XX 8B F8 85 FF 74 XX D9 EE 51 8B CF D9 1C 24 E8 XX XX XX XX 83 A7 XX XX XX XX XX) // should be unique
+alloc(newmem,$1000)
+
+label(code)
+label(return)
+
+newmem:
+
+code:
+  db EB
+
+INJECT:
+  db 74
+return:
+registersymbol(INJECT)
+
+[DISABLE]
+
+INJECT:
+  db EB
+
+unregistersymbol(INJECT)
+dealloc(newmem)
+
+{
+// ORIGINAL CODE - INJECTION POINT: trove.exe+528FD4
+
+trove.exe+528FBA: E8 41 E8 FA FF  - call trove.exe+4D7800
+trove.exe+528FBF: 8B F8           - mov edi,eax
+trove.exe+528FC1: 85 FF           - test edi,edi
+trove.exe+528FC3: 74 D8           - je trove.exe+528F9D
+trove.exe+528FC5: 6A 03           - push 03
+trove.exe+528FC7: 8B CF           - mov ecx,edi
+trove.exe+528FC9: E8 A2 8D E2 FF  - call trove.AK::SoundEngine::SeekOnEvent+1FA0
+trove.exe+528FCE: 84 C0           - test al,al
+trove.exe+528FD0: 74 CB           - je trove.exe+528F9D
+trove.exe+528FD2: B3 01           - mov bl,01
+// ---------- INJECTING HERE ----------
+trove.exe+528FD4: EB C9           - jmp trove.exe+528F9F
+// ---------- DONE INJECTING  ----------
+trove.exe+528FD6: 32 C0           - xor al,al
+trove.exe+528FD8: 84 DB           - test bl,bl
+trove.exe+528FDA: 74 15           - je trove.exe+528FF1
+trove.exe+528FDC: 84 C0           - test al,al
+trove.exe+528FDE: 74 11           - je trove.exe+528FF1
+trove.exe+528FE0: 8B CF           - mov ecx,edi
+trove.exe+528FE2: E8 69 9E 0C 00  - call trove.exe+5F2E50
+trove.exe+528FE7: 8B 17           - mov edx,[edi]
+trove.exe+528FE9: 8B CF           - mov ecx,edi
+trove.exe+528FEB: 50              - push eax
+}
+</AssemblerScript>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>5269</ID>
+              <Description>"Hitted all"</Description>
+              <Color>4080FF</Color>
+              <VariableType>Auto Assembler Script</VariableType>
+              <AssemblerScript>{ Game   : Trove.exe
+  Version: 
+  Date   : 2021-12-14
+  Author : Cliente
+
+  This script does blah blah blah
+}
+
+[ENABLE]
+
+aobscanmodule(INJECT,trove.exe,F0 D9 C9 DF F1 DD D8 76) // should be unique
+alloc(newmem,$1000)
+
+label(code)
+label(return)
+
+newmem:
+
+code:
+  db F0 D9 C9
+
+INJECT:
+  db F0 D9 C8
+return:
+registersymbol(INJECT)
+
+[DISABLE]
+
+INJECT:
+  db F0 D9 C9
+
+unregistersymbol(INJECT)
+dealloc(newmem)
+
+{
+// ORIGINAL CODE - INJECTION POINT: trove.exe+631013
+
+trove.exe+630FF0: 8B CE              - mov ecx,esi
+trove.exe+630FF2: 0F 28 00           - movaps xmm0,[eax]
+trove.exe+630FF5: 8B 06              - mov eax,[esi]
+trove.exe+630FF7: 0F 29 45 F0        - movaps [ebp-10],xmm0
+trove.exe+630FFB: F3 0F 10 45 F4     - movss xmm0,[ebp-0C]
+trove.exe+631000: 0F C6 C0 00        - shufps xmm0,xmm0,00
+trove.exe+631004: 8B 80 C0 00 00 00  - mov eax,[eax+000000C0]
+trove.exe+63100A: 0F 29 45 F0        - movaps [ebp-10],xmm0
+trove.exe+63100E: FF D0              - call eax
+trove.exe+631010: D9 45 F0           - fld dword ptr [ebp-10]
+// ---------- INJECTING HERE ----------
+trove.exe+631013: D9 C9              - fxch st(1)
+// ---------- DONE INJECTING  ----------
+trove.exe+631015: DF F1              - fcomip st(0),st(1)
+trove.exe+631017: DD D8              - fstp st(0)
+trove.exe+631019: 76 09              - jna trove.exe+631024
+trove.exe+63101B: 6A 02              - push 02
+trove.exe+63101D: 8B CE              - mov ecx,esi
+trove.exe+63101F: E8 9C 95 B9 FF     - call trove.AK::ReadBytesMem::ReadBytesMem+A9D0
+trove.exe+631024: 5E                 - pop esi
+trove.exe+631025: 8B E5              - mov esp,ebp
+trove.exe+631027: 5D                 - pop ebp
+trove.exe+631028: 8B E3              - mov esp,ebx
+}
+</AssemblerScript>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>229</ID>
+              <Description>"No Clip Cam  - Final"</Description>
+              <Color>4080FF</Color>
+              <VariableType>Auto Assembler Script</VariableType>
+              <AssemblerScript>[ENABLE]
+
+aobscanmodule(INJECT,trove.exe,0F 29 01 C7 41 34 00 00 00 00 0F) // should be unique
+alloc(newmem,$1000)
+
+label(code)
+label(return)
+
+newmem:
+
+code:
+  movaps [ecx],xmm0
+  jmp return
+
+INJECT:
+  db 90 90 90
+
+return:
+registersymbol(INJECT)
+
+[DISABLE]
+
+INJECT:
+  db 0F 29 01
+
+unregistersymbol(INJECT)
+dealloc(newmem)
+
+{
+// ORIGINAL CODE - INJECTION POINT: "trove.exe"+A1388A
+
+"trove.exe"+A13868: 0F 58 CA                 -  addps xmm1,xmm2
+"trove.exe"+A1386B: 0F 51 C9                 -  sqrtps xmm1,xmm1
+"trove.exe"+A1386E: F3 0F 5E CB              -  divss xmm1,xmm3
+"trove.exe"+A13872: 0F 2F C1                 -  comiss xmm0,xmm1
+"trove.exe"+A13875: F3 0F 11 4C 24 04        -  movss [esp+04],xmm1
+"trove.exe"+A1387B: 77 05                    -  ja trove.exe+A13882
+"trove.exe"+A1387D: B8 70 EA AA 01           -  mov eax,trove.exe+D0EA70
+"trove.exe"+A13882: D9 00                    -  fld dword ptr [eax]
+"trove.exe"+A13884: D9 59 30                 -  fstp dword ptr [ecx+30]
+"trove.exe"+A13887: 0F 28 02                 -  movaps xmm0,[edx]
+// ---------- INJECTING HERE ----------
+"trove.exe"+A1388A: 0F 29 01                 -  movaps [ecx],xmm0
+"trove.exe"+A1388D: C7 41 34 00 00 00 00     -  mov [ecx+34],00000000
+// ---------- DONE INJECTING  ----------
+"trove.exe"+A13894: 0F 29 69 20              -  movaps [ecx+20],xmm5
+"trove.exe"+A13898: 0F 28 19                 -  movaps xmm3,[ecx]
+"trove.exe"+A1389B: 0F 28 D3                 -  movaps xmm2,xmm3
+"trove.exe"+A1389E: 0F 5C 51 10              -  subps xmm2,[ecx+10]
+"trove.exe"+A138A2: 0F 59 D2                 -  mulps xmm2,xmm2
+"trove.exe"+A138A5: 0F 28 CA                 -  movaps xmm1,xmm2
+"trove.exe"+A138A8: 0F 28 C2                 -  movaps xmm0,xmm2
+"trove.exe"+A138AB: 0F C6 CA AA              -  shufps xmm1,xmm2-56
+"trove.exe"+A138AF: 0F C6 C2 55              -  shufps xmm0,xmm255
+"trove.exe"+A138B3: 0F 58 C8                 -  addps xmm1,xmm0
+}
+</AssemblerScript>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>5255</ID>
+              <Description>"Lock Cam - Final"</Description>
+              <Color>4080FF</Color>
+              <VariableType>Auto Assembler Script</VariableType>
+              <AssemblerScript>{ Game   : Trove.exe
+  Version: 
+  Date   : 2021-12-04
+  Author : Lock Cam
+
+  This script does blah blah blah
+}
+
+[ENABLE]
+
+aobscanmodule(INJECT,trove.exe,74 05 8B 01 FF 50 0C 8B E5) // should be unique
+alloc(newmem,$1000)
+
+label(code)
+label(return)
+
+newmem:
+
+code:
+  db 74 05
+
+INJECT:
+  db EB 05
+
+return:
+registersymbol(INJECT)
+
+[DISABLE]
+
+INJECT:
+  db 74 05
+
+unregistersymbol(INJECT)
+dealloc(newmem)
+
+{
+// ORIGINAL CODE - INJECTION POINT: trove.exe+7F8685
+
+trove.exe+7F866F: EB 2D              - jmp trove.exe+7F869E
+trove.exe+7F8671: 8B 42 0C           - mov eax,[edx+0C]
+trove.exe+7F8674: 8B 4E 20           - mov ecx,[esi+20]
+trove.exe+7F8677: 57                 - push edi
+trove.exe+7F8678: 50                 - push eax
+trove.exe+7F8679: E8 C2 5B 2A 00     - call trove.exe+A9E240
+trove.exe+7F867E: 5F                 - pop edi
+trove.exe+7F867F: 8B 4E 10           - mov ecx,[esi+10]
+trove.exe+7F8682: 5E                 - pop esi
+trove.exe+7F8683: 85 C9              - test ecx,ecx
+// ---------- INJECTING HERE ----------
+trove.exe+7F8685: 74 05              - je trove.exe+7F868C
+// ---------- DONE INJECTING  ----------
+trove.exe+7F8687: 8B 01              - mov eax,[ecx]
+trove.exe+7F8689: FF 50 0C           - call dword ptr [eax+0C]
+trove.exe+7F868C: 8B E5              - mov esp,ebp
+trove.exe+7F868E: 5D                 - pop ebp
+trove.exe+7F868F: C3                 - ret 
+trove.exe+7F8690: 8B CA              - mov ecx,edx
+trove.exe+7F8692: FF D0              - call eax
+trove.exe+7F8694: 8B 15 E8 03 89 01  - mov edx,[trove.exe+FD03E8]
+trove.exe+7F869A: 8B F8              - mov edi,eax
+trove.exe+7F869C: EB C7              - jmp trove.exe+7F8665
+}
+</AssemblerScript>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>5256</ID>
+              <Description>"Utevo Lux - Final"</Description>
+              <Color>4080FF</Color>
+              <VariableType>Auto Assembler Script</VariableType>
+              <AssemblerScript>{ Game   : Trove.exe
+  Version: 
+  Date   : 2021-12-07
+  Author : Utevo Lux
+
+  This script does blah blah blah
+}
+
+[ENABLE]
+
+aobscanmodule(INJECT,trove.exe,F3 0F 11 45 F0 F3 0F 10 41 5C) // should be unique
+alloc(newmem,$1000)
+
+label(code)
+label(return)
+
+newmem:
+
+code:
+  db F3 0F 11 45
+
+INJECT:
+  db F3 0F 11 4D
+return:
+registersymbol(INJECT)
+
+[DISABLE]
+
+INJECT:
+  db F3 0F 11 45
+
+unregistersymbol(INJECT)
+dealloc(newmem)
+
+{
+// ORIGINAL CODE - INJECTION POINT: trove.exe+68A777
+
+trove.exe+68A753: 8B 45 F4        - mov eax,[ebp-0C]
+trove.exe+68A756: F3 0F 59 C5     - mulss xmm0,xmm5
+trove.exe+68A75A: 89 41 6C        - mov [ecx+6C],eax
+trove.exe+68A75D: 8B 45 F8        - mov eax,[ebp-08]
+trove.exe+68A760: 89 41 70        - mov [ecx+70],eax
+trove.exe+68A763: F3 0F 11 45 FC  - movss [ebp-04],xmm0
+trove.exe+68A768: 8B 45 FC        - mov eax,[ebp-04]
+trove.exe+68A76B: 89 41 74        - mov [ecx+74],eax
+trove.exe+68A76E: F3 0F 10 41 58  - movss xmm0,[ecx+58]
+trove.exe+68A773: F3 0F 59 C1     - mulss xmm0,xmm1
+// ---------- INJECTING HERE ----------
+trove.exe+68A777: F3 0F 11 45 F0  - movss [ebp-10],xmm0
+// ---------- DONE INJECTING  ----------
+trove.exe+68A77C: F3 0F 10 41 5C  - movss xmm0,[ecx+5C]
+trove.exe+68A781: 8B 45 F0        - mov eax,[ebp-10]
+trove.exe+68A784: F3 0F 59 C1     - mulss xmm0,xmm1
+trove.exe+68A788: F3 0F 11 45 F4  - movss [ebp-0C],xmm0
+trove.exe+68A78D: F3 0F 10 41 60  - movss xmm0,[ecx+60]
+trove.exe+68A792: F3 0F 59 C1     - mulss xmm0,xmm1
+trove.exe+68A796: F3 0F 11 45 F8  - movss [ebp-08],xmm0
+trove.exe+68A79B: F3 0F 10 41 64  - movss xmm0,[ecx+64]
+trove.exe+68A7A0: F3 0F 59 C1     - mulss xmm0,xmm1
+trove.exe+68A7A4: 89 41 58        - mov [ecx+58],eax
+}
+</AssemblerScript>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>5257</ID>
+              <Description>"Cave Lux (Set how much u need?)"</Description>
+              <ShowAsSigned>0</ShowAsSigned>
+              <Color>4080FF</Color>
+              <VariableType>Float</VariableType>
+              <Address>trove.exe+C9ABC0</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>5244</ID>
+              <Description>"No Animation Skills / Etc - Final"</Description>
+              <Color>4080FF</Color>
+              <VariableType>Auto Assembler Script</VariableType>
+              <AssemblerScript>{ Game   : Trove.exe
+  Version: 
+  Date   : 2021-11-26
+  Author : No Animation
+
+  This script does blah blah blah
+}
+
+[ENABLE]
+
+aobscanmodule(INJECT,trove.exe,F3 0F 11 44 24 24 F3 0F 58 84 24 80 00 00 00 50 F3 0F 11 43 24 E8 XX XX XX XX 8D 44 24 34 50) // should be unique
+alloc(newmem,$1000)
+
+label(code)
+label(return)
+
+newmem:
+
+code:
+  movss [esp+24],xmm0
+  jmp return
+
+INJECT:
+  movss [esp+24],xmm1
+
+return:
+registersymbol(INJECT)
+
+[DISABLE]
+
+INJECT:
+  db F3 0F 11 44 24 24
+
+unregistersymbol(INJECT)
+dealloc(newmem)
+</AssemblerScript>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>3688</ID>
+              <Description>"False break blocks - Final"</Description>
+              <Color>4080FF</Color>
+              <VariableType>Auto Assembler Script</VariableType>
+              <AssemblerScript>[ENABLE]
+
+aobscanmodule(draco,trove.exe,80 7F xx 00 0F 84 xx xx xx xx 8B 4B 08 E8 xx xx xx xx FF 75 0C 8B 4D 10 8B F0 FF 75 08 8B 45 14 83 EC 0C 8B 3E 8B D4 6A 01 89 0A 8B CE 89 42 04 8B 45 18) // should be unique
+alloc(newmem,$1000)
+
+label(code)
+label(return)
+
+newmem:
+
+code:
+  db 80 7F 64 00
+  jmp return
+
+draco:
+  db 80 7F 64 01
+return:
+registersymbol(draco)
+
+[DISABLE]
+
+draco:
+  db 80 7F 64 00
+
+unregistersymbol(draco)
+dealloc(newmem)
+</AssemblerScript>
+              <Hotkeys>
+                <Hotkey>
+                  <Action>Toggle Activation</Action>
+                  <Keys>
+                    <Key>226</Key>
+                  </Keys>
+                  <ID>0</ID>
+                </Hotkey>
+              </Hotkeys>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>6351</ID>
+              <Description>"Remove the taking damage animation (Yakup's mom)"</Description>
+              <Color>0080FF</Color>
+              <VariableType>Auto Assembler Script</VariableType>
+              <AssemblerScript>{ Game   : trove.exe
+  Version:
+  Date   : 2020-04-06
+  Author : Yakup's mom // Hello to darkm125 :) Greetings to the king.
+
+  This script does blah blah blah
+}
+
+[ENABLE]
+//code from here to '[DISABLE]' will be used to enable the cheat
+
+
+
+aobscanmodule(INJECT,trove.exe,8B 45 E0 2B 85 18 FF FF FF) // should be unique
+alloc(newmem,$100)
+
+label(code)
+label(return)
+
+newmem:
+
+code:
+  mov [ebp-000000E8],(int)1
+  sub eax,[ebp-000000E8]
+  jmp return
+
+INJECT:
+  jmp newmem
+  nop 4
+return:
+registersymbol(INJECT)
+
+[DISABLE]
+//code from here till the end of the code will be used to disable the cheat
+INJECT:
+  db 8B 45 E0 2B 85 18 FF FF FF
+
+unregistersymbol(INJECT)
+dealloc(newmem)
+
+{
+// ORIGINAL CODE - INJECTION POINT: "trove.exe"+6A4578
+
+"trove.exe"+6A4555: E8 46 C6 00 00           -  call trove.exe+6B0BA0
+"trove.exe"+6A455A: 8B C8                    -  mov ecx,eax
+"trove.exe"+6A455C: EB 12                    -  jmp trove.exe+6A4570
+"trove.exe"+6A455E: 6A 02                    -  push 02
+"trove.exe"+6A4560: 8B CF                    -  mov ecx,edi
+"trove.exe"+6A4562: E8 39 C6 00 00           -  call trove.exe+6B0BA0
+"trove.exe"+6A4567: 8B C8                    -  mov ecx,eax
+"trove.exe"+6A4569: EB 05                    -  jmp trove.exe+6A4570
+"trove.exe"+6A456B: B9 01 00 00 00           -  mov ecx,00000001
+"trove.exe"+6A4570: F3 0F 2C BE 70 02 00 00  -  cvttss2si edi,[esi+00000270]
+// ---------- INJECTING HERE ----------
+"trove.exe"+6A4578: 8B 45 E0                 -  mov eax,[ebp-20]
+"trove.exe"+6A457B: 2B 85 18 FF FF FF        -  sub eax,[ebp-000000E8]
+// ---------- DONE INJECTING  ----------
+"trove.exe"+6A4581: 3B C7                    -  cmp eax,edi
+"trove.exe"+6A4583: 7C 07                    -  jl trove.exe+6A458C
+"trove.exe"+6A4585: 3B C1                    -  cmp eax,ecx
+"trove.exe"+6A4587: 8B F8                    -  mov edi,eax
+"trove.exe"+6A4589: 0F 4F F9                 -  cmovg edi,ecx
+"trove.exe"+6A458C: 57                       -  push edi
+"trove.exe"+6A458D: 8B CE                    -  mov ecx,esi
+"trove.exe"+6A458F: C6 45 FF 00              -  mov byte ptr [ebp-01],00
+"trove.exe"+6A4593: E8 18 FC FF FF           -  call trove.exe+6A41B0
+"trove.exe"+6A4598: F3 0F 10 66 54           -  movss xmm4,[esi+54]
+}
+</AssemblerScript>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>830</ID>
+              <Description>"Super Atk Speed (Dont Move)"</Description>
+              <Options moActivateChildrenAsWell="1" moDeactivateChildrenAsWell="1"/>
+              <Color>4080FF</Color>
+              <VariableType>Auto Assembler Script</VariableType>
+              <AssemblerScript>{ Game   : Trove.exe
+  Version: 
+  Date   : 2021-12-14
+  Author : Cliente
+
+  This script does blah blah blah
+}
+
+[ENABLE]
+
+aobscanmodule(INJECT,trove.exe,D9 C9 DD 56 38) // should be unique
+alloc(newmem,$1000)
+
+label(code)
+label(return)
+
+newmem:
+
+code:
+  db D9 C9
+
+INJECT:
+  db D9 C8
+return:
+registersymbol(INJECT)
+
+[DISABLE]
+
+INJECT:
+  db D9 C9 DD 56 38
+
+unregistersymbol(INJECT)
+dealloc(newmem)
+
+{
+// ORIGINAL CODE - INJECTION POINT: trove.exe+700F9A
+
+trove.exe+700F7E: DD 56 28           - fst qword ptr [esi+28]
+trove.exe+700F81: D9 C0              - fld st(0)
+trove.exe+700F83: DC 66 30           - fsub qword ptr [esi+30]
+trove.exe+700F86: DD 56 40           - fst qword ptr [esi+40]
+trove.exe+700F89: DD 56 38           - fst qword ptr [esi+38]
+trove.exe+700F8C: DD 05 88 56 C4 01  - fld qword ptr [trove.exe+E05688]
+trove.exe+700F92: D9 C9              - fxch st(1)
+trove.exe+700F94: DB F1              - fcomi st(0),st(1)
+trove.exe+700F96: 76 12              - jna trove.exe+700FAA
+trove.exe+700F98: D8 E1              - fsub st(0),st(1)
+// ---------- INJECTING HERE ----------
+trove.exe+700F9A: D9 C9              - fxch st(1)
+// ---------- DONE INJECTING  ----------
+trove.exe+700F9C: DD 56 38           - fst qword ptr [esi+38]
+trove.exe+700F9F: D8 EA              - fsubr st(0),st(2)
+trove.exe+700FA1: DD 5E 30           - fstp qword ptr [esi+30]
+trove.exe+700FA4: DC 06              - fadd qword ptr [esi]
+trove.exe+700FA6: DD 1E              - fstp qword ptr [esi]
+trove.exe+700FA8: EB 04              - jmp trove.exe+700FAE
+trove.exe+700FAA: DD D8              - fstp st(0)
+trove.exe+700FAC: DD D8              - fstp st(0)
+trove.exe+700FAE: DC 26              - fsub qword ptr [esi]
+trove.exe+700FB0: DC 4E 20           - fmul qword ptr [esi+20]
+}
+</AssemblerScript>
+              <Hotkeys>
+                <Hotkey>
+                  <Action>Toggle Activation</Action>
+                  <Keys>
+                    <Key>145</Key>
+                  </Keys>
+                  <ID>0</ID>
+                </Hotkey>
+              </Hotkeys>
+              <CheatEntries>
+                <CheatEntry>
+                  <ID>831</ID>
+                  <Description>"Super Atk Speed (Dont Move)"</Description>
+                  <Color>4080FF</Color>
+                  <VariableType>Auto Assembler Script</VariableType>
+                  <AssemblerScript>{ Game   : Trove.exe
+  Version: 
+  Date   : 2021-12-14
+  Author : Cliente
+
+  This script does blah blah blah
+}
+
+[ENABLE]
+
+aobscanmodule(INJECT,trove.exe,D9 C9 DB F1 76 12) // should be unique
+alloc(newmem,$1000)
+
+label(code)
+label(return)
+
+newmem:
+
+code:
+  db D9 C9
+
+INJECT:
+  db D9 C8
+return:
+registersymbol(INJECT)
+
+[DISABLE]
+
+INJECT:
+  db D9 C9
+
+unregistersymbol(INJECT)
+dealloc(newmem)
+
+{
+// ORIGINAL CODE - INJECTION POINT: trove.exe+700F92
+
+trove.exe+700F71: 8B F1              - mov esi,ecx
+trove.exe+700F73: DD 46 28           - fld qword ptr [esi+28]
+trove.exe+700F76: DD 5E 30           - fstp qword ptr [esi+30]
+trove.exe+700F79: E8 62 00 00 00     - call trove.exe+700FE0
+trove.exe+700F7E: DD 56 28           - fst qword ptr [esi+28]
+trove.exe+700F81: D9 C0              - fld st(0)
+trove.exe+700F83: DC 66 30           - fsub qword ptr [esi+30]
+trove.exe+700F86: DD 56 40           - fst qword ptr [esi+40]
+trove.exe+700F89: DD 56 38           - fst qword ptr [esi+38]
+trove.exe+700F8C: DD 05 88 56 C4 01  - fld qword ptr [trove.exe+E05688]
+// ---------- INJECTING HERE ----------
+trove.exe+700F92: D9 C9              - fxch st(1)
+// ---------- DONE INJECTING  ----------
+trove.exe+700F94: DB F1              - fcomi st(0),st(1)
+trove.exe+700F96: 76 12              - jna trove.exe+700FAA
+trove.exe+700F98: D8 E1              - fsub st(0),st(1)
+trove.exe+700F9A: D9 C9              - fxch st(1)
+trove.exe+700F9C: DD 56 38           - fst qword ptr [esi+38]
+trove.exe+700F9F: D8 EA              - fsubr st(0),st(2)
+trove.exe+700FA1: DD 5E 30           - fstp qword ptr [esi+30]
+trove.exe+700FA4: DC 06              - fadd qword ptr [esi]
+trove.exe+700FA6: DD 1E              - fstp qword ptr [esi]
+trove.exe+700FA8: EB 04              - jmp trove.exe+700FAE
+}
+</AssemblerScript>
+                  <Hotkeys>
+                    <Hotkey>
+                      <Action>Toggle Activation</Action>
+                      <Keys>
+                        <Key>145</Key>
+                      </Keys>
+                      <ID>0</ID>
+                    </Hotkey>
+                  </Hotkeys>
+                </CheatEntry>
+              </CheatEntries>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>33</ID>
+              <Description>"Atk speed"</Description>
+              <ShowAsSigned>0</ShowAsSigned>
+              <Color>0000FF</Color>
+              <VariableType>4 Bytes</VariableType>
+              <Address>"trove.exe"+01013A10</Address>
+              <Offsets>
+                <Offset>1D8</Offset>
+                <Offset>2D4</Offset>
+                <Offset>C4</Offset>
+                <Offset>28</Offset>
+                <Offset>0</Offset>
+              </Offsets>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>35</ID>
+              <Description>"Atk speed"</Description>
+              <ShowAsSigned>0</ShowAsSigned>
+              <Color>0000FF</Color>
+              <VariableType>4 Bytes</VariableType>
+              <Address>"trove.exe"+01013A10</Address>
+              <Offsets>
+                <Offset>1D8</Offset>
+                <Offset>2D4</Offset>
+                <Offset>C4</Offset>
+                <Offset>28</Offset>
+                <Offset>18</Offset>
+              </Offsets>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>6356</ID>
+              <Description>"Atk speed (change max to 1)"</Description>
+              <Options moHideChildren="1"/>
+              <ShowAsSigned>0</ShowAsSigned>
+              <Color>0000FF</Color>
+              <VariableType>Float</VariableType>
+              <Address>trove.exe+C715D8</Address>
+              <CheatEntries>
+                <CheatEntry>
+                  <ID>6357</ID>
+                  <Description>" Change max to 1 ( D8 0D xx xx xx xx 8B E5 5D C3 D9 45 FC 8B E5 5D)"</Description>
+                  <GroupHeader>1</GroupHeader>
+                </CheatEntry>
+              </CheatEntries>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>340</ID>
+              <Description>"Player Size"</Description>
+              <ShowAsSigned>0</ShowAsSigned>
+              <Color>0000FF</Color>
+              <VariableType>Float</VariableType>
+              <Address>"trove.exe"+01013A10</Address>
+              <Offsets>
+                <Offset>D4</Offset>
+                <Offset>4</Offset>
+                <Offset>C4</Offset>
+                <Offset>28</Offset>
+                <Offset>18</Offset>
+              </Offsets>
+              <Hotkeys>
+                <Hotkey>
+                  <Action>Set Value</Action>
+                  <Keys>
+                    <Key>37</Key>
+                  </Keys>
+                  <Value>1.5</Value>
+                  <ID>0</ID>
+                </Hotkey>
+                <Hotkey>
+                  <Action>Toggle Activation</Action>
+                  <Keys>
+                    <Key>37</Key>
+                  </Keys>
+                  <ID>1</ID>
+                </Hotkey>
+                <Hotkey>
+                  <Action>Set Value</Action>
+                  <Keys>
+                    <Key>40</Key>
+                  </Keys>
+                  <Value>0.1</Value>
+                  <ID>2</ID>
+                </Hotkey>
+                <Hotkey>
+                  <Action>Activate</Action>
+                  <Keys>
+                    <Key>40</Key>
+                  </Keys>
+                  <ID>3</ID>
+                </Hotkey>
+                <Hotkey>
+                  <Action>Set Value</Action>
+                  <Keys>
+                    <Key>39</Key>
+                  </Keys>
+                  <Value>0.5</Value>
+                  <ID>4</ID>
+                </Hotkey>
+                <Hotkey>
+                  <Action>Deactivate</Action>
+                  <Keys>
+                    <Key>39</Key>
+                  </Keys>
+                  <ID>5</ID>
+                </Hotkey>
+              </Hotkeys>
+            </CheatEntry>
+          </CheatEntries>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>5281</ID>
+          <Description>"Actual Pointer Offset Trove"</Description>
+          <GroupHeader>1</GroupHeader>
+          <CheatEntries>
+            <CheatEntry>
+              <ID>6360</ID>
+              <Description>""trove.exe"+01013A10"</Description>
+              <Color>0000FF</Color>
+              <GroupHeader>1</GroupHeader>
+            </CheatEntry>
+          </CheatEntries>
+        </CheatEntry>
+      </CheatEntries>
+    </CheatEntry>
+  </CheatEntries>
+  <UserdefinedSymbols/>
+  <LuaScript>getAutoAttachList().add("trove.exe") --attach to trove
+
+function skip() --performs the skip
+  local xcoord=readFloat("[[[[[trove.exe+01013A10]+0]+28]+C4]+4]+60") --Loading in the current xyz coords
+  local ycoord=readFloat("[[[[[trove.exe+01013A10]+0]+28]+C4]+4]+64")
+  local zcoord=readFloat("[[[[[trove.exe+01013A10]+0]+28]+C4]+4]+68")
+  local xper=readFloat("[[[[[trove.exe+01013A10]+4]+24]+84]+0]+100")
+  local yper=readFloat("[[[[[trove.exe+01013A10]+4]+24]+84]+0]+104")
+  local zper=readFloat("[[[[[trove.exe+01013A10]+4]+24]+84]+0]+108")
+  local xadd=xper*3 --calculating distance to be traveled in each direction/currently this travels 3 blocks whichever direction you point, the 3 could be replaced with a differnt number or a variable
+  local yadd=yper*3
+  local zadd=zper*3
+  local xdest=xcoord+xadd --calculating the new xyz coords
+  local ydest=ycoord+yadd
+  local zdest=zcoord+zadd
+  writeFloat("[[[[[trove.exe+01013A10]+0]+28]+C4]+4]+60",xdest) --Writes speed values
+  writeFloat("[[[[[trove.exe+01013A10]+0]+28]+C4]+4]+64",ydest)
+  writeFloat("[[[[[trove.exe+01013A10]+0]+28]+C4]+4]+68",zdest)
+end
+
+lastSpeed=1;
+
+function checkKeys(timer)
+if (isKeyPressed(VK_E)) then if lastspeed ~= 2 then speedhack_setSpeed(2) lastSpeed=2 end
+else if lastspeed ~= 1 then speedhack_setSpeed(1) lastSpeed=1 end
+end
+
+end
+
+t=createTimer(nil)
+timer_setInterval(t, 100)
+timer_onTimer(t, checkKeys)
+timer_setEnabled(t, true)
+
+function sprint() --OP speedhack
+  if main.speedenable.checked == true then
+    local xper=readFloat("[[[[[trove.exe+01013A10]+4]+24]+84]+0]+100")
+    local yper=readFloat("[[[[[trove.exe+01013A10]+4]+24]+84]+0]+104")
+    local zper=readFloat("[[[[[trove.exe+01013A10]+4]+24]+84]+0]+108")
+    local xaccel=xper * main.speedf.text
+    local yaccel=yper * main.speedf.text
+    local zaccel=zper * main.speedf.text
+    writeFloat("[[[[[trove.exe+01013A10]+0]+28]+C4]+4]+90",xaccel)
+    writeFloat("[[[[[trove.exe+01013A10]+0]+28]+C4]+4]+94",yaccel)
+    writeFloat("[[[[[trove.exe+01013A10]+0]+28]+C4]+4]+98",zaccel)
+  end
+end
+
+function togglespeed() --speedhack toggle for hotkey
+  if main.speedenable.checked==true then
+    main.speedenable.checked=false
+  else
+    main.speedenable.checked=true
+  end
+end
+
+function jump() --boosts jumps for superjump
+  if main.superjump.checked==true then
+    writeFloat("[[[[[trove.exe+01013A10]+0]+28]+C4]+4]+94",15)
+  end
+end
+
+function float() --superjump without the jump
+    writeFloat("[[[[[trove.exe+01013A10]+0]+28]+C4]+4]+94",15)
+end
+
+function elockChange() --turns on and off energy lock script
+if main.elock.checked==false then
+  etimer.Enabled = false
+else
+    efreezeval = readFloat("[[[[[trove.exe+00F4B5FC]+50]+CC]+94]+38]+60")
+    etimers()
+end
+end
+
+function etimers() --energy lock timer
+etimer = createTimer(getMainForm(),true)
+timer_setInterval(etimer,100)
+timer_onTimer(etimer, setener)
+end
+
+function setener(sender) --sets energy value when energy lock timer ticks
+writeFloat("[[[[[trove.exe+00F4B5FC]+50]+CC]+94]+38]+60",efreezeval)
+end
+
+skipkey = createHotkey("skip",VK_3) --skip hotkey
+jumpkey = createHotkey("jump",VK_SPACE) --superjump hotkey
+speedokey = createHotkey("togglespeed",VK_CAPITAL) --speedhack on/off hotkey
+speedkey = createHotkey("sprint",VK_CAPITAL) --sprint hotkey
+
+function close() --on close for form
+closeCE()
+return caFree
+end
+
+main=createForm(true)
+main.borderstyle=bsToolWindow
+main.height=170
+main.width=156
+main.left=342
+main.top=115
+main.caption="Farm's Trainer"
+main.OnClose = close
+main.speedenable=createLabel(main)
+main.speedenable.caption=nil
+main.speedenable.checked=false
+main.speedenable.left=108
+main.speedenable.top=40
+main.jumptext=createLabel(main)
+main.jumptext.caption="Superjump"
+main.jumptext.left=28
+main.jumptext.top=5
+main.superjump=createCheckBox(main)
+main.superjump.caption=nil
+main.superjump.checked=false
+main.superjump.left=95
+main.superjump.top=5
+main.speedf=createEdit(main)
+main.speedf.text="25"
+main.speedf.left=95
+main.speedf.top=48
+main.speedf.width=28
+main.speedtexta=createLabel(main)
+main.speedtexta.caption="Acceleration Hold Caps Lock"
+main.speedtexta.left=1
+main.speedtexta.top=30
+main.speedtextb=createLabel(main)
+main.speedtextb.caption="Speed Set :"
+main.speedtextb.left=34
+main.speedtextb.top=50
+main.skiptext=createLabel(main)
+main.skiptext.caption="Skip Distance"
+main.skiptext.left=22
+main.skiptext.top=75
+main.skipdist=createEdit(main)
+main.skipdist.text="3"
+main.skipdist.left=100
+main.skipdist.top=75
+main.skipdist.width=24
+main.checkKeystexta=createLabel(main)
+main.checkKeystexta.caption="Speedhack.dll"
+main.checkKeystexta.left=15
+main.checkKeystexta.top=105
+main.checkKeys=createEdit(main)
+main.checkKeys.text="2.0"
+main.checkKeys.left=90
+main.checkKeys.top=103
+main.checkKeys.width=28
+main.capslocktexta=createLabel(main)
+main.capslocktexta.caption="Hold E"
+main.capslocktexta.left=45
+main.capslocktexta.top=122
+main.elocktext=createLabel(main)
+main.elocktext.caption="Energy Lock"
+main.elocktext.left=22
+main.elocktext.top=145
+main.elock=createCheckBox(main)
+main.elock.caption=nil
+main.elock.checked=false
+main.elock.left=94
+main.elock.top=143
+main.elock.OnChange=elockChange
+main.OnClose = close
+</LuaScript>
+</CheatTable>
