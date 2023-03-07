@@ -10,6 +10,7 @@ config := _Config(
     Map("Global",Map(
             "GameTitle","Trove.exe",
             "GamePath","",
+            "ConfigVersion","20230307134420",
         ),
         "Key",Map(
             ; "Press","e",
@@ -134,11 +135,12 @@ for key,value in Map(
 ; MainGui.Add("HotKey","vPressKey",config.data["Key"]["Press"])
 MainGui.Add("Text","xs w100 Section","钓鱼按键:")
 MainGui.Add("HotKey","ys w100 vFishKey ",config.data["Key"]["Fish"])
-MainGui.Add("Button","xs w200 vSaveBtn","保存")
+MainGui.Add("Button","xs w70 Section vSaveBtn","保存")
+MainGui.Add("Button","ys w130 vUpdateBtn","获取更新")
 
 ; 关于内容
 MainGui["Tab"].UseTab("关于")
-MainGui.Add("ActiveX","w100 h100 y+80 Center",
+MainGui.Add("ActiveX","w100 h100 y+50 Center",
     "mshtml:<img src='https://cdn.jsdelivr.net/gh/Angels-D/Angels-D.github.io/medias/avatar.jpg' style='width:100px;'/>")
 MainGui.Add("Text",,"作者: AnglesD 游戏ID: D_FairyTail")
 MainGui.Add("Text","cRed","本软件完全开源免费, 仅供学习使用！")
@@ -149,6 +151,7 @@ MainGui.Add("Link",,"
         公会推广: `n<a target="_blank" href="https://qm.qq.com/cgi-bin/qm/qr?k=vOppyOHhd2WOrA6jJ9Yd-qi8EZQvHjnk&jump_from=webapi">AshesWithoutFire[群号:423933990]</a>
     )"
 )
+MainGui.Add("Button","y+30 w200 h60 vDownloadBtn","最新版脚本下载")
 
 ; 绑定交互
 MainGui["GamePathBtn"].OnEvent("Click",GetGamePath)
@@ -158,6 +161,8 @@ MainGui["ModCfgsPathBtn"].OnEvent("Click",OpenModCfgsPath)
 MainGui["RefreshBtn"].OnEvent("Click",Refresh)
 MainGui["StartBtn"].OnEvent("Click",Start)
 MainGui["SaveBtn"].OnEvent("Click",Save)
+MainGui["UpdateBtn"].OnEvent("Click",Update)
+MainGui["DownloadBtn"].OnEvent("Click",DownloadExe)
 MainGui["SelectGame"].OnEvent("Change",SelectGame)
 MainGui["SelectAction"].OnEvent("Change",SelectAction)
 MainGui["Interval"].OnEvent("Change",Interval)
@@ -246,9 +251,19 @@ Save(GuiCtrlObj, Info){
         for key in data
             Try config.data[sect][key] := MainGui[key sect].Value
             Catch
-                config.data[sect][key] := MainGui[key].Value
+                Try config.data[sect][key] := MainGui[key].Value
     }
     config.Save()
+}
+Update(GuiCtrlObj, Info){
+    Try config.Update("https://github.com/Angels-D/TroveAuto/releases/latest/download/config.ini")
+    Catch
+        MsgBox("更新失败, 请检查网络连接")
+}
+DownloadExe(GuiCtrlObj, Info){
+    Try Download("https://github.com/Angels-D/TroveAuto/releases/latest/download/TroveAuto.exe","Trove辅助.exe")
+    Catch
+        MsgBox("下载失败, 请检查网络连接")
 }
 SelectGame(GuiCtrlObj, Info){
     MainGui["SelectAction"].Text := Game.Lists[GuiCtrlObj.Text].action
@@ -346,6 +361,16 @@ class _Config{
             for key,value in data
                 IniWrite(this.data[sect][key],path,sect,key)
     }
+    Update(url){
+        Download(url,TempPath := A_Temp "\TroveAutoConfig.ini")
+        if((NewVersion := IniRead(TempPath,"Global","ConfigVersion")) > 
+            (OldVersion := this.data["Global"]["ConfigVersion"])){
+            this.Load(TempPath)
+            MsgBox(Format("版本 {1} => {2} 已完成",OldVersion,NewVersion))
+        }
+        else
+            MsgBox("当前已是最新版本")
+    }
 }
 
 ; Game Class
@@ -417,6 +442,7 @@ class Game{
                 Sleep(Random(66, 122))
             }
             Running(Pid,FishKey,Interval,Take_Address,State_Address){
+                Flag := True
                 Loop{
                     Sleep(Interval)
                     TakeFlag := False
@@ -431,16 +457,16 @@ class Game{
                         ;     Sleep(100)
                         ; }
                         NatualPress(FishKey,Pid)
-                        Flag := true
+                        Flag := True
                     }
                     if (TakeFlag) {
                         if (Flag) {
                             Sleep(1000)
-                            Flag := false
+                            Flag := False
                         }
                         else {
                             NatualPress(FishKey,Pid)
-                            Flag := true
+                            Flag := True
                         }
                     }
                 }
