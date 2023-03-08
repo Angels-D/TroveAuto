@@ -10,25 +10,25 @@ config := _Config(
     Map("Global",Map(
             "GameTitle","Trove.exe",
             "GamePath","",
-            "ConfigVersion","20230307134420",
+            "ConfigVersion","20230308095600",
         ),
         "Key",Map(
             ; "Press","e",
             "Fish","f",
         ),
         "Address",Map(
-            "Attack","0xAED288",
-            "Dismount","0x42D6EE",
-            "Mining","0x9C3F78",
-            "MiningGeode","0x972147",
-            "Breakblocks","0x9763C3",
-            "Map","0x9F3E9D",
-            "Zoom","0x8DE6E6",
-            "ClipCam","0x8E077A",
-            "LockCam","0xACC295",
-            "Animation","0x7F7155",
-            "Fish","0x117B02C",
-            "Name","0x11821FC",
+            "Attack","0xA3C3E8",
+            "Dismount","0x35705E",
+            "Mining","0xAB8318",
+            "MiningGeode","0xB59387",
+            "Breakblocks","0xB30BA3",
+            "Map","0xBC1BFD",
+            "Zoom","0xB96D86",
+            "ClipCam","0xB98DCA",
+            "LockCam","0x9F0F45",
+            "Animation","0x7F6FE5",
+            "Fish","0x117BB04",
+            "Name","0x11855FC",
             ; "TP","",
         ),
         "Address_Offset",Map(
@@ -256,12 +256,19 @@ Save(GuiCtrlObj, Info){
     config.Save()
 }
 Update(GuiCtrlObj, Info){
-    Try config.Update("https://github.com/Angels-D/TroveAuto/releases/latest/download/config.ini")
+    Try{
+        config.Update("https://github.com/Angels-D/TroveAuto/releases/latest/download/config.ini")
+        MainGui.Add("Text","x+50 w100 Section","游戏标题:")
+        MainGui["GameTitle"].Text := config.data["Global"]["GameTitle"]
+        for sect in ["Address","Key"]
+            for key,value in config.data[sect]
+                MainGui[key sect].Text := config.data[sect][key]
+    }
     Catch
         MsgBox("更新失败, 请检查网络连接")
 }
 DownloadExe(GuiCtrlObj, Info){
-    Try Download("https://github.com/Angels-D/TroveAuto/releases/latest/download/TroveAuto.exe","Trove辅助.exe")
+    Try Download("https://github.com/Angels-D/TroveAuto/releases/latest/download/TroveAuto.exe","Trove辅助" A_Now ".exe")
     Catch
         MsgBox("下载失败, 请检查网络连接")
 }
