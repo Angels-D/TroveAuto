@@ -10,25 +10,26 @@ config := _Config(
     Map("Global",Map(
             "GameTitle","Trove.exe",
             "GamePath","",
-            "ConfigVersion","20230308095600",
+            "ConfigVersion","20230423165400",
+            "AppVersion","20230423165400",
         ),
         "Key",Map(
             ; "Press","e",
             "Fish","f",
         ),
         "Address",Map(
-            "Attack","0xA3C3E8",
-            "Dismount","0x35705E",
-            "Mining","0xAB8318",
-            "MiningGeode","0xB59387",
-            "Breakblocks","0xB30BA3",
-            "Map","0xBC1BFD",
-            "Zoom","0xB96D86",
-            "ClipCam","0xB98DCA",
-            "LockCam","0x9F0F45",
+            "Attack","0x877A38",
+            "Dismount","0x371F1E",
+            "Mining","0x871478",
+            "MiningGeode","0x8DE947",
+            "Breakblocks","0x8CA9A3",
+            "Map","0xAE683D",
+            "Zoom","0xB03EA6",
+            "ClipCam","0xB05F0A",
+            "LockCam","0x8235F5",
             "Animation","0x7F6FE5",
-            "Fish","0x117BB04",
-            "Name","0x11855FC",
+            "Fish","0x1035E94",
+            "Name","0x10411E8",
             ; "TP","",
         ),
         "Address_Offset",Map(
@@ -106,7 +107,11 @@ for key,value in Map(
     )
     MainGui.Add("CheckBox",(Mod(A_Index,2)?"xs Section":"ys") " w130 v" key,value)
 MainGui.Add("Text","xs w70 Section","按键设置:")
-MainGui.Add("Hotkey","ys w130 vAutoBtn_Key")
+MainGui.Add("Hotkey","ys w40 vAutoBtn_Key_1")
+MainGui.Add("Hotkey","ys w40 vAutoBtn_Key_2")
+MainGui.Add("Hotkey","ys w40 vAutoBtn_Key_3")
+MainGui.Add("CheckBox","xs Section w130 vAutoBtn_Key_Click_LEFT","自动左击")
+MainGui.Add("CheckBox","ys w130 vAutoBtn_Key_Click_RIGHT","自动右击")
 ; MainGui.Add("Text",,"文本内容:")
 ; MainGui.Add("Hotkey","vAutoCall_Text")
 
@@ -166,7 +171,11 @@ MainGui["DownloadBtn"].OnEvent("Click",DownloadExe)
 MainGui["SelectGame"].OnEvent("Change",SelectGame)
 MainGui["SelectAction"].OnEvent("Change",SelectAction)
 MainGui["Interval"].OnEvent("Change",Interval)
-MainGui["AutoBtn_Key"].OnEvent("Change",AutoBtn_Key)
+MainGui["AutoBtn_Key_1"].OnEvent("Change",AutoBtn_Key_1)
+MainGui["AutoBtn_Key_2"].OnEvent("Change",AutoBtn_Key_2)
+MainGui["AutoBtn_Key_3"].OnEvent("Change",AutoBtn_Key_3)
+MainGui["AutoBtn_Key_Click_LEFT"].OnEvent("Click",AutoBtn_Key_Click_LEFT)
+MainGui["AutoBtn_Key_Click_RIGHT"].OnEvent("Click",AutoBtn_Key_Click_RIGHT)
 ; MainGui["AutoCall_Text"].OnEvent("Change",AutoCall_Text)
 for key in ["Attack","Dismount","Mining","MiningGeode"
         ,"Breakblocks","Map","Zoom","ClipCam","LockCam","Animation"]
@@ -204,11 +213,13 @@ Refresh(GuiCtrlObj := unset, Info := unset){
     Game.GetID()
     for key in ["Attack","Dismount","Mining","MiningGeode"
         ,"Breakblocks","Map","Zoom","ClipCam","LockCam","Animation"
-        ,"AutoBtn_Key","Interval","SelectAction","StartBtn"] ; AutoPress AutoCall_Text
+        ,"AutoBtn_Key_1","AutoBtn_Key_2","AutoBtn_Key_3","AutoBtn_Key_Click_LEFT","AutoBtn_Key_Click_RIGHT"
+        ,"Interval","SelectAction","StartBtn"] ; AutoPress AutoCall_Text
         MainGui[key].Enabled := False
     for key in ["Attack","Dismount","Mining","MiningGeode"
         ,"Breakblocks","Map","Zoom","ClipCam","LockCam","Animation"
-        ,"AutoBtn_Key","Interval","SelectAction","SelectGame"] ; AutoPress AutoCall_Text
+        ,"AutoBtn_Key_1","AutoBtn_Key_2","AutoBtn_Key_3","AutoBtn_Key_Click_LEFT","AutoBtn_Key_Click_RIGHT"
+        ,"Interval","SelectAction","SelectGame"] ; AutoPress AutoCall_Text
         Try MainGui[key].Value := ""
         Catch
             MainGui[key].Value := 0
@@ -225,7 +236,8 @@ Start(GuiCtrlObj, Info){
             ; MainGui["AutoPress"].Enabled := True
             Func()
         Default:
-            MainGui["AutoBtn_Key"].Enabled := True
+            for key in ["AutoBtn_Key_1","AutoBtn_Key_2","AutoBtn_Key_3","AutoBtn_Key_Click_LEFT","AutoBtn_Key_Click_RIGHT"]
+                MainGui[key].Enabled := True
             SetTimer(Func,False)
         }
     }
@@ -239,7 +251,8 @@ Start(GuiCtrlObj, Info){
             ; MainGui["AutoPress"].Enabled := False
             Func()
         Default:
-            MainGui["AutoBtn_Key"].Enabled := False
+            for key in ["AutoBtn_Key_1","AutoBtn_Key_2","AutoBtn_Key_3","AutoBtn_Key_Click_LEFT","AutoBtn_Key_Click_RIGHT"]
+                MainGui[key].Enabled := False
             SetTimer(Func,MainGui["Interval"].Value)
         }
     }
@@ -286,16 +299,18 @@ SelectAction(GuiCtrlObj, Info := unset){
         MainGui[key].Enabled := True
         MainGui[key].Value := Game.Lists[MainGui["SelectGame"].Text].setting["Features"][key]
     }
-    for key in ["AutoBtn_Key"] ; AutoPress AutoCall_Text
+    for key in ["AutoBtn_Key_1","AutoBtn_Key_2","AutoBtn_Key_3","AutoBtn_Key_Click_LEFT","AutoBtn_Key_Click_RIGHT"] ; AutoPress AutoCall_Text
         MainGui[key].Enabled := False
-    MainGui["AutoBtn_Key"].Value := Game.Lists[MainGui["SelectGame"].Text].setting["AutoBtn"]["key"]
+    for key in ["Key_1","Key_2","Key_3","Key_Click_LEFT","Key_Click_RIGHT"]
+        MainGui["AutoBtn_" key].Value := Game.Lists[MainGui["SelectGame"].Text].setting["AutoBtn"][key]
     ; MainGui["AutoCall_Text"].Value := Game.Lists[MainGui["SelectGame"].Text].setting["AutoCall_Text"]["text"]
     Switch GuiCtrlObj.Text {
     Case "自动按键":
         Game.Lists[MainGui["SelectGame"].Text].Func := ObjBindMethod(Game.Lists[MainGui["SelectGame"].Text], "AutoBtn")
         MainGui["Interval"].Value := Game.Lists[MainGui["SelectGame"].Text].setting["AutoBtn"]["interval"]
         If(!Game.Lists[MainGui["SelectGame"].Text].running) 
-            MainGui["AutoBtn_Key"].Enabled := True
+            for key in ["AutoBtn_Key_1","AutoBtn_Key_2","AutoBtn_Key_3","AutoBtn_Key_Click_LEFT","AutoBtn_Key_Click_RIGHT"]
+                MainGui[key].Enabled := True
     Case "钓鱼":
         Game.Lists[MainGui["SelectGame"].Text].Func := ObjBindMethod(Game.Lists[MainGui["SelectGame"].Text], "AutoFish")
         MainGui["Interval"].Value := Game.Lists[MainGui["SelectGame"].Text].setting["Fish"]["interval"]
@@ -340,8 +355,20 @@ Interval(GuiCtrlObj, Info){
         ;     [Game.Lists[MainGui["SelectGame"].Text].setting["AutoCall"]["Interval"] := Interval
     } 
 }
-AutoBtn_Key(GuiCtrlObj, Info){
-    Game.Lists[MainGui["SelectGame"].Text].setting["AutoBtn"]["key"] := GuiCtrlObj.Value
+AutoBtn_Key_1(GuiCtrlObj, Info){
+    Game.Lists[MainGui["SelectGame"].Text].setting["AutoBtn"]["Key_1"] := GuiCtrlObj.Value
+}
+AutoBtn_Key_2(GuiCtrlObj, Info){
+    Game.Lists[MainGui["SelectGame"].Text].setting["AutoBtn"]["Key_2"] := GuiCtrlObj.Value
+}
+AutoBtn_Key_3(GuiCtrlObj, Info){
+    Game.Lists[MainGui["SelectGame"].Text].setting["AutoBtn"]["Key_3"] := GuiCtrlObj.Value
+}
+AutoBtn_Key_Click_LEFT(GuiCtrlObj, Info){
+    Game.Lists[MainGui["SelectGame"].Text].setting["AutoBtn"]["Key_Click_LEFT"] := GuiCtrlObj.Value
+}
+AutoBtn_Key_Click_RIGHT(GuiCtrlObj, Info){
+    Game.Lists[MainGui["SelectGame"].Text].setting["AutoBtn"]["Key_Click_RIGHT"] := GuiCtrlObj.Value
 }
 ; AutoCall_Text(GuiCtrlObj, Info){
 ;     Game.Lists[MainGui["SelectGame"].Text].setting["AutoCall_Text"]["Text"] := GuiCtrlObj.Text
@@ -357,6 +384,10 @@ class _Config{
     }
     Load(path := unset){
         path := IsSet(path) ? path : this.path
+        if((NewConfigVersion := IniRead(path,"Global","ConfigVersion",this.data["Global"]["ConfigVersion"])) < 
+            (OldConfigVersion := this.data["Global"]["ConfigVersion"])){
+            MsgBox(Format("警告: 配置文件非最新版本 {1} => {2}",OldConfigVersion,NewConfigVersion))
+        }
         for sect,data in this.data
             for key,value in data
                 this.data[sect][key] := IniRead(
@@ -370,10 +401,13 @@ class _Config{
     }
     Update(url){
         Download(url,TempPath := A_Temp "\TroveAutoConfig.ini")
-        if((NewVersion := IniRead(TempPath,"Global","ConfigVersion")) > 
-            (OldVersion := this.data["Global"]["ConfigVersion"])){
+        if((NewConfigVersion := IniRead(TempPath,"Global","ConfigVersion")) > 
+            (OldConfigVersion := this.data["Global"]["ConfigVersion"])){
+            NewAppVersion := IniRead(TempPath,"Global","AppVersion")
+            OldAppVersion := this.data["Global"]["AppVersion"]
             this.Load(TempPath)
-            MsgBox(Format("版本 {1} => {2} 已完成",OldVersion,NewVersion))
+            MsgBox(Format("配置版本 {1} => {2} 已完成{3}",OldConfigVersion,NewConfigVersion,
+                NewAppVersion > OldAppVersion?Format("`n警告: 程序本体存在最新版本 {1} => {2}",OldAppVersion,NewAppVersion):""))
         }
         else
             MsgBox("当前已是最新版本")
@@ -394,7 +428,11 @@ class Game{
         ),
         "AutoBtn",Map(
             "interval","10000",
-            "key","End",
+            "Key_1","End",
+            "Key_2","",
+            "Key_3","",
+            "Key_Click_LEFT",false,
+            "Key_Click_RIGHT",false,
         ),
         ; "AutoCall",Map(
         ;     "interval","5000",
@@ -420,7 +458,15 @@ class Game{
         this.Func := ObjBindMethod(this, "AutoBtn")
     }
     AutoBtn(){
-        this.NatualPress(this.setting["AutoBtn"]["key"])
+        for key in [1,2,3]
+            if(this.setting["AutoBtn"]["Key_" key])
+                this.NatualPress(this.setting["AutoBtn"]["Key_" key])
+        for key in ["LEFT","RIGHT"]
+            if(this.setting["AutoBtn"]["Key_Click_" key])
+                if(WinGetPID("A") != this.pid)
+                    ControlClick(,"ahk_pid " this.pid,,key,,"NA")
+                else
+                    Click(key)
     }
     ; AutoCall(){
     ;     this.NatualPress("Enter")
