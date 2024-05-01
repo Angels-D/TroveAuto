@@ -10,26 +10,26 @@ config := _Config(
     Map("Global",Map(
             "GameTitle","Trove.exe",
             "GamePath","",
-            "ConfigVersion","20230423165400",
-            "AppVersion","20230423165400",
+            "ConfigVersion","20240415171000",
+            "AppVersion","20240415171000",
         ),
         "Key",Map(
             ; "Press","e",
             "Fish","f",
         ),
         "Address",Map(
-            "Attack","0x877A38",
-            "Dismount","0x371F1E",
-            "Mining","0x871478",
-            "MiningGeode","0x8DE947",
-            "Breakblocks","0x8CA9A3",
-            "Map","0xAE683D",
-            "Zoom","0xB03EA6",
-            "ClipCam","0xB05F0A",
-            "LockCam","0x8235F5",
-            "Animation","0x7F6FE5",
-            "Fish","0x1035E94",
-            "Name","0x10411E8",
+            "Attack","0xA5BAF8",
+            "Dismount","0x339FBE",
+            "Mining","0xA9BD78",
+            "MiningGeode","0x953A97",
+            "Breakblocks","0xA151D3",
+            "Map","0x87E69D",
+            "Zoom","0x923BD6",
+            "ClipCam","0x925C5A",
+            "LockCam","0x8CEDE5",
+            "Animation","0x73D255",
+            "Fish","0x107BE14",
+            "Name","0x1087C48",
             ; "TP","",
         ),
         "Address_Offset",Map(
@@ -73,7 +73,7 @@ MainGui.Add("Text","xs w200","说明: 当前使用Steam打开游戏会强制绑�
 MainGui.Add("Button","w200 vModsPathBtn","Mods文件夹")
 MainGui.Add("Link","w200","
     (
-        说明: 本游戏支持模组, 可通过各公会群和Steam创意工坊等渠道下载, Mod制作可使用
+        说明: 本游戏支持模组, 可通过各公会群和Steam创意工坊等渠道下载, Mod制作或下载可使用
         <a href="https://github.com/DazoTrove/TroveTools.NET/">TroveTools.NET</a>等工具
     )"
 )
@@ -269,27 +269,35 @@ Save(GuiCtrlObj, Info){
     config.Save()
 }
 Update(GuiCtrlObj, Info){
-    Try{
-        config.Update("https://github.com/Angels-D/TroveAuto/releases/latest/download/config.ini")
+    Source := "https://github.com/Angels-D/TroveAuto/releases/latest/download/config.ini"
+    Mirror := "https://gh.api.99988866.xyz/" Source
+    if(config.Update(Mirror) Or config.Update(Source)){
         MainGui.Add("Text","x+50 w100 Section","游戏标题:")
         MainGui["GameTitle"].Text := config.data["Global"]["GameTitle"]
         for sect in ["Address","Key"]
             for key,value in config.data[sect]
                 MainGui[key sect].Text := config.data[sect][key]
     }
-    Catch
-        MsgBox("更新失败, 请检查网络连接")
+    else MsgBox("更新失败, 请检查网络连接")
+
 }
 DownloadExe(GuiCtrlObj, Info){
-    Try Download("https://github.com/Angels-D/TroveAuto/releases/latest/download/TroveAuto.exe","Trove辅助" A_Now ".exe")
-    Catch
-        MsgBox("下载失败, 请检查网络连接")
+    Source := "https://github.com/Angels-D/TroveAuto/releases/latest/download/TroveAuto.exe"
+    Mirror := "https://gh.api.99988866.xyz/" Source
+    try Download(Mirror,"Trove辅助" A_Now ".exe")
+    catch
+        try Download(Source,"Trove辅助" A_Now ".exe")
+        catch 
+            MsgBox("下载失败, 请检查网络连接")
+        else MsgBox("应用下载成功, 请打开最新版本")
+    else MsgBox("应用下载成功, 请打开最新版本")
 }
 SelectGame(GuiCtrlObj, Info){
     MainGui["SelectAction"].Text := Game.Lists[GuiCtrlObj.Text].action
     MainGui["StartBtn"].Text := Game.Lists[GuiCtrlObj.Text].running ? "关闭":"启动"
-    for key in ["SelectAction","Interval","StartBtn"]
+    for key in ["SelectAction","Interval"]
         MainGui[key].Enabled := !Game.Lists[GuiCtrlObj.Text].running
+    MainGui["StartBtn"].Enabled := True
     SelectAction(MainGui["SelectAction"])
 }
 SelectAction(GuiCtrlObj, Info := unset){
@@ -400,17 +408,21 @@ class _Config{
                 IniWrite(this.data[sect][key],path,sect,key)
     }
     Update(url){
-        Download(url,TempPath := A_Temp "\TroveAutoConfig.ini")
-        if((NewConfigVersion := IniRead(TempPath,"Global","ConfigVersion")) > 
-            (OldConfigVersion := this.data["Global"]["ConfigVersion"])){
-            NewAppVersion := IniRead(TempPath,"Global","AppVersion")
-            OldAppVersion := this.data["Global"]["AppVersion"]
-            this.Load(TempPath)
-            MsgBox(Format("配置版本 {1} => {2} 已完成{3}",OldConfigVersion,NewConfigVersion,
-                NewAppVersion > OldAppVersion?Format("`n警告: 程序本体存在最新版本 {1} => {2}",OldAppVersion,NewAppVersion):""))
+        Try {
+            Download(url,TempPath := A_Temp "\TroveAutoConfig.ini")
+            if((NewConfigVersion := IniRead(TempPath,"Global","ConfigVersion")) > 
+                (OldConfigVersion := this.data["Global"]["ConfigVersion"])){
+                NewAppVersion := IniRead(TempPath,"Global","AppVersion")
+                OldAppVersion := this.data["Global"]["AppVersion"]
+                this.Load(TempPath)
+                MsgBox(Format("配置版本 {1} => {2} 已完成{3}",OldConfigVersion,NewConfigVersion,
+                    NewAppVersion > OldAppVersion?Format("`n警告: 程序本体存在最新版本 {1} => {2}",OldAppVersion,NewAppVersion):""))
+            }
+            else MsgBox("当前已是最新版本")
         }
-        else
-            MsgBox("当前已是最新版本")
+        Catch
+            Return False
+        Else Return True
     }
 }
 
@@ -463,10 +475,11 @@ class Game{
                 this.NatualPress(this.setting["AutoBtn"]["Key_" key])
         for key in ["LEFT","RIGHT"]
             if(this.setting["AutoBtn"]["Key_Click_" key])
-                if(WinGetPID("A") != this.pid)
-                    ControlClick(,"ahk_pid " this.pid,,key,,"NA")
-                else
-                    Click(key)
+                Try{
+                    if(WinGetPID("A") != this.pid)
+                        ControlClick(,"ahk_pid " this.pid,,key,,"NA")
+                    else Click(key)
+                }
     }
     ; AutoCall(){
     ;     this.NatualPress("Enter")
