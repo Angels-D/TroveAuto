@@ -4,21 +4,22 @@
   <UserdefinedSymbols/>
   <LuaScript>getAutoAttachList().add("Trove.exe")
 
-function result(skill,data,offset)
-  print(string.format("%s %X",skill,tonumber(AOBScan(data, "+X-C-W").getText(),16) - BaseAddress + offset))
+function result(skill,data,offset,model)
+  print(string.format("%s %X",skill,tonumber(AOBScan(data, model).getText(),16) - BaseAddress + offset))
 end
 
 BaseAddress = getAddress("Trove.exe")
 
-result("隐藏特效","F3 0F 11 44 24 24 F3 0F 58 84 24 80 00 00 00 50 F3 0F 11 43 24 E8 XX XX XX XX 8D 44 24 34 50",3)
-result("自动攻击","DF F1 DD D8 72 1F",1)
-result("打破障碍","80 7F xx 00 0F 84 xx xx xx xx 8B 4B 08 E8 xx xx xx xx FF 75 0C 8B 4D 10 8B F0 FF 75 08 8B 45 14 83 EC 0C 8B 3E 8B D4 6A 01 89 0A 8B CE 89 42 04 8B 45 18",3)
-result("视角遮挡","0F 29 01 C7 41 34 00 00 00 00 0F",0)
-result("保持骑乘","74 XX 8B 07 8B CF 6A 00 6A 00 FF 50 60",0)
-result("视角固定","74 05 8B 01 FF 50 0C 8B E5",0)
-result("地图放大","77 XX B8 XX XX XX XX F3 0F 10 08 F3 0F 11 89 XX XX XX XX 8B 89 A8 00 00 00 85 C9 74 XX",0)
-result("快速挖矿","DF F1 DD D8 72 61",1)
-result("快速挖矿（晶洞）","DF F1 DD D8 72 35 8D",1)
-result("视野放大","F3 0F 11 5F 2C",3)
+result("隐藏特效","F3 0F 11 44 24 24 F3 0F 58 84 24 80 00 00 00 50 F3 0F 11 43 24 E8 XX XX XX XX 8D 44 24 34 50",3,"+X-C-W")
+result("自动攻击","DF F1 DD D8 72 1F",1,"+X-C-W")
+result("打破障碍","80 7F xx 00 0F 84 xx xx xx xx 8B 4B 08 E8 xx xx xx xx FF 75 0C 8B 4D 10 8B F0 FF 75 08 8B 45 14 83 EC 0C 8B 3E 8B D4 6A 01 89 0A 8B CE 89 42 04 8B 45 18",3,"+X-C-W")
+result("视角遮挡","0F 29 01 C7 41 34 00 00 00 00 0F",0,"+X-C-W")
+result("保持骑乘","74 XX 8B 07 8B CF 6A 00 6A 00 FF 50",0,"+X-C-W")
+result("钓鱼地址","10 14 XX 04 00 00 00 00 FF",0,"-X-C+W")
+result("视角固定","74 05 8B 01 FF 50 0C 8B E5",0,"+X-C-W")
+result("地图放大","77 XX B8 XX XX XX XX F3 0F 10 08 F3 0F 11 89 XX XX XX XX 8B 89",0,"+X-C-W")
+result("快速挖矿","DF F1 DD D8 72 61",1,"+X-C-W")
+result("快速挖矿（晶洞）","DF F1 DD D8 72 35 8D",1,"+X-C-W")
+result("视野放大","F3 0F 11 5F 2C",3,"+X-C-W")
 </LuaScript>
 </CheatTable>
