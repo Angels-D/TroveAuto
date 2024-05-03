@@ -1,8 +1,12 @@
+;@Ahk2Exe-UpdateManifest 2
+;@Ahk2Exe-SetName TroveAuto
+;@Ahk2Exe-SetProductVersion 2.2.0
+;@Ahk2Exe-SetCopyright GPL-3.0 license
 ;@Ahk2Exe-SetLanguage Chinese_PRC
 ;@Ahk2Exe-SetMainIcon Trove辅助.ico
-;@Ahk2Exe-UpdateManifest 2
+;@Ahk2Exe-SetDescription Trove自动脚本`, 解放双手
 #SingleInstance Prompt
-; #NoTrayIcon
+
 SetTitleMatchMode("RegEx")
 
 config := _Config(
@@ -10,8 +14,8 @@ config := _Config(
     Map("Global",Map(
             "GameTitle","Trove.exe",
             "GamePath","",
-            "ConfigVersion","20240503103000",
-            "AppVersion","20240503103000",
+            "ConfigVersion","20240504033000",
+            "AppVersion","20240504033000",
         ),
         "HoldTime",Map("Value","3000",),
         "RestartTime",Map("Value","5000",),
@@ -164,8 +168,8 @@ MainGui.Add("Button","ys w130 vUpdateBtn","获取更新")
 
 ; 关于内容
 MainGui["Tab"].UseTab("关于")
-MainGui.Add("ActiveX","w100 h100 y+50 Center",
-    "mshtml:<img src='https://cdn.jsdelivr.net/gh/Angels-D/Angels-D.github.io/medias/avatar.jpg' style='width:100px;'/>")
+MainGui.Add("ActiveX","w150 h150 y+50 Center",
+    "mshtml:<img src='https://cdn.jsdelivr.net/gh/Angels-D/Angels-D.github.io/medias/avatar.jpg' style='width:150px;'/>")
 MainGui.Add("Text",,"作者: AnglesD 游戏ID: D_FairyTail")
 MainGui.Add("Text","cRed","本软件完全开源免费, 仅供学习使用！")
 MainGui.Add("Link",,"
@@ -178,6 +182,7 @@ MainGui.Add("Link",,"
 MainGui.Add("Button","y+30 w200 h60 vDownloadBtn","最新版脚本下载")
 
 ; 绑定交互
+MainGui.OnEvent("Close", Close, -1)
 MainGui["GamePathBtn"].OnEvent("Click",GetGamePath)
 MainGui["GameStartBtn"].OnEvent("Click",GameStart)
 MainGui["ModsPathBtn"].OnEvent("Click",OpenModsPath)
@@ -206,10 +211,29 @@ for key in ["Attack","Dismount","Mining","MiningGeode"
         ,"Breakblocks","Map","Zoom","ClipCam","LockCam","Animation"]
     MainGui[key].OnEvent("Click",Features)
 
-Reset()
-MainGui.Show()
+; 托盘图标
+A_TrayMenu.Delete()
+A_TrayMenu.Add("显示",(ItemName, ItemPos, MyMenu){
+    MainGui.Show()
+})
+A_TrayMenu.Add("重新启动",(ItemName, ItemPos, MyMenu){
+    Reload
+})
+A_TrayMenu.Add("退出",(ItemName, ItemPos, MyMenu){
+    ExitApp
+})
 
 ; 交互函数
+Close(thisGui) {
+    Result := MsgBox("是: 关闭脚本`n否: 最小化到托盘", ,3)
+    Switch Result {
+    case "Yes":
+        ExitApp
+    case "No":
+    default:
+        return true
+    }
+}
 GetGamePath(GuiCtrlObj, Info){
     try{
         GamePath := WinGetProcessPath("ahk_exe i)" config.data["Global"]["GameTitle"] "|Glyph.*")
@@ -508,6 +532,7 @@ class Game{
     GetBase(id){
         this.id := id
         this.pid := WingetPID("ahk_id " id)
+        this.ProcessHandle := DllCall("OpenProcess", "Int", 0x38, "Char", 0, "UInt", this.pid, "UInt")
         this.BaseaAddress := this.getProcessBaseAddress(id)
         for key in ["Water","Lava","Choco","Plasma"] {
             this.setting["Fish"]["take_address"][key] := this.GetAddressOffset(
@@ -541,10 +566,10 @@ class Game{
         ThreadAHK := Format("
         (
             #NoTrayIcon
-            ReadMemoryINT(MADDRESS,PID) {
+            STOP := false
+            ReadMemoryINT(MADDRESS,PID,ProcessHandle) {
                 MVALUE := Buffer(4,0)
-                ProcessHandle := DllCall("OpenProcess", "Int", 24, "Char", 0, "UInt", PID, "UInt")
-                DllCall("ReadProcessMemory", "UInt", ProcessHandle, "Ptr", MADDRESS, "Ptr", MVALUE, "UInt", 4)
+                try DllCall("ReadProcessMemory", "UInt", ProcessHandle, "Ptr", MADDRESS, "Ptr", MVALUE, "UInt", 4)
                 Return NumGet(Mvalue,"Int")
             }
             NatualPress(npbtn,pid) {
@@ -553,16 +578,17 @@ class Game{
                 ControlSend("{" npbtn " up}",, "ahk_pid " pid)
                 Sleep(Random(66, 122))
             }
-            Running(Pid,FishKey,Interval,Take_Address,State_Address){
+            Running(Pid,FishKey,Interval,Take_Address,State_Address,ProcessHandle){
+                Global STOP
                 Flag := true
                 Loop{
                     Sleep(Interval)
                     TakeFlag := false
                     StateFlag := false
                     for key in Take_Address
-                        TakeFlag |= ReadMemoryINT(key,Pid)
+                        TakeFlag |= ReadMemoryINT(key,Pid,ProcessHandle)
                     for key in State_Address
-                        StateFlag |= ReadMemoryINT(key,Pid)
+                        StateFlag |= ReadMemoryINT(key,Pid,ProcessHandle)
                     if(!StateFlag) {
                         NatualPress(FishKey,Pid)
                         Flag := true
@@ -577,14 +603,13 @@ class Game{
                             Flag := true
                         }
                     }
-                }
+                }until(STOP)
             }
-            Running({1},"{2}",{3},[{4}],[{5}])
-        )"
-            ,this.pid,config.data["Key"]["Fish"],this.setting["Fish"]["interval"],Take_Address,State_Address)
-        try this.thread.ahkTerminate()
+            Running({1},"{2}",{3},[{4}],[{5}],{6})
+        )",this.pid,config.data["Key"]["Fish"],this.setting["Fish"]["interval"],Take_Address,State_Address,this.ProcessHandle)
+        try this.thread["STOP"] := true
         if (this.running)
-            this.thread := NewThread(ThreadAHK)
+            this.thread := Worker(ThreadAHK)
     }
     AutoRestart(){
         if not WinExist("ahk_id " this.id){
@@ -671,7 +696,8 @@ class Game{
         this.running := false
         Func := this.Func
         SetTimer(Func,false)
-        try this.thread.ahkTerminate()
+        try this.thread["STOP"] := true
+        DllCall("CloseHandle", "int", this.ProcessHandle)
         if keepStatus 
             this.running := running
     }
@@ -695,25 +721,26 @@ class Game{
         Return DllCall( A_PtrSize = 4 ? "GetWindowLong" : "GetWindowLongPtr" , "Ptr", id , "Int", -6 , "Int64")
     }
     ReadMemory(Maddress,Readtype,Len := unset) {
-        ProcessHandle := DllCall("OpenProcess", "Int", 24, "Char", 0, "UInt", this.pid, "UInt")
         if(Readtype == "Int"){
             Len := IsSet(Len)?Len:4
             Mvalue := Buffer(Len,0)
-            DllCall("ReadProcessMemory", "UInt", ProcessHandle, "Ptr", Maddress, "Ptr", Mvalue, "UInt", Len)
+            try DllCall("ReadProcessMemory", "UInt", this.ProcessHandle, "Ptr", Maddress, "Ptr", Mvalue, "UPtr", Len)
             Return NumGet(Mvalue,"Int")
         }
         else if(Readtype == "Str"){
             Len := IsSet(Len)?Len:15
             Mvalue := Buffer(Len,0)
-            ProcessHandle := DllCall("OpenProcess", "Int", 24, "Char", 0, "UInt", this.pid, "UInt")
-            DllCall("ReadProcessMemory", "UInt", ProcessHandle, "Ptr", Maddress, "Ptr", Mvalue, "UInt", Len)
+            DllCall("ReadProcessMemory", "UInt", this.ProcessHandle, "Ptr", Maddress, "Ptr", Mvalue, "UPtr", Len)
             Return StrGet(Mvalue,"utf-8")
         }
         throw ValueError("错误的读取类型", -1, Readtype)
     }
     WriteMemory(Address,Value,Len) {
         Mvalue := Buffer(Len, Value)
-        ProcessHandle := DllCall("OpenProcess", "Int", 0x38, "Char", 0, "UInt", this.pid, "UInt")
-        Return DllCall("WriteProcessMemory", "UInt", ProcessHandle, "Ptr", this.BaseaAddress + Address, "Ptr", Mvalue, "UInt", Len)
+        Return DllCall("WriteProcessMemory", "UInt", this.ProcessHandle, "Ptr", this.BaseaAddress + Address, "Ptr", Mvalue, "UInt", Len)
     }
 }
+
+Reset()
+MainGui.Show()
+Persistent
