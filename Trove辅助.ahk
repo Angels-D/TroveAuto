@@ -1,6 +1,6 @@
 ;@Ahk2Exe-UpdateManifest 2
 ;@Ahk2Exe-SetName TroveAuto
-;@Ahk2Exe-SetProductVersion 2.2.0
+;@Ahk2Exe-SetProductVersion 2.2.2
 ;@Ahk2Exe-SetCopyright GPL-3.0 license
 ;@Ahk2Exe-SetLanguage Chinese_PRC
 ;@Ahk2Exe-SetMainIcon Trove辅助.ico
@@ -14,8 +14,8 @@ config := _Config(
     Map("Global", Map(
         "GameTitle", "Trove.exe",
         "GamePath", "",
-        "ConfigVersion", "20240505020500",
-        "AppVersion", "20240505020500",
+        "ConfigVersion", "20240510193500",
+        "AppVersion", "20240510193500",
     ),
         "HoldTime", Map("Value", "3000",),
         "RestartTime", Map("Value", "5000",),
@@ -26,21 +26,21 @@ config := _Config(
             "Fish", "f",
         ),
         "Address", Map(
-            "Attack", "0xB3B188",
-            "Dismount", "0x33231E",
-            "Mining", "0x9D74A8",
-            "MiningGeode", "0x836497",
-            "Breakblocks", "0x9599F3",
-            "Map", "0x9EA88D",
-            "Zoom", "0x937216",
-            "ClipCam", "0x93929A",
-            "LockCam", "0xB40405",
-            "Animation", "0x73CB75",
-            "Fish", "0x107EB3C",
-            "Name", "0x10863E0",
+            "Attack", "0xA5B198",
+            "Dismount", "0x33214E",
+            "Mining", "0xAA6D08",
+            "MiningGeode", "0x9B75B7",
+            "Breakblocks", "0xB31DF3",
+            "Map", "0x8E8E9D",
+            "Zoom", "0x8C0826",
+            "ClipCam", "0x8C28AA",
+            "LockCam", "0xA8C945",
+            "Animation", "0x73CC05",
+            "Fish", "0x105466C",
+            "Name", "0x9AD958",
         ),
         "Address_Offset", Map(
-            "Name", "0x10,0x0",
+            "Name", "0x0,0x10,0x0",
             "Fish_Take_Water", "0x68,0xE4,0x3C4",
             "Fish_Take_Lava", "0x68,0xE4,0x898",
             "Fish_Take_Choco", "0x68,0xE4,0x62C",
@@ -62,6 +62,20 @@ config := _Config(
             "LockCam", "0xEB,0x74",
             "Animation", "0x4C,0x44",
         ),
+        "Address_Offset_Signature", Map(
+            "Attack", "1,DF F1 DD D8 72 1F",
+            "Dismount", "0,74 XX 8B 07 8B CF 6A 00 6A 00 FF 50",
+            "Mining", "1,DF F1 DD D8 72 61",
+            "MiningGeode", "1,DF F1 DD D8 72 35 8D",
+            "Breakblocks", "3,80 7F XX 00 0F 84 XX XX XX XX 8B 4B 08 E8 XX XX XX XX FF 75 0C 8B 4D 10 8B F0 FF 75 08 8B 45 14 83 EC 0C 8B 3E 8B D4 6A 01 89 0A 8B CE 89 42 04 8B 45 18",
+            "Map", "0,77 XX B8 XX XX XX XX F3 0F 10 08 F3 0F 11 89 XX XX XX XX 8B 89",
+            "Zoom", "3,F3 0F 11 5F 2C",
+            "ClipCam", "0,0F 29 01 C7 41 34 00 00 00 00 0F",
+            "LockCam", "0,74 05 8B 01 FF 50 0C 8B E5",
+            "Animation", "3,F3 0F 11 44 24 24 F3 0F 58 84 24 80 00 00 00 50 F3 0F 11 43 24 E8 XX XX XX XX 8D 44 24 34 50",
+            "Fish", "0,10 14 XX XX 00 00 00 00 FF 00 00 00 00",
+            "Name", "6,E8 XX XX XX FF A1 XX XX XX 01 68 XX XX XX 01 FF",
+        )
     )
 )
 config.Load()
@@ -87,6 +101,12 @@ MainGui.Add("Button", "w200 vModCfgsPathBtn", "ModCfgs文件夹")
 MainGui.Add("Link", "w200", Format("说明: Cfgs用于保存某些Mod的配置信息,一般位于<a href=`"file:///{1}\Trove\ModCfgs\`">%AppData%\Trove\ModCfgs\</a>中", A_AppData))
 MainGui.Add("Text", "w200", "Mod使用教程: 后缀为.tmod的文件存放在Mods文件夹, 后缀为.cfg的文件存放在ModCfgs文件夹, 放置后重启游戏生效")
 MainGui.Add("Link", "w200", "附: 官方邮箱<a href=`"mailto:support@gamigo.com`">support@gamigo.com</a>(通过此邮箱询问交易问题、账号问题等内容,注意使用英文描述")
+MainGui.Add("Link", "w200 cRed", "
+    (
+        新: 强烈推荐使用<a href="https://github.com/Sly0511/RenewedTroveTools/">RenewedTroveTools</a>
+        工具管理你的Mod和CFG文件, 还有装备推荐、模拟加点、模组开发管理、模组下载等功能
+    )"
+)
 
 ; 面板内容
 MainGui["Tab"].UseTab("面板")
@@ -163,8 +183,9 @@ MainGui.Add("Text", "xs w100 Section", "长按时间(毫秒):")
 MainGui.Add("Edit", "ys w100 vHoldTime", config.data["HoldTime"]["Value"])
 MainGui.Add("Text", "xs w100 Section", "自启扫描(毫秒):")
 MainGui.Add("Edit", "ys w100 vRestartTime", config.data["RestartTime"]["Value"])
-MainGui.Add("Button", "xs w70 Section vSaveBtn", "保存")
-MainGui.Add("Button", "ys w130 vUpdateBtn", "获取更新")
+MainGui.Add("Button", "xs w40 Section vSaveBtn", "保存")
+MainGui.Add("Button", "ys w75 vUpdateFromInternetBtn", "联网更新")
+MainGui.Add("Button", "ys w75 vUpdateFromLocalBtn", "本地更新")
 
 ; 关于内容
 MainGui["Tab"].UseTab("关于")
@@ -191,7 +212,8 @@ MainGui["ResetBtn"].OnEvent("Click", Reset)
 MainGui["RefreshBtn"].OnEvent("Click", Refresh)
 MainGui["StartBtn"].OnEvent("Click", Start)
 MainGui["SaveBtn"].OnEvent("Click", Save)
-MainGui["UpdateBtn"].OnEvent("Click", Update)
+MainGui["UpdateFromInternetBtn"].OnEvent("Click", UpdateFromInternet)
+MainGui["UpdateFromLocalBtn"].OnEvent("Click", UpdateFromLocal)
 MainGui["DownloadBtn"].OnEvent("Click", DownloadExe)
 MainGui["SelectGame"].OnEvent("Change", SelectGame)
 MainGui["SelectAction"].OnEvent("Change", SelectAction)
@@ -316,7 +338,7 @@ Start(GuiCtrlObj, Info) {
 }
 Save(GuiCtrlObj, Info) {
     for sect, data in config.data {
-        if (sect == "Address_Offset" or sect == "Features_Change")
+        if (sect == "Address_Offset" or sect == "Features_Change" or sect == "Address_Offset_Signature")
             Continue
         for key in data
             try config.data[sect][key] := MainGui[key sect].Value
@@ -325,7 +347,7 @@ Save(GuiCtrlObj, Info) {
     }
     config.Save()
 }
-Update(GuiCtrlObj, Info) {
+UpdateFromInternet(GuiCtrlObj, Info) {
     Source := "https://github.com/Angels-D/TroveAuto/releases/latest/download/config.ini"
     Mirror := "https://gh.api.99988866.xyz/" Source
     if (config.Update(Mirror) Or config.Update(Source)) {
@@ -338,12 +360,28 @@ Update(GuiCtrlObj, Info) {
     else MsgBox("更新失败, 请检查网络连接")
 
 }
+UpdateFromLocal(GuiCtrlObj, Info) {
+    if not WinExist("Trove") {
+        MsgBox("请先启动游戏, 再进行扫描")
+        return
+    }
+    shell := ComObject("WScript.Shell")
+    for key, value in config.data["Address"] {
+        signature := StrSplit(config.data["Address_Offset_Signature"][key], ',')
+        exec := shell.Exec("PtrFind.exe " signature[2])
+        value := Format("0x{1:X}", exec.StdOut.ReadAll() + signature[1])
+        MainGui[key "Address"].Text := value
+    }
+}
 DownloadExe(GuiCtrlObj, Info) {
-    Source := "https://github.com/Angels-D/TroveAuto/releases/latest/download/TroveAuto.zip"
+    Source := "https://github.com/Angels-D/TroveAuto/releases/latest/download/TroveAuto.exe"
     Mirror := "https://gh.api.99988866.xyz/" Source
-    try Download(Mirror, "Trove辅助" A_Now ".zip")
+    SelectedFile := FileSelect(18, "Trove辅助.exe", "保存路径", "可执行文件 (*.exe)")
+    if not SelectedFile
+        return
+    try Download(Mirror, SelectedFile)
     catch
-        try Download(Source, "Trove辅助" A_Now ".zip")
+        try Download(Source, SelectedFile)
         catch
             MsgBox("下载失败, 请检查网络连接")
         else MsgBox("应用下载成功, 请打开最新版本")
@@ -420,7 +458,7 @@ AutoBtn_Key_PressE(GuiCtrlObj, Info) {
     Game.Lists[MainGui["SelectGame"].Text].setting["AutoBtn"]["Key_PressE"] := GuiCtrlObj.Value
 }
 AutoRestart(GuiCtrlObj, Info) {
-    if GuiCtrlObj.Value and not MainGui["Account"].Value or not MainGui["Password"]{
+    if GuiCtrlObj.Value and not MainGui["Account"].Value or not MainGui["Password"] {
         MsgBox("账号密码不能为空")
         GuiCtrlObj.Value := false
         return
