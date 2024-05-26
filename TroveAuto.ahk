@@ -436,10 +436,10 @@ HotKeyEdit(GuiCtrlObj, Item) {
     HotKeyBoxEdit.Add("Edit", "ys w100 vHotKeyBox_Hotkey", Item ? GuiCtrlObj.GetText(Item, 1) : "")
     HotKeyBoxEdit.Add("Text", "xs w100 Section", "持续时间(毫秒):")
     HotKeyBoxEdit.Add("Edit", "ys w100 Number vHotKeyBox_HoldTime",)
-    HotKeyBoxEdit.Add("UpDown", "Range1-10000", Item ? GuiCtrlObj.GetText(Item, 2) : 0)
+    HotKeyBoxEdit.Add("UpDown", "Range0-10000", Item ? GuiCtrlObj.GetText(Item, 2) : 0)
     HotKeyBoxEdit.Add("Text", "xs w100 Section", "间隔时间(毫秒):")
     HotKeyBoxEdit.Add("Edit", "ys w100 Number vHotKeyBox_Interval",)
-    HotKeyBoxEdit.Add("UpDown", "Range1-10000", Item ? GuiCtrlObj.GetText(Item, 3) : 0)
+    HotKeyBoxEdit.Add("UpDown", "Range0-10000", Item ? GuiCtrlObj.GetText(Item, 3) : 0)
     HotKeyBoxEdit.Add("Text", "xs w100 Section", "次数:")
     HotKeyBoxEdit.Add("Edit", "ys w100 Number vHotKeyBox_Count")
     HotKeyBoxEdit.Add("UpDown", "Range1-1000", Item ? GuiCtrlObj.GetText(Item, 4) : 1)
@@ -615,13 +615,13 @@ class Game {
         "AutoBtn", Map(
             "interval", "10000",
             "keys", [
-                Game.Key(false, "Esc", 0, 1),
-                Game.Key(false, "1", 0, 1),
-                Game.Key(false, "2", 0, 1),
-                Game.Key(false, "Q", 0, 1),
-                Game.Key(false, "R", 5000, 1),
-                Game.Key(false, "T", 5000, 1),
-                Game.Key(false, "E", 5000, 1)
+                Game.Key(false, "Esc", 0, 100),
+                Game.Key(false, "1", 0, 100),
+                Game.Key(false, "2", 0, 100),
+                Game.Key(false, "Q", 0, 100),
+                Game.Key(false, "R", 5000, 100),
+                Game.Key(false, "T", 5000, 100),
+                Game.Key(false, "E", 5000, 100)
             ],
             "Key_Click_LEFT", false,
             "Key_Click_RIGHT", false,
