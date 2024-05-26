@@ -14,8 +14,8 @@ config := _Config(
     Map("Global", Map(
         "GameTitle", "Trove.exe",
         "GamePath", "",
-        "ConfigVersion", "20240510193500",
-        "AppVersion", "20240510193500",
+        "ConfigVersion", "20240526143500",
+        "AppVersion", "20240526143500",
     ),
         "HoldTime", Map("Value", "3000",),
         "RestartTime", Map("Value", "5000",),
@@ -85,7 +85,7 @@ MainGui.Add("Tab3", "vTab", ["主页", "面板", "设置", "关于"]) ; 监控,�
 
 ; 主页内容
 MainGui["Tab"].UseTab("主页")
-MainGui.Add("Text", "x+50", "游戏路径:")
+MainGui.Add("Text", "x+50 y+30", "游戏路径:")
 MainGui.Add("Edit", "w200 vGamePath", config.data["Global"]["GamePath"])
 MainGui.Add("Button", "Section vGamePathBtn", "获取游戏路径")
 MainGui.Add("Button", "ys vGameStartBtn", "启动游戏")
@@ -117,19 +117,13 @@ MainGui.Add("Text", "xs w70 Section", "玩家列表:")
 MainGui.Add("DropDownList", "ys w130 vSelectGame")
 MainGui.Add("Text", "xs w70 Section", "脚本动作:")
 MainGui.Add("DropDownList", "ys w130 vSelectAction", ["自动按键", "钓鱼"])
-MainGui.Add("GroupBox", "xs-20 y+20 w290 r6 Section", "自动按键配置区")
+MainGui.Add("GroupBox", "xs-20 y+20 w290 r8 Section", "自动按键配置区")
 MainGui.Add("Text", "xp+10 yp+30 Section", "频率(毫秒):")
 MainGui.Add("Edit", "ys w100 vInterval")
-MainGui.Add("Text", "xs w70 Section", "按键设置:")
-MainGui.Add("Hotkey", "ys w40 vAutoBtn_Key_1")
-MainGui.Add("Hotkey", "ys w40 vAutoBtn_Key_2")
-MainGui.Add("Hotkey", "ys w40 vAutoBtn_Key_3")
+MainGui.Add("ListView", "xs w250 Section NoSortHdr Checked -Multi vHotKeyBox", ["热键", "持续时间", "间隔时间", "次数"])
 MainGui.Add("CheckBox", "xs Section w130 vAutoBtn_Key_Click_LEFT", "自动左击")
 MainGui.Add("CheckBox", "ys w130 vAutoBtn_Key_Click_RIGHT", "自动右击")
-MainGui.Add("CheckBox", "xs Section w130 vAutoBtn_Key_PressR", "自动物品栏1")
-MainGui.Add("CheckBox", "ys w130 vAutoBtn_Key_PressT", "自动物品栏2")
-MainGui.Add("CheckBox", "xs Section w130 vAutoBtn_Key_PressE", "自动拾取")
-MainGui.Add("GroupBox", "xs-10 ys+50 w290 r6 Section", "功能区")
+MainGui.Add("GroupBox", "xs-10 ys+40 w290 r6 Section", "功能区")
 for key, value in Map(
     "Attack", "自动攻击",
     "Dismount", "保持骑乘",
@@ -153,7 +147,7 @@ MainGui.Add("Text", "xs+40 ys+50 cRed", "任何脚本都有风险, 请慎用!")
 
 ; 设置内容
 MainGui["Tab"].UseTab("设置")
-MainGui.Add("Text", "x+50 w100 Section", "游戏标题:")
+MainGui.Add("Text", "x+50 y+50 w100 Section", "游戏标题:")
 MainGui.Add("Edit", "ys w100 vGameTitle", config.data["Global"]["GameTitle"])
 for key, value in Map(
     "Name", "账号",
@@ -172,15 +166,8 @@ for key, value in Map(
     MainGui.Add("Text", "xs w100 Section", value "地址:")
     MainGui.Add("Edit", "ys w100 v" key "Address", config.data["Address"][key])
 }
-MainGui.Add("Text", "xs w100 Section", "交互按键:")
-MainGui.Add("HotKey", "ys w100 vPressEKey", config.data["Key"]["PressE"])
-MainGui.Add("Text", "xs w100 Section", "物品1/2按键:")
-MainGui.Add("HotKey", "ys w40 vPressRKey", config.data["Key"]["PressR"])
-MainGui.Add("HotKey", "ys w40 vPressTKey", config.data["Key"]["PressT"])
 MainGui.Add("Text", "xs w100 Section", "钓鱼按键:")
 MainGui.Add("HotKey", "ys w100 vFishKey", config.data["Key"]["Fish"])
-MainGui.Add("Text", "xs w100 Section", "长按时间(毫秒):")
-MainGui.Add("Edit", "ys w100 vHoldTime", config.data["HoldTime"]["Value"])
 MainGui.Add("Text", "xs w100 Section", "自启扫描(毫秒):")
 MainGui.Add("Edit", "ys w100 vRestartTime", config.data["RestartTime"]["Value"])
 MainGui.Add("Button", "xs w40 Section vSaveBtn", "保存")
@@ -189,7 +176,7 @@ MainGui.Add("Button", "ys w75 vUpdateFromLocalBtn", "本地更新")
 
 ; 关于内容
 MainGui["Tab"].UseTab("关于")
-MainGui.Add("ActiveX", "w150 h150 y+50 Center",
+MainGui.Add("ActiveX", "w150 h150 y+100 Center",
     "mshtml:<img src='https://cdn.jsdelivr.net/gh/Angels-D/Angels-D.github.io/medias/avatar.jpg' style='width:150px;'/>")
 MainGui.Add("Text", , "作者: AnglesD 游戏ID: D_FairyTail")
 MainGui.Add("Text", "cRed", "本软件完全开源免费, 仅供学习使用！")
@@ -218,14 +205,11 @@ MainGui["DownloadBtn"].OnEvent("Click", DownloadExe)
 MainGui["SelectGame"].OnEvent("Change", SelectGame)
 MainGui["SelectAction"].OnEvent("Change", SelectAction)
 MainGui["Interval"].OnEvent("Change", Interval)
-MainGui["AutoBtn_Key_1"].OnEvent("Change", AutoBtn_Key_1)
-MainGui["AutoBtn_Key_2"].OnEvent("Change", AutoBtn_Key_2)
-MainGui["AutoBtn_Key_3"].OnEvent("Change", AutoBtn_Key_3)
+MainGui["HotKeyBox"].OnEvent("ContextMenu", HotKeyMenu)
+MainGui["HotKeyBox"].OnEvent("DoubleClick", HotKeyEdit)
+MainGui["HotKeyBox"].OnEvent("ItemCheck", HotKeyCheck)
 MainGui["AutoBtn_Key_Click_LEFT"].OnEvent("Click", AutoBtn_Key_Click_LEFT)
 MainGui["AutoBtn_Key_Click_RIGHT"].OnEvent("Click", AutoBtn_Key_Click_RIGHT)
-MainGui["AutoBtn_Key_PressR"].OnEvent("Click", AutoBtn_Key_PressR)
-MainGui["AutoBtn_Key_PressT"].OnEvent("Click", AutoBtn_Key_PressT)
-MainGui["AutoBtn_Key_PressE"].OnEvent("Click", AutoBtn_Key_PressE)
 MainGui["AutoRestart"].OnEvent("Click", AutoRestart)
 MainGui["Account"].OnEvent("Change", Account)
 MainGui["Password"].OnEvent("Change", Password)
@@ -235,15 +219,9 @@ for key in ["Attack", "Dismount", "Mining", "MiningGeode"
 
 ; 托盘图标
 A_TrayMenu.Delete()
-A_TrayMenu.Add("显示", (ItemName, ItemPos, MyMenu) {
-    MainGui.Show()
-})
-A_TrayMenu.Add("重新启动", (ItemName, ItemPos, MyMenu) {
-    Reload
-})
-A_TrayMenu.Add("退出", (ItemName, ItemPos, MyMenu) {
-    ExitApp
-})
+A_TrayMenu.Add("显示", (ItemName, ItemPos, MyMenu) => (MainGui.Show()))
+A_TrayMenu.Add("重新启动", (ItemName, ItemPos, MyMenu) => (Reload))
+A_TrayMenu.Add("退出", (ItemName, ItemPos, MyMenu) => (ExitApp))
 
 ; 交互函数
 Close(thisGui) {
@@ -291,18 +269,17 @@ Refresh(GuiCtrlObj := unset, Info := unset) {
 UIReset() {
     for key in ["Attack", "Dismount", "Mining", "MiningGeode"
         , "Breakblocks", "Map", "Zoom", "ClipCam", "LockCam", "Animation"
-        , "AutoBtn_Key_1", "AutoBtn_Key_2", "AutoBtn_Key_3"
-        , "AutoBtn_Key_Click_LEFT", "AutoBtn_Key_Click_RIGHT", "AutoBtn_Key_PressR", "AutoBtn_Key_PressT", "AutoBtn_Key_PressE"
+        , "AutoBtn_Key_Click_LEFT", "AutoBtn_Key_Click_RIGHT", "HotKeyBox"
         , "Interval", "SelectAction", "StartBtn", "AutoRestart", "Account", "Password"]
         MainGui[key].Enabled := false
     for key in ["Attack", "Dismount", "Mining", "MiningGeode"
         , "Breakblocks", "Map", "Zoom", "ClipCam", "LockCam", "Animation"
-        , "AutoBtn_Key_1", "AutoBtn_Key_2", "AutoBtn_Key_3"
-        , "AutoBtn_Key_Click_LEFT", "AutoBtn_Key_Click_RIGHT", "AutoBtn_Key_PressR", "AutoBtn_Key_PressT", "AutoBtn_Key_PressE"
+        , "AutoBtn_Key_Click_LEFT", "AutoBtn_Key_Click_RIGHT"
         , "Interval", "SelectAction", "AutoRestart", "Account", "Password"]
         try MainGui[key].Value := ""
         catch
             MainGui[key].Value := 0
+    MainGui["HotKeyBox"].Delete()
 }
 Start(GuiCtrlObj, Info) {
     if (Game.Lists[MainGui["SelectGame"].Text].running) {
@@ -315,7 +292,7 @@ Start(GuiCtrlObj, Info) {
             case "钓鱼":
                 Func()
             default:
-                for key in ["AutoBtn_Key_1", "AutoBtn_Key_2", "AutoBtn_Key_3", "AutoBtn_Key_Click_LEFT", "AutoBtn_Key_Click_RIGHT", "AutoBtn_Key_PressR", "AutoBtn_Key_PressT", "AutoBtn_Key_PressE"]
+                for key in ["HotKeyBox", "AutoBtn_Key_Click_LEFT", "AutoBtn_Key_Click_RIGHT"]
                     MainGui[key].Enabled := true
                 SetTimer(Func, false)
         }
@@ -330,7 +307,7 @@ Start(GuiCtrlObj, Info) {
             case "钓鱼":
                 Func()
             default:
-                for key in ["AutoBtn_Key_1", "AutoBtn_Key_2", "AutoBtn_Key_3", "AutoBtn_Key_Click_LEFT", "AutoBtn_Key_Click_RIGHT", "AutoBtn_Key_PressR", "AutoBtn_Key_PressT", "AutoBtn_Key_PressE"]
+                for key in ["HotKeyBox", "AutoBtn_Key_Click_LEFT", "AutoBtn_Key_Click_RIGHT"]
                     MainGui[key].Enabled := false
                 SetTimer(Func, MainGui["Interval"].Value)
         }
@@ -349,7 +326,7 @@ Save(GuiCtrlObj, Info) {
 }
 UpdateFromInternet(GuiCtrlObj, Info) {
     Source := "https://github.com/Angels-D/TroveAuto/releases/latest/download/config.ini"
-    Mirror := "https://gh.api.99988866.xyz/" Source
+    Mirror := "https://github.moeyy.xyz/" Source
     if (config.Update(Mirror) Or config.Update(Source)) {
         MainGui.Add("Text", "x+50 w100 Section", "游戏标题:")
         MainGui["GameTitle"].Text := config.data["Global"]["GameTitle"]
@@ -375,7 +352,7 @@ UpdateFromLocal(GuiCtrlObj, Info) {
 }
 DownloadExe(GuiCtrlObj, Info) {
     Source := "https://github.com/Angels-D/TroveAuto/releases/latest/download/TroveAuto.exe"
-    Mirror := "https://gh.api.99988866.xyz/" Source
+    Mirror := "https://github.moeyy.xyz/" Source
     SelectedFile := FileSelect(18, "Trove辅助.exe", "保存路径", "可执行文件 (*.exe)")
     if not SelectedFile
         return
@@ -404,18 +381,21 @@ SelectAction(GuiCtrlObj, Info := unset) {
     MainGui["AutoRestart"].Value := Game.Lists[MainGui["SelectGame"].Text].setting["AutoRestart"]
     for key in ["Attack", "Dismount", "Mining", "MiningGeode"
         , "Breakblocks", "Map", "Zoom", "ClipCam", "LockCam", "Animation"] {
-            MainGui[key].Enabled := true
-            MainGui[key].Value := Game.Lists[MainGui["SelectGame"].Text].setting["Features"][key]
+        MainGui[key].Enabled := true
+        MainGui[key].Value := Game.Lists[MainGui["SelectGame"].Text].setting["Features"][key]
     }
-    for key in ["AutoBtn_Key_1", "AutoBtn_Key_2", "AutoBtn_Key_3", "AutoBtn_Key_Click_LEFT", "AutoBtn_Key_Click_RIGHT", "AutoBtn_Key_PressR", "AutoBtn_Key_PressT", "AutoBtn_Key_PressE"]
+    for key in ["HotKeyBox", "AutoBtn_Key_Click_LEFT", "AutoBtn_Key_Click_RIGHT"]
         MainGui[key].Enabled := false
-    for key in ["Key_1", "Key_2", "Key_3", "Key_Click_LEFT", "Key_Click_RIGHT", "Key_PressR", "Key_PressT", "Key_PressE"]
+    MainGui["HotKeyBox"].Delete()
+    for key in Game.Lists[MainGui["SelectGame"].Text].setting["AutoBtn"]["keys"]
+        MainGui["HotKeyBox"].Add(key.enabled ? "+Check" : "-Check", key.key, key.holdtime, key.interval, key.count)
+    for key in ["Key_Click_LEFT", "Key_Click_RIGHT"]
         MainGui["AutoBtn_" key].Value := Game.Lists[MainGui["SelectGame"].Text].setting["AutoBtn"][key]
     switch GuiCtrlObj.Text {
         case "自动按键":
             MainGui["Interval"].Value := Game.Lists[MainGui["SelectGame"].Text].setting["AutoBtn"]["interval"]
             if (!Game.Lists[MainGui["SelectGame"].Text].running)
-                for key in ["AutoBtn_Key_1", "AutoBtn_Key_2", "AutoBtn_Key_3", "AutoBtn_Key_Click_LEFT", "AutoBtn_Key_Click_RIGHT", "AutoBtn_Key_PressR", "AutoBtn_Key_PressT", "AutoBtn_Key_PressE"]
+                for key in ["HotKeyBox", "AutoBtn_Key_Click_LEFT", "AutoBtn_Key_Click_RIGHT"]
                     MainGui[key].Enabled := true
         case "钓鱼":
             MainGui["Interval"].Value := Game.Lists[MainGui["SelectGame"].Text].setting["Fish"]["interval"]
@@ -433,29 +413,66 @@ Interval(GuiCtrlObj, Info) {
             Game.Lists[MainGui["SelectGame"].Text].setting["Fish"]["interval"] := GuiCtrlObj.value
     }
 }
-AutoBtn_Key_1(GuiCtrlObj, Info) {
-    Game.Lists[MainGui["SelectGame"].Text].setting["AutoBtn"]["Key_1"] := GuiCtrlObj.Value
-}
-AutoBtn_Key_2(GuiCtrlObj, Info) {
-    Game.Lists[MainGui["SelectGame"].Text].setting["AutoBtn"]["Key_2"] := GuiCtrlObj.Value
-}
-AutoBtn_Key_3(GuiCtrlObj, Info) {
-    Game.Lists[MainGui["SelectGame"].Text].setting["AutoBtn"]["Key_3"] := GuiCtrlObj.Value
-}
 AutoBtn_Key_Click_LEFT(GuiCtrlObj, Info) {
     Game.Lists[MainGui["SelectGame"].Text].setting["AutoBtn"]["Key_Click_LEFT"] := GuiCtrlObj.Value
 }
 AutoBtn_Key_Click_RIGHT(GuiCtrlObj, Info) {
     Game.Lists[MainGui["SelectGame"].Text].setting["AutoBtn"]["Key_Click_RIGHT"] := GuiCtrlObj.Value
 }
-AutoBtn_Key_PressR(GuiCtrlObj, Info) {
-    Game.Lists[MainGui["SelectGame"].Text].setting["AutoBtn"]["Key_PressR"] := GuiCtrlObj.Value
+HotKeyMenu(GuiCtrlObj, Item, IsRightClick, X, Y) {
+    HotKeyBoxMenu := Menu()
+    HotKeyBoxMenu.Add("添加", (ItemName, ItemPos, MyMenu) {
+        HotKeyEdit(GuiCtrlObj, Item)
+        })
+    if (Item)
+        HotKeyBoxMenu.Add("删除", (ItemName, ItemPos, MyMenu) {
+            GuiCtrlObj.Delete(Item)
+            Game.Lists[MainGui["SelectGame"].Text].setting["AutoBtn"]["keys"].RemoveAt(Item)
+            })
+    HotKeyBoxMenu.Show()
 }
-AutoBtn_Key_PressT(GuiCtrlObj, Info) {
-    Game.Lists[MainGui["SelectGame"].Text].setting["AutoBtn"]["Key_PressT"] := GuiCtrlObj.Value
+HotKeyEdit(GuiCtrlObj, Item) {
+    MainGui.Opt("+Disabled")
+    HotKeyBoxEdit := Gui("-DPIScale OwnDialogs Owner" MainGui.Hwnd)
+    HotKeyBoxEdit.Add("Text", "w100", "热键:")
+    HotKeyBoxEdit.Add("Edit", "ys w100 vHotKeyBox_Hotkey", Item ? GuiCtrlObj.GetText(Item, 1) : "")
+    HotKeyBoxEdit.Add("Text", "xs w100 Section", "持续时间(毫秒):")
+    HotKeyBoxEdit.Add("Edit", "ys w100 Number vHotKeyBox_HoldTime",)
+    HotKeyBoxEdit.Add("UpDown", "Range1-10000", Item ? GuiCtrlObj.GetText(Item, 2) : 0)
+    HotKeyBoxEdit.Add("Text", "xs w100 Section", "间隔时间(毫秒):")
+    HotKeyBoxEdit.Add("Edit", "ys w100 Number vHotKeyBox_Interval",)
+    HotKeyBoxEdit.Add("UpDown", "Range1-10000", Item ? GuiCtrlObj.GetText(Item, 3) : 0)
+    HotKeyBoxEdit.Add("Text", "xs w100 Section", "次数:")
+    HotKeyBoxEdit.Add("Edit", "ys w100 Number vHotKeyBox_Count")
+    HotKeyBoxEdit.Add("UpDown", "Range1-1000", Item ? GuiCtrlObj.GetText(Item, 4) : 1)
+    HotKeyBoxEdit.Add("Button", "xs Section vHotKeyBox_Save", "保存")
+    HotKeyBoxEdit.Add("Button", "ys vHotKeyBox_Cancel", "取消")
+    HotKeyBoxEdit["HotKeyBox_Save"].OnEvent("Click", (*) {
+        if Item
+            key := Game.Lists[MainGui["SelectGame"].Text].setting["AutoBtn"]["keys"][Item]
+        else {
+            Item := GuiCtrlObj.Add("+Check")
+            key := Game.Key(true)
+            Game.Lists[MainGui["SelectGame"].Text].setting["AutoBtn"]["keys"].Push(key)
+        }
+        GuiCtrlObj.Modify(Item, ,
+            HotKeyBoxEdit["HotKeyBox_Hotkey"].value,
+            HotKeyBoxEdit["HotKeyBox_HoldTime"].value,
+            HotKeyBoxEdit["HotKeyBox_Interval"].value,
+            HotKeyBoxEdit["HotKeyBox_Count"].value
+        )
+        key.key := HotKeyBoxEdit["HotKeyBox_Hotkey"].value,
+            key.holdtime := HotKeyBoxEdit["HotKeyBox_HoldTime"].value,
+            HotKeyBoxEdit["HotKeyBox_Interval"].value,
+            key.count := HotKeyBoxEdit["HotKeyBox_Count"].value
+        WinClose()
+        })
+    HotKeyBoxEdit["HotKeyBox_Cancel"].OnEvent("Click", (*) => (WinClose()))
+    HotKeyBoxEdit.OnEvent("Close", (*) => (MainGui.Opt("-Disabled")))
+    HotKeyBoxEdit.Show("AutoSize")
 }
-AutoBtn_Key_PressE(GuiCtrlObj, Info) {
-    Game.Lists[MainGui["SelectGame"].Text].setting["AutoBtn"]["Key_PressE"] := GuiCtrlObj.Value
+HotKeyCheck(GuiCtrlObj, Item, Checked) {
+    Game.Lists[MainGui["SelectGame"].Text].setting["AutoBtn"]["keys"][Item].enabled := Checked
 }
 AutoRestart(GuiCtrlObj, Info) {
     if GuiCtrlObj.Value and not MainGui["Account"].Value or not MainGui["Password"] {
@@ -492,7 +509,7 @@ class _Config {
         path := IsSet(path) ? path : this.path
         if ((NewConfigVersion := IniRead(path, "Global", "ConfigVersion", this.data["Global"]["ConfigVersion"])) <
             (OldConfigVersion := this.data["Global"]["ConfigVersion"])) {
-                MsgBox(Format("警告: 配置文件非最新版本 {1} => {2}", OldConfigVersion, NewConfigVersion))
+            MsgBox(Format("警告: 配置文件非最新版本 {1} => {2}", OldConfigVersion, NewConfigVersion))
         }
         for sect, data in this.data
             for key, value in data
@@ -510,11 +527,11 @@ class _Config {
             Download(url, TempPath := A_Temp "\TroveAutoConfig.ini")
             if ((NewConfigVersion := IniRead(TempPath, "Global", "ConfigVersion")) >
                 (OldConfigVersion := this.data["Global"]["ConfigVersion"])) {
-                    NewAppVersion := IniRead(TempPath, "Global", "AppVersion")
-                    OldAppVersion := this.data["Global"]["AppVersion"]
-                    this.Load(TempPath)
-                    MsgBox(Format("配置版本 {1} => {2} 已完成{3}", OldConfigVersion, NewConfigVersion,
-                        NewAppVersion > OldAppVersion ? Format("`n警告: 程序本体存在最新版本 {1} => {2}", OldAppVersion, NewAppVersion) : ""))
+                NewAppVersion := IniRead(TempPath, "Global", "AppVersion")
+                OldAppVersion := this.data["Global"]["AppVersion"]
+                this.Load(TempPath)
+                MsgBox(Format("配置版本 {1} => {2} 已完成{3}", OldConfigVersion, NewConfigVersion,
+                    NewAppVersion > OldAppVersion ? Format("`n警告: 程序本体存在最新版本 {1} => {2}", OldAppVersion, NewAppVersion) : ""))
             }
             else MsgBox("当前已是最新版本")
         }
@@ -526,6 +543,15 @@ class _Config {
 
 ; Game Class
 class Game {
+    class Key {
+        __New(enabled := false, key := "", holdtime := 0, interval := 500, count := 1) {
+            this.enabled := enabled
+            this.key := key
+            this.holdtime := holdtime
+            this.interval := interval
+            this.count := count
+        }
+    }
     static Lists := Map()
     static ActionsMap := Map(
         "钓鱼", "AutoFish",
@@ -590,14 +616,17 @@ class Game {
         ),
         "AutoBtn", Map(
             "interval", "10000",
-            "Key_1", "End",
-            "Key_2", "",
-            "Key_3", "",
+            "keys", [
+                Game.Key(false, "Esc", 0, 1),
+                Game.Key(false, "1", 0, 1),
+                Game.Key(false, "2", 0, 1),
+                Game.Key(false, "Q", 0, 1),
+                Game.Key(false, "R", 5000, 1),
+                Game.Key(false, "T", 5000, 1),
+                Game.Key(false, "E", 5000, 1)
+            ],
             "Key_Click_LEFT", false,
             "Key_Click_RIGHT", false,
-            "Key_PressR", false,
-            "Key_PressT", false,
-            "Key_PressE", false,
         ),
     )
     __New(id) {
@@ -671,17 +700,17 @@ class Game {
     }
     AutoBtn() {
         try {
-            for key in [1, 2, 3]
-                if (this.setting["AutoBtn"]["Key_" key])
-                    this.NatualPress(this.setting["AutoBtn"]["Key_" key])
+            for key in this.setting["AutoBtn"]["keys"]
+                if (key.enabled)
+                    Loop key.count {
+                        this.NatualPress(key.key, key.holdtime)
+                        Sleep(key.interval)
+                    }
             for key in ["LEFT", "RIGHT"]
                 if (this.setting["AutoBtn"]["Key_Click_" key])
                     if (WinGetPID("A") != this.pid)
                         ControlClick(, "ahk_pid " this.pid, , key, , "NA")
                     else Click(key)
-            for key in ["PressR", "PressT", "PressE"]
-                if (this.setting["AutoBtn"]["Key_" key])
-                    this.NatualPress(config.data["Key"][key], config.data["HoldTime"]["Value"])
         }
     }
     AutoFish() {
@@ -712,28 +741,28 @@ class Game {
                         and not ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/select2.png")
                         and ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/select3.png")
                         or ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/select4.png")) {
-                            ControlClick("x" OutputVarX " y" OutputVarY, "Glyph", , , , "NA")
-                            ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "*2 image/logout1.png")
-                                or ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "*2 image/logout2.png")
-                            ControlClick("x" OutputVarX " y" OutputVarY, "Glyph", , , , "NA")
-                            Sleep(3000)
+                        ControlClick("x" OutputVarX " y" OutputVarY, "Glyph", , , , "NA")
+                        ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "*2 image/logout1.png")
+                            or ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "*2 image/logout2.png")
+                        ControlClick("x" OutputVarX " y" OutputVarY, "Glyph", , , , "NA")
+                        Sleep(3000)
                     }
                     if ( not WinWaitActive("登录 Glyph", , 3)
                         and ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/select1.png")
                         or ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/select2.png")) {
-                            ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/start1.png")
-                                or ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/start2.png")
-                                or ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/start3.png")
-                            ControlClick("x" OutputVarX " y" OutputVarY, "Glyph", , , , "NA")
-                            Sleep(3000)
+                        ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/start1.png")
+                            or ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/start2.png")
+                            or ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/start3.png")
+                        ControlClick("x" OutputVarX " y" OutputVarY, "Glyph", , , , "NA")
+                        Sleep(3000)
                     }
                     WinGetPos(&X, &Y, &W, &H, "登录 Glyph")
                     if (ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/login1.png")
                         or ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/login2.png")) {
-                            SetKeyDelay(10, 20)
-                            ControlSend(this.setting["Account"] "{Tab}" this.setting["Password"], , "登录 Glyph")
-                            ControlClick("x" OutputVarX " y" OutputVarY, "登录 Glyph", , , , "NA")
-                            Sleep(30000)
+                        SetKeyDelay(10, 20)
+                        ControlSend(this.setting["Account"] "{Tab}" this.setting["Password"], , "登录 Glyph")
+                        ControlClick("x" OutputVarX " y" OutputVarY, "登录 Glyph", , , , "NA")
+                        Sleep(30000)
                     }
                 }
             }
