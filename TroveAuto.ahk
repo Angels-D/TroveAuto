@@ -1,6 +1,6 @@
 ;@Ahk2Exe-UpdateManifest 2
 ;@Ahk2Exe-SetName TroveAuto
-;@Ahk2Exe-SetProductVersion 2.2.2
+;@Ahk2Exe-SetProductVersion 2.2.4
 ;@Ahk2Exe-SetCopyright GPL-3.0 license
 ;@Ahk2Exe-SetLanguage Chinese_PRC
 ;@Ahk2Exe-SetMainIcon TroveAuto.ico
@@ -438,35 +438,36 @@ HotKeyEdit(GuiCtrlObj, Item) {
     HotKeyBoxEdit.Add("Text", "w100", "热键:")
     HotKeyBoxEdit.Add("Edit", "ys w100 vHotKeyBox_Hotkey", Item ? GuiCtrlObj.GetText(Item, 1) : "")
     HotKeyBoxEdit.Add("Text", "xs w100 Section", "持续时间(毫秒):")
-    HotKeyBoxEdit.Add("Edit", "ys w100 Number vHotKeyBox_HoldTime",)
-    HotKeyBoxEdit.Add("UpDown", "Range0-10000", Item ? GuiCtrlObj.GetText(Item, 2) : 0)
+    HotKeyBoxEdit.Add("Edit", "ys w100 Number vHotKeyBox_HoldTime")
+    HotKeyBoxEdit.Add("UpDown", "Range0-10000 0x80", Item ? GuiCtrlObj.GetText(Item, 2) : 0)
     HotKeyBoxEdit.Add("Text", "xs w100 Section", "间隔时间(毫秒):")
-    HotKeyBoxEdit.Add("Edit", "ys w100 Number vHotKeyBox_Interval",)
-    HotKeyBoxEdit.Add("UpDown", "Range0-10000", Item ? GuiCtrlObj.GetText(Item, 3) : 0)
+    HotKeyBoxEdit.Add("Edit", "ys w100 Number vHotKeyBox_Interval")
+    HotKeyBoxEdit.Add("UpDown", "Range0-10000 0x80", Item ? GuiCtrlObj.GetText(Item, 3) : 100)
     HotKeyBoxEdit.Add("Text", "xs w100 Section", "次数:")
     HotKeyBoxEdit.Add("Edit", "ys w100 Number vHotKeyBox_Count")
-    HotKeyBoxEdit.Add("UpDown", "Range1-1000", Item ? GuiCtrlObj.GetText(Item, 4) : 1)
+    HotKeyBoxEdit.Add("UpDown", "Range1-1000 0x80", Item ? GuiCtrlObj.GetText(Item, 4) : 1)
     HotKeyBoxEdit.Add("Button", "xs Section vHotKeyBox_Save", "保存")
     HotKeyBoxEdit.Add("Button", "ys vHotKeyBox_Cancel", "取消")
-    HotKeyBoxEdit["HotKeyBox_Save"].OnEvent("Click", (*) {
-        if Item
-            key := Game.Lists[MainGui["SelectGame"].Text].setting["AutoBtn"]["keys"][Item]
-        else {
-            Item := GuiCtrlObj.Add("+Check")
-            key := Game.Key(true)
-            Game.Lists[MainGui["SelectGame"].Text].setting["AutoBtn"]["keys"].Push(key)
-        }
-        GuiCtrlObj.Modify(Item, ,
-            HotKeyBoxEdit["HotKeyBox_Hotkey"].value,
-            HotKeyBoxEdit["HotKeyBox_HoldTime"].value,
-            HotKeyBoxEdit["HotKeyBox_Interval"].value,
-            HotKeyBoxEdit["HotKeyBox_Count"].value
-        )
-        key.key := HotKeyBoxEdit["HotKeyBox_Hotkey"].value,
-            key.holdtime := HotKeyBoxEdit["HotKeyBox_HoldTime"].value,
-            HotKeyBoxEdit["HotKeyBox_Interval"].value,
+    HotKeyBoxEdit["HotKeyBox_Save"].OnEvent("Click",
+        (*) {
+            if Item
+                key := Game.Lists[MainGui["SelectGame"].Text].setting["AutoBtn"]["keys"][Item]
+            else {
+                Item := GuiCtrlObj.Add("+Check")
+                key := Game.Key(true)
+                Game.Lists[MainGui["SelectGame"].Text].setting["AutoBtn"]["keys"].Push(key)
+            }
+            GuiCtrlObj.Modify(Item, ,
+                HotKeyBoxEdit["HotKeyBox_Hotkey"].value,
+                HotKeyBoxEdit["HotKeyBox_HoldTime"].value,
+                HotKeyBoxEdit["HotKeyBox_Interval"].value,
+                HotKeyBoxEdit["HotKeyBox_Count"].value
+            )
+            key.key := HotKeyBoxEdit["HotKeyBox_Hotkey"].value
+            key.holdtime := HotKeyBoxEdit["HotKeyBox_HoldTime"].value
+            key.interval := HotKeyBoxEdit["HotKeyBox_Interval"].value
             key.count := HotKeyBoxEdit["HotKeyBox_Count"].value
-        WinClose()
+            WinClose()
         })
     HotKeyBoxEdit["HotKeyBox_Cancel"].OnEvent("Click", (*) => (WinClose()))
     HotKeyBoxEdit.OnEvent("Close", (*) => (MainGui.Opt("-Disabled")))
@@ -570,9 +571,9 @@ class Game {
             return NumGet(Mvalue,"Int")
         }
         NatualPress(npbtn,pid) {
-            ControlSend("{" npbtn " down}",, "ahk_pid " pid)
+            ControlSend("{Blind}{" npbtn " down}",, "ahk_pid " pid)
             Sleep(Random(66, 122))
-            ControlSend("{" npbtn " up}",, "ahk_pid " pid)
+            ControlSend("{Blind}{" npbtn " up}",, "ahk_pid " pid)
             Sleep(Random(66, 122))
         }
         AutoFish(Pid,FishKey,Interval,Take_Address,State_Address,ProcessHandle){
@@ -619,10 +620,10 @@ class Game {
         "AutoBtn", Map(
             "interval", "10000",
             "keys", [
-                Game.Key(false, "Esc", 0, 100),
-                Game.Key(false, "1", 0, 100),
-                Game.Key(false, "2", 0, 100),
-                Game.Key(false, "Q", 0, 100),
+                Game.Key(false, "Esc", 0, 500),
+                Game.Key(false, "1", 0, 500),
+                Game.Key(false, "2", 0, 500),
+                Game.Key(false, "Q", 0, 500),
                 Game.Key(false, "R", 5000, 100),
                 Game.Key(false, "T", 5000, 100),
                 Game.Key(false, "E", 5000, 100)
@@ -787,9 +788,9 @@ class Game {
         )
     }
     NatualPress(npbtn, holdtime := 0) {
-        ControlSend("{" npbtn " down}", , "ahk_pid " this.pid)
+        ControlSend("{Blind}{" npbtn " down}", , "ahk_pid " this.pid)
         Sleep(Random(66, 122) + holdtime)
-        ControlSend("{" npbtn " up}", , "ahk_pid " this.pid)
+        ControlSend("{Blind}{" npbtn " up}", , "ahk_pid " this.pid)
         Sleep(Random(66, 122))
     }
     GetName(Address) {
