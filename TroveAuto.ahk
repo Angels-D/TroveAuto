@@ -15,8 +15,10 @@ config := _Config(
         "Global", Map(
             "GameTitle", "Trove.exe",
             "GamePath", "",
-            "ConfigVersion", "20240526143500",
-            "AppVersion", "20240526143500",
+            "ConfigVersion", "20240526184000",
+            "AppVersion", "20240526184000",
+            "Source", "https://github.com/Angels-D/TroveAuto/",
+            "Mirror", "https://github.moeyy.xyz/",
         ),
         "HoldTime", Map("Value", "3000",),
         "RestartTime", Map("Value", "5000",),
@@ -237,6 +239,7 @@ GetGamePath(GuiCtrlObj, Info) {
         GamePath := WinGetProcessPath("ahk_exe i)" config.data["Global"]["GameTitle"] "|Glyph.*")
         RegExMatch(GamePath, "i)^(.*?Trove)", &GamePath)
         MainGui["GamePath"].Value := GamePath[0]
+        Save()
     }
     catch
         MsgBox("请运行游戏或登陆器以检测路径")
@@ -311,7 +314,7 @@ Start(GuiCtrlObj, Info) {
         }
     }
 }
-Save(GuiCtrlObj, Info) {
+Save(GuiCtrlObj := unset, Info := unset) {
     for sect, data in config.data {
         if (sect == "Address_Offset" or sect == "Features_Change" or sect == "Address_Offset_Signature")
             Continue
@@ -323,8 +326,8 @@ Save(GuiCtrlObj, Info) {
     config.Save()
 }
 UpdateFromInternet(GuiCtrlObj, Info) {
-    Source := "https://github.com/Angels-D/TroveAuto/releases/latest/download/config.ini"
-    Mirror := "https://github.moeyy.xyz/" Source
+    Source := config.data["Global"]["Source"] "releases/latest/download/config.ini"
+    Mirror := config.data["Global"]["Mirror"] Source
     if (config.Update(Mirror) Or config.Update(Source)) {
         MainGui.Add("Text", "x+50 w100 Section", "游戏标题:")
         MainGui["GameTitle"].Text := config.data["Global"]["GameTitle"]
@@ -349,8 +352,8 @@ UpdateFromLocal(GuiCtrlObj, Info) {
     }
 }
 DownloadExe(GuiCtrlObj, Info) {
-    Source := "https://github.com/Angels-D/TroveAuto/releases/latest/download/TroveAuto.exe"
-    Mirror := "https://github.moeyy.xyz/" Source
+    Source := config.data["Global"]["Source"] "releases/latest/download/TroveAuto.exe"
+    Mirror := config.data["Global"]["Mirror"] Source
     SelectedFile := FileSelect(18, "Trove辅助.exe", "保存路径", "可执行文件 (*.exe)")
     if not SelectedFile
         return
@@ -511,8 +514,8 @@ class _Config {
         }
         for sect, data in this.data
             for key, value in data
-                this.data[sect][key] := IniRead(
-                    path, sect, key, this.data[sect][key])
+                if key != "AppVersion"
+                    this.data[sect][key] := IniRead(path, sect, key, this.data[sect][key])
     }
     Save(path := unset) {
         path := IsSet(path) ? path : this.path
@@ -530,6 +533,7 @@ class _Config {
                 this.Load(TempPath)
                 MsgBox(Format("配置版本 {1} => {2} 已完成{3}", OldConfigVersion, NewConfigVersion,
                     NewAppVersion > OldAppVersion ? Format("`n警告: 程序本体存在最新版本 {1} => {2}", OldAppVersion, NewAppVersion) : ""))
+                Save()
             }
             else MsgBox("当前已是最新版本")
         }
