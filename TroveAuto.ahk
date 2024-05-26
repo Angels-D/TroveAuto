@@ -3,7 +3,7 @@
 ;@Ahk2Exe-SetProductVersion 2.2.2
 ;@Ahk2Exe-SetCopyright GPL-3.0 license
 ;@Ahk2Exe-SetLanguage Chinese_PRC
-;@Ahk2Exe-SetMainIcon Trove辅助.ico
+;@Ahk2Exe-SetMainIcon TroveAuto.ico
 ;@Ahk2Exe-SetDescription Trove自动脚本`, 解放双手
 #SingleInstance Prompt
 
@@ -11,18 +11,16 @@ SetTitleMatchMode("RegEx")
 
 config := _Config(
     "config.ini",
-    Map("Global", Map(
-        "GameTitle", "Trove.exe",
-        "GamePath", "",
-        "ConfigVersion", "20240526143500",
-        "AppVersion", "20240526143500",
-    ),
+    Map(
+        "Global", Map(
+            "GameTitle", "Trove.exe",
+            "GamePath", "",
+            "ConfigVersion", "20240526143500",
+            "AppVersion", "20240526143500",
+        ),
         "HoldTime", Map("Value", "3000",),
         "RestartTime", Map("Value", "5000",),
         "Key", Map(
-            "PressR", "r",
-            "PressT", "t",
-            "PressE", "e",
             "Fish", "f",
         ),
         "Address", Map(
