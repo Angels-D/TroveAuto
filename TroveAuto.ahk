@@ -220,8 +220,8 @@ for key in ["Attack", "Dismount", "Mining", "MiningGeode"
 ; 托盘图标
 A_TrayMenu.Delete()
 A_TrayMenu.Add("显示", (ItemName, ItemPos, MyMenu) => (MainGui.Show()))
-A_TrayMenu.Add("重新启动", (ItemName, ItemPos, MyMenu) => (Reload))
-A_TrayMenu.Add("退出", (ItemName, ItemPos, MyMenu) => (ExitApp))
+A_TrayMenu.Add("重新启动", (ItemName, ItemPos, MyMenu) => (Reload()))
+A_TrayMenu.Add("退出", (ItemName, ItemPos, MyMenu) => (ExitApp()))
 
 ; 交互函数
 Close(thisGui) {
