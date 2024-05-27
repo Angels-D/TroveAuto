@@ -423,7 +423,7 @@ AutoBtn_Key_Click_RIGHT(GuiCtrlObj, Info) {
 HotKeyMenu(GuiCtrlObj, Item, IsRightClick, X, Y) {
     HotKeyBoxMenu := Menu()
     HotKeyBoxMenu.Add("添加", (ItemName, ItemPos, MyMenu) {
-        HotKeyEdit(GuiCtrlObj, Item)
+        HotKeyEdit(GuiCtrlObj, Item, true)
         })
     if (Item)
         HotKeyBoxMenu.Add("删除", (ItemName, ItemPos, MyMenu) {
@@ -432,7 +432,7 @@ HotKeyMenu(GuiCtrlObj, Item, IsRightClick, X, Y) {
             })
     HotKeyBoxMenu.Show()
 }
-HotKeyEdit(GuiCtrlObj, Item) {
+HotKeyEdit(GuiCtrlObj, Item, isAdd := unset) {
     MainGui.Opt("+Disabled")
     HotKeyBoxEdit := Gui("-DPIScale OwnDialogs Owner" MainGui.Hwnd)
     HotKeyBoxEdit.Add("Text", "w100", "热键:")
@@ -450,10 +450,12 @@ HotKeyEdit(GuiCtrlObj, Item) {
     HotKeyBoxEdit.Add("Button", "ys vHotKeyBox_Cancel", "取消")
     HotKeyBoxEdit["HotKeyBox_Save"].OnEvent("Click",
         (*) {
-            if Item
+            if not isAdd and Item
                 key := Game.Lists[MainGui["SelectGame"].Text].setting["AutoBtn"]["keys"][Item]
             else {
-                Item := GuiCtrlObj.Add("+Check")
+                if(Item) 
+                    Item := GuiCtrlObj.Insert(Item,"+Check")
+                else Item := GuiCtrlObj.Add("+Check")
                 key := Game.Key(true)
                 Game.Lists[MainGui["SelectGame"].Text].setting["AutoBtn"]["keys"].Push(key)
             }
@@ -623,10 +625,10 @@ class Game {
                 Game.Key(false, "Esc", 0, 500),
                 Game.Key(false, "1", 0, 500),
                 Game.Key(false, "2", 0, 500),
-                Game.Key(false, "Q", 0, 500),
-                Game.Key(false, "R", 5000, 100),
-                Game.Key(false, "T", 5000, 100),
-                Game.Key(false, "E", 5000, 100)
+                Game.Key(false, "q", 0, 500),
+                Game.Key(false, "r", 5000, 500),
+                Game.Key(false, "t", 5000, 500),
+                Game.Key(false, "e", 5000, 500)
             ],
             "Key_Click_LEFT", false,
             "Key_Click_RIGHT", false,
