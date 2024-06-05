@@ -24,9 +24,7 @@ UINT32 module_address = 0;
  * 地图放大: (+0 Address) 77 XX B8 XX XX XX XX F3 0F 10 08 F3 0F 11 89 XX XX XX XX 8B 89
  * 快速挖矿: (+1 Address) DF F1 DD D8 72 61
  * 快速挖矿（晶洞）: (+1 Address) DF F1 DD D8 72 35 8D
- * 账号地址: (+6 Address) E8 XX XX XX FF A1 XX XX XX 01 68 XX XX XX 01 FF
- *           00 00 00 00 E8 X9 XX XX FF A1 XX 6X XX 01 68 XX XX XX 01 FF 70 1C FF 70 18 8D 45 B0 50 E8 X0 7X XX FF 83 C4 10 8D 45 B0
- *           75 06 8B 01 6A 01 FF 10 C7 05 XX XX XX 01 00 00 00 00 C3 CC CC CC 8B 0D XX 6X XX 01 85 C9 74 16 83 41 08 FF 75 06 8B 01
+ * 账号地址: (-9 Address) FF 70 1C FF 70 18 8D 45 B0
  * 视野放大: (+3 Address) F3 0F 11 5F 2C
  */
 

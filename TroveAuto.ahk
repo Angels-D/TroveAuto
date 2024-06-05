@@ -15,8 +15,8 @@ config := _Config(
         "Global", Map(
             "GameTitle", "Trove.exe",
             "GamePath", "",
-            "ConfigVersion", "20240526184000",
-            "AppVersion", "20240526184000",
+            "ConfigVersion", "20240605173000",
+            "AppVersion", "20240605173000",
             "Source", "https://github.com/Angels-D/TroveAuto/",
             "Mirror", "https://github.moeyy.xyz/",
         ),
@@ -26,18 +26,18 @@ config := _Config(
             "Fish", "f",
         ),
         "Address", Map(
-            "Attack", "0xA5B198",
-            "Dismount", "0x33214E",
-            "Mining", "0xAA6D08",
-            "MiningGeode", "0x9B75B7",
-            "Breakblocks", "0xB31DF3",
-            "Map", "0x8E8E9D",
-            "Zoom", "0x8C0826",
-            "ClipCam", "0x8C28AA",
-            "LockCam", "0xA8C945",
-            "Animation", "0x73CC05",
-            "Fish", "0x105466C",
-            "Name", "0x9AD958",
+            "Animation", "0x81DF85",
+            "Attack", "0xC31EC8",
+            "Breakblocks", "0x9220B3",
+            "ClipCam", "0x94DF8A",
+            "Dismount", "0x36661E",
+            "Fish", "0x11DF82C",
+            "LockCam", "0xAECDA5",
+            "Map", "0x9E5F2D",
+            "Mining", "0xA10A08",
+            "MiningGeode", "0xC7F4A7",
+            "Name", "0x9F8C68",
+            "Zoom", "0x94BF06",
         ),
         "Address_Offset", Map(
             "Name", "0x0,0x10,0x0",
@@ -74,7 +74,7 @@ config := _Config(
             "LockCam", "0,74 05 8B 01 FF 50 0C 8B E5",
             "Animation", "3,F3 0F 11 44 24 24 F3 0F 58 84 24 80 00 00 00 50 F3 0F 11 43 24 E8 XX XX XX XX 8D 44 24 34 50",
             "Fish", "0,10 14 XX XX 00 00 00 00 FF 00 00 00 00",
-            "Name", "6,E8 XX XX XX FF A1 XX XX XX 01 68 XX XX XX 01 FF",
+            "Name", "-9,FF 70 1C FF 70 18 8D 45 B0",
         )
     )
 )
@@ -350,6 +350,7 @@ UpdateFromLocal(GuiCtrlObj, Info) {
         value := Format("0x{1:X}", exec.StdOut.ReadAll() + signature[1])
         MainGui[key "Address"].Text := value
     }
+    Msgbox("检测完毕, 确认无误后请手动保存")
 }
 DownloadExe(GuiCtrlObj, Info) {
     Source := config.data["Global"]["Source"] "releases/latest/download/TroveAuto.exe"
@@ -432,7 +433,7 @@ HotKeyMenu(GuiCtrlObj, Item, IsRightClick, X, Y) {
             })
     HotKeyBoxMenu.Show()
 }
-HotKeyEdit(GuiCtrlObj, Item, isAdd := unset) {
+HotKeyEdit(GuiCtrlObj, Item, isAdd := false) {
     MainGui.Opt("+Disabled")
     HotKeyBoxEdit := Gui("-DPIScale OwnDialogs Owner" MainGui.Hwnd)
     HotKeyBoxEdit.Add("Text", "w100", "热键:")
