@@ -1,6 +1,6 @@
 ;@Ahk2Exe-UpdateManifest 2
 ;@Ahk2Exe-SetName TroveAuto
-;@Ahk2Exe-SetProductVersion 2.2.4
+;@Ahk2Exe-SetProductVersion 2.2.6
 ;@Ahk2Exe-SetCopyright GPL-3.0 license
 ;@Ahk2Exe-SetLanguage Chinese_PRC
 ;@Ahk2Exe-SetMainIcon TroveAuto.ico
@@ -15,8 +15,8 @@ config := _Config(
         "Global", Map(
             "GameTitle", "Trove.exe",
             "GamePath", "",
-            "ConfigVersion", "20240605173000",
-            "AppVersion", "20240605173000",
+            "ConfigVersion", "20240619203000",
+            "AppVersion", "20240619203000",
             "Source", "https://github.com/Angels-D/TroveAuto/",
             "Mirror", "https://github.moeyy.xyz/",
         ),
@@ -26,18 +26,18 @@ config := _Config(
             "Fish", "f",
         ),
         "Address", Map(
-            "Animation", "0x81DF85",
-            "Attack", "0xC31EC8",
-            "Breakblocks", "0x9220B3",
-            "ClipCam", "0x94DF8A",
-            "Dismount", "0x36661E",
-            "Fish", "0x11DF82C",
-            "LockCam", "0xAECDA5",
-            "Map", "0x9E5F2D",
-            "Mining", "0xA10A08",
-            "MiningGeode", "0xC7F4A7",
-            "Name", "0x9F8C68",
-            "Zoom", "0x94BF06",
+            "Animation", "0x73F7A5",
+            "Attack", "0x885D78",
+            "Breakblocks", "0x80BD63",
+            "ClipCam", "0x971B6A",
+            "Dismount", "0x33248E",
+            "Fish", "0x10843EC",
+            "LockCam", "0x879685",
+            "Map", "0x9DC8BD",
+            "Mining", "0x8DE118",
+            "MiningGeode", "0xA73617",
+            "Name", "0xB3C478",
+            "Zoom", "0x96FAA6",
         ),
         "Address_Offset", Map(
             "Name", "0x0,0x10,0x0",
@@ -334,9 +334,9 @@ UpdateFromInternet(GuiCtrlObj, Info) {
         for sect in ["Address", "Key"]
             for key, value in config.data[sect]
                 MainGui[key sect].Text := config.data[sect][key]
+        Save()
     }
     else MsgBox("更新失败, 请检查网络连接")
-
 }
 UpdateFromLocal(GuiCtrlObj, Info) {
     if not WinExist("Trove") {
@@ -454,8 +454,8 @@ HotKeyEdit(GuiCtrlObj, Item, isAdd := false) {
             if not isAdd and Item
                 key := Game.Lists[MainGui["SelectGame"].Text].setting["AutoBtn"]["keys"][Item]
             else {
-                if(Item) 
-                    Item := GuiCtrlObj.Insert(Item,"+Check")
+                if (Item)
+                    Item := GuiCtrlObj.Insert(Item, "+Check")
                 else Item := GuiCtrlObj.Add("+Check")
                 key := Game.Key(true)
                 Game.Lists[MainGui["SelectGame"].Text].setting["AutoBtn"]["keys"].Push(key)
@@ -537,7 +537,6 @@ class _Config {
                 this.Load(TempPath)
                 MsgBox(Format("配置版本 {1} => {2} 已完成{3}", OldConfigVersion, NewConfigVersion,
                     NewAppVersion > OldAppVersion ? Format("`n警告: 程序本体存在最新版本 {1} => {2}", OldAppVersion, NewAppVersion) : ""))
-                Save()
             }
             else MsgBox("当前已是最新版本")
         }
