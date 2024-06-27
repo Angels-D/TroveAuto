@@ -1,6 +1,6 @@
 ;@Ahk2Exe-UpdateManifest 2
 ;@Ahk2Exe-SetName TroveAuto
-;@Ahk2Exe-SetProductVersion 2.2.6
+;@Ahk2Exe-SetProductVersion 2.2.7
 ;@Ahk2Exe-SetCopyright GPL-3.0 license
 ;@Ahk2Exe-SetLanguage Chinese_PRC
 ;@Ahk2Exe-SetMainIcon TroveAuto.ico
@@ -15,29 +15,28 @@ config := _Config(
         "Global", Map(
             "GameTitle", "Trove.exe",
             "GamePath", "",
-            "ConfigVersion", "20240619203000",
-            "AppVersion", "20240619203000",
+            "ConfigVersion", "20240628055500",
+            "AppVersion", "20240628055500",
             "Source", "https://github.com/Angels-D/TroveAuto/",
             "Mirror", "https://github.moeyy.xyz/",
         ),
-        "HoldTime", Map("Value", "3000",),
         "RestartTime", Map("Value", "5000",),
         "Key", Map(
             "Fish", "f",
         ),
         "Address", Map(
-            "Animation", "0x73F7A5",
-            "Attack", "0x885D78",
-            "Breakblocks", "0x80BD63",
-            "ClipCam", "0x971B6A",
-            "Dismount", "0x33248E",
-            "Fish", "0x10843EC",
-            "LockCam", "0x879685",
-            "Map", "0x9DC8BD",
-            "Mining", "0x8DE118",
-            "MiningGeode", "0xA73617",
-            "Name", "0xB3C478",
-            "Zoom", "0x96FAA6",
+            "Animation", "0x73F805",
+            "Attack", "0xAF6D48",
+            "Breakblocks", "0x820E43",
+            "ClipCam", "0xA331CA",
+            "Dismount", "0x32D61E",
+            "Fish", "0x1080634",
+            "LockCam", "0xA1C8D5",
+            "Map", "0x83368D",
+            "Mining", "0xA744D8",
+            "MiningGeode", "0xAAA427",
+            "Name", "0x8D6168",
+            "Zoom", "0xA31146",
         ),
         "Address_Offset", Map(
             "Name", "0x0,0x10,0x0",
@@ -284,33 +283,31 @@ UIReset() {
 }
 Start(GuiCtrlObj, Info) {
     if (Game.Lists[MainGui["SelectGame"].Text].running) {
-        Func := Game.Lists[MainGui["SelectGame"].Text].Func
         MainGui["StartBtn"].Text := "启动"
         for key in ["SelectAction", "Interval"]
             MainGui[key].Enabled := true
         Game.Lists[MainGui["SelectGame"].Text].running := false
         switch MainGui["SelectAction"].Text {
             case "钓鱼":
-                Func()
+                Game.Lists[MainGui["SelectGame"].Text].AutoFish()
             default:
                 for key in ["HotKeyBox", "AutoBtn_Key_Click_LEFT", "AutoBtn_Key_Click_RIGHT"]
                     MainGui[key].Enabled := true
-                SetTimer(Func, false)
+                Game.Lists[MainGui["SelectGame"].Text].AutoBtn()
         }
     }
     else {
-        Func := Game.Lists[MainGui["SelectGame"].Text].Func := ObjBindMethod(Game.Lists[MainGui["SelectGame"].Text], Game.ActionsMap[MainGui["SelectAction"].Text])
         MainGui["StartBtn"].Text := "关闭"
         for key in ["SelectAction", "Interval"]
             MainGui[key].Enabled := false
         Game.Lists[MainGui["SelectGame"].Text].running := true
         switch MainGui["SelectAction"].Text {
             case "钓鱼":
-                Func()
+                Game.Lists[MainGui["SelectGame"].Text].AutoFish()
             default:
                 for key in ["HotKeyBox", "AutoBtn_Key_Click_LEFT", "AutoBtn_Key_Click_RIGHT"]
                     MainGui[key].Enabled := false
-                SetTimer(Func, MainGui["Interval"].Value)
+                Game.Lists[MainGui["SelectGame"].Text].AutoBtn()
         }
     }
 }
@@ -429,7 +426,7 @@ HotKeyMenu(GuiCtrlObj, Item, IsRightClick, X, Y) {
     if (Item)
         HotKeyBoxMenu.Add("删除", (ItemName, ItemPos, MyMenu) {
             GuiCtrlObj.Delete(Item)
-            Game.Lists[MainGui["SelectGame"].Text].setting["AutoBtn"]["keys"].RemoveAt(Item)
+                Game.Lists[MainGui["SelectGame"].Text].setting["AutoBtn"]["keys"].RemoveAt(Item)
             })
     HotKeyBoxMenu.Show()
 }
@@ -457,8 +454,8 @@ HotKeyEdit(GuiCtrlObj, Item, isAdd := false) {
                 if (Item)
                     Item := GuiCtrlObj.Insert(Item, "+Check")
                 else Item := GuiCtrlObj.Add("+Check")
-                key := Game.Key(true)
-                Game.Lists[MainGui["SelectGame"].Text].setting["AutoBtn"]["keys"].Push(key)
+                    key := Game.Key(true)
+                    Game.Lists[MainGui["SelectGame"].Text].setting["AutoBtn"]["keys"].Push(key)
             }
             GuiCtrlObj.Modify(Item, ,
                 HotKeyBoxEdit["HotKeyBox_Hotkey"].value,
@@ -466,11 +463,11 @@ HotKeyEdit(GuiCtrlObj, Item, isAdd := false) {
                 HotKeyBoxEdit["HotKeyBox_Interval"].value,
                 HotKeyBoxEdit["HotKeyBox_Count"].value
             )
-            key.key := HotKeyBoxEdit["HotKeyBox_Hotkey"].value
-            key.holdtime := HotKeyBoxEdit["HotKeyBox_HoldTime"].value
-            key.interval := HotKeyBoxEdit["HotKeyBox_Interval"].value
-            key.count := HotKeyBoxEdit["HotKeyBox_Count"].value
-            WinClose()
+                key.key := HotKeyBoxEdit["HotKeyBox_Hotkey"].value
+                key.holdtime := HotKeyBoxEdit["HotKeyBox_HoldTime"].value
+                key.interval := HotKeyBoxEdit["HotKeyBox_Interval"].value
+                key.count := HotKeyBoxEdit["HotKeyBox_Count"].value
+                WinClose()
         })
     HotKeyBoxEdit["HotKeyBox_Cancel"].OnEvent("Click", (*) => (WinClose()))
     HotKeyBoxEdit.OnEvent("Close", (*) => (MainGui.Opt("-Disabled")))
@@ -572,11 +569,31 @@ class Game {
             ReadProcessMemory(ProcessHandle,MADDRESS,MVALUE,4)
             return NumGet(Mvalue,"Int")
         }
-        NatualPress(npbtn,pid) {
-            ControlSend("{Blind}{" npbtn " down}",, "ahk_pid " pid)
-            Sleep(Random(66, 122))
-            ControlSend("{Blind}{" npbtn " up}",, "ahk_pid " pid)
-            Sleep(Random(66, 122))
+        NatualPress(npbtn,pid,holdtime := 0) {
+            SetKeyDelay(,Random(66, 122) + holdtime)
+            ControlSend("{" npbtn "}",, "ahk_pid " pid)
+        }
+        AutoBtn(Pid,Interval) {
+            Global STOP, keys
+            loop{
+                Sleep(500)
+            }until(IsSet(keys) or STOP)
+            loop{
+                Sleep(Interval)
+                try {
+                    for key in keys["btn"]
+                        if (key.enabled)
+                            Loop key.count {
+                                NatualPress(key.key, Pid, key.holdtime)
+                                Sleep(key.interval)
+                            }
+                    for key in ["LEFT", "RIGHT"]
+                        if (keys["Click" key])
+                            if (WinGetPID("A") != Pid)
+                                ControlClick(, "ahk_pid " Pid, , key, , "NA")
+                            else Click(key)
+                }
+            }until(STOP)
         }
         AutoFish(Pid,FishKey,Interval,Take_Address,State_Address,ProcessHandle){
             Global STOP
@@ -641,7 +658,6 @@ class Game {
             , "Breakblocks", "Map", "Zoom", "ClipCam", "LockCam", "Animation",]
             this.setting["Features"][key] := false
         this.AutoRestartFunc := ObjBindMethod(this, "AutoRestart")
-        this.Func := ObjBindMethod(this, "AutoBtn")
     }
     static Reset() {
         for Key, Value in Game.Lists
@@ -672,14 +688,14 @@ class Game {
                         if theGame.running {
                             switch theGame.action {
                                 case "钓鱼":
-                                    theGame.Func()
+                                    theGame.AutoFish()
                                 default:
-                                    SetTimer(theGame.Func, theGame.setting["AutoBtn"]["interval"])
+                                    theGame.AutoBtn()
                             }
-                            for key in ["Attack", "Dismount", "Mining", "MiningGeode"
-                                , "Breakblocks", "Map", "Zoom", "ClipCam", "LockCam", "Animation",]
-                                theGame.Features(key, theGame.setting["Features"][key])
                         }
+                        for key in ["Attack", "Dismount", "Mining", "MiningGeode"
+                            , "Breakblocks", "Map", "Zoom", "ClipCam", "LockCam", "Animation",]
+                            theGame.Features(key, theGame.setting["Features"][key])
                     }
                     else Game.Lists[theGame.name] := theGame
                     MainGui["SelectGame"].Add([theGame.name])
@@ -704,18 +720,17 @@ class Game {
         }
     }
     AutoBtn() {
-        try {
-            for key in this.setting["AutoBtn"]["keys"]
-                if (key.enabled)
-                    Loop key.count {
-                        this.NatualPress(key.key, key.holdtime)
-                        Sleep(key.interval)
-                    }
-            for key in ["LEFT", "RIGHT"]
-                if (this.setting["AutoBtn"]["Key_Click_" key])
-                    if (WinGetPID("A") != this.pid)
-                        ControlClick(, "ahk_pid " this.pid, , key, , "NA")
-                    else Click(key)
+        try
+            this.thread["STOP"] := true
+        if (this.running)
+        {
+            this.thread := Worker(Format(Game.ScriptAHK, Format('{1}({2},{3})'
+                , "AutoBtn", this.pid, this.setting["AutoBtn"]["interval"])))
+            this.thread["keys"] := Map(
+                "btn", this.setting["AutoBtn"]["keys"],
+                "Click_LEFT", this.setting["AutoBtn"]["Key_Click_LEFT"],
+                "Click_RIGHT", this.setting["AutoBtn"]["Key_Click_RIGHT"],
+            )
         }
     }
     AutoFish() {
@@ -776,8 +791,6 @@ class Game {
     StopAll(keepStatus := false) {
         running := this.running
         this.running := false
-        Func := this.Func
-        SetTimer(Func, false)
         try this.thread["STOP"] := true
         CloseHandle(this.ProcessHandle)
         if keepStatus
@@ -788,12 +801,6 @@ class Game {
             config.data["Address"][Name],
             StrSplit(config.data["Features_Change"][Name], ",")[Value ? 1 : 2]
         )
-    }
-    NatualPress(npbtn, holdtime := 0) {
-        ControlSend("{Blind}{" npbtn " down}", , "ahk_pid " this.pid)
-        Sleep(Random(66, 122) + holdtime)
-        ControlSend("{Blind}{" npbtn " up}", , "ahk_pid " this.pid)
-        Sleep(Random(66, 122))
     }
     GetName(Address) {
         Address := this.GetAddressOffset(Address, StrSplit(config.data["Address_Offset"]["Name"], ","))
