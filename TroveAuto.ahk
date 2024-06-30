@@ -455,7 +455,7 @@ HotKeyEdit(GuiCtrlObj, Item, isAdd := false) {
                     Item := GuiCtrlObj.Insert(Item, "+Check")
                 else Item := GuiCtrlObj.Add("+Check")
                     key := Game.Key(true)
-                    Game.Lists[MainGui["SelectGame"].Text].setting["AutoBtn"]["keys"].Push(key)
+                    Game.Lists[MainGui["SelectGame"].Text].setting["AutoBtn"]["keys"].InsertAt(Item, key)
             }
             GuiCtrlObj.Modify(Item, ,
                 HotKeyBoxEdit["HotKeyBox_Hotkey"].value,
@@ -585,10 +585,12 @@ class Game {
                         if (key.enabled)
                             Loop key.count {
                                 NatualPress(key.key, Pid, key.holdtime)
+                                if(STOP)
+                                    return
                                 Sleep(key.interval)
                             }
                     for key in ["LEFT", "RIGHT"]
-                        if (keys["Click" key])
+                        if (keys["Click_" key] and not STOP)
                             if (WinGetPID("A") != Pid)
                                 ControlClick(, "ahk_pid " Pid, , key, , "NA")
                             else Click(key)
