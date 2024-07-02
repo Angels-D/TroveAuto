@@ -639,7 +639,7 @@ class Game {
             "state_address", Map(),
         ),
         "AutoBtn", Map(
-            "interval", "10000",
+            "interval", "1000",
             "keys", [
                 Game.Key(false, "Esc", 0, 500),
                 Game.Key(false, "1", 0, 500),
@@ -660,6 +660,7 @@ class Game {
             , "Breakblocks", "Map", "Zoom", "ClipCam", "LockCam", "Animation",]
             this.setting["Features"][key] := false
         this.AutoRestartFunc := ObjBindMethod(this, "AutoRestart")
+        this.FeaturesAttackFunc := ObjBindMethod(this, "Features_Attack")
     }
     static Reset() {
         for Key, Value in Game.Lists
@@ -798,7 +799,21 @@ class Game {
         if keepStatus
             this.running := running
     }
+    Features_Attack(){
+        this.WriteMemory(
+            config.data["Address"]["Attack"],
+            StrSplit(config.data["Features_Change"]["Attack"], ",")[1]
+        )
+        Sleep(300)
+        this.WriteMemory(
+            config.data["Address"]["Attack"],
+            StrSplit(config.data["Features_Change"]["Attack"], ",")[2]
+        )
+    }
     Features(Name, Value) {
+        if(Name == "Attack")
+            SetTimer(this.FeaturesAttackFunc,Value?1000:0)
+
         this.WriteMemory(
             config.data["Address"][Name],
             StrSplit(config.data["Features_Change"][Name], ",")[Value ? 1 : 2]
