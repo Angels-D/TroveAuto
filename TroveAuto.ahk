@@ -1,6 +1,6 @@
 ;@Ahk2Exe-UpdateManifest 2
 ;@Ahk2Exe-SetName TroveAuto
-;@Ahk2Exe-SetProductVersion 2.2.7
+;@Ahk2Exe-SetProductVersion 2.2.8
 ;@Ahk2Exe-SetCopyright GPL-3.0 license
 ;@Ahk2Exe-SetLanguage Chinese_PRC
 ;@Ahk2Exe-SetMainIcon TroveAuto.ico
@@ -15,8 +15,8 @@ config := _Config(
         "Global", Map(
             "GameTitle", "Trove.exe",
             "GamePath", "",
-            "ConfigVersion", "20240628055500",
-            "AppVersion", "20240628055500",
+            "ConfigVersion", "20240702180000",
+            "AppVersion", "20240702180000",
             "Source", "https://github.com/Angels-D/TroveAuto/",
             "Mirror", "https://github.moeyy.xyz/",
         ),
@@ -116,12 +116,13 @@ MainGui.Add("Text", "xs w70 Section", "玩家列表:")
 MainGui.Add("DropDownList", "ys w130 vSelectGame")
 MainGui.Add("Text", "xs w70 Section", "脚本动作:")
 MainGui.Add("DropDownList", "ys w130 vSelectAction", ["自动按键", "钓鱼"])
-MainGui.Add("GroupBox", "xs-20 y+20 w290 r8 Section", "自动按键配置区")
+MainGui.Add("GroupBox", "xs-20 y+20 w290 r9 Section", "自动按键配置区")
 MainGui.Add("Text", "xp+10 yp+30 Section", "频率(毫秒):")
 MainGui.Add("Edit", "ys w100 vInterval")
 MainGui.Add("ListView", "xs w250 Section NoSortHdr Checked -Multi vHotKeyBox", ["热键", "持续时间", "间隔时间", "次数"])
 MainGui.Add("CheckBox", "xs Section w130 vAutoBtn_Key_Click_LEFT", "自动左击")
 MainGui.Add("CheckBox", "ys w130 vAutoBtn_Key_Click_RIGHT", "自动右击")
+MainGui.Add("CheckBox", "xs Section w200 vAutoBtn_NoTop", "前台时禁用")
 MainGui.Add("GroupBox", "xs-10 ys+40 w290 r6 Section", "功能区")
 for key, value in Map(
     "Attack", "自动攻击",
@@ -169,6 +170,8 @@ MainGui.Add("Text", "xs w100 Section", "钓鱼按键:")
 MainGui.Add("HotKey", "ys w100 vFishKey", config.data["Key"]["Fish"])
 MainGui.Add("Text", "xs w100 Section", "自启扫描(毫秒):")
 MainGui.Add("Edit", "ys w100 vRestartTime", config.data["RestartTime"]["Value"])
+MainGui.Add("Text", "xs w100 Section", "镜像源:")
+MainGui.Add("Edit", "ys w100 vMirror", config.data["Global"]["Mirror"])
 MainGui.Add("Button", "xs w40 Section vSaveBtn", "保存")
 MainGui.Add("Button", "ys w75 vUpdateFromInternetBtn", "联网更新")
 MainGui.Add("Button", "ys w75 vUpdateFromLocalBtn", "本地更新")
@@ -209,6 +212,7 @@ MainGui["HotKeyBox"].OnEvent("DoubleClick", HotKeyEdit)
 MainGui["HotKeyBox"].OnEvent("ItemCheck", HotKeyCheck)
 MainGui["AutoBtn_Key_Click_LEFT"].OnEvent("Click", AutoBtn_Key_Click_LEFT)
 MainGui["AutoBtn_Key_Click_RIGHT"].OnEvent("Click", AutoBtn_Key_Click_RIGHT)
+MainGui["AutoBtn_NoTop"].OnEvent("Click", AutoBtn_NoTop)
 MainGui["AutoRestart"].OnEvent("Click", AutoRestart)
 MainGui["Account"].OnEvent("Change", Account)
 MainGui["Password"].OnEvent("Change", Password)
@@ -269,12 +273,12 @@ Refresh(GuiCtrlObj := unset, Info := unset) {
 UIReset() {
     for key in ["Attack", "Dismount", "Mining", "MiningGeode"
         , "Breakblocks", "Map", "Zoom", "ClipCam", "LockCam", "Animation"
-        , "AutoBtn_Key_Click_LEFT", "AutoBtn_Key_Click_RIGHT", "HotKeyBox"
+        , "AutoBtn_Key_Click_LEFT", "AutoBtn_Key_Click_RIGHT", "AutoBtn_NoTop", "HotKeyBox"
         , "Interval", "SelectAction", "StartBtn", "AutoRestart", "Account", "Password"]
         MainGui[key].Enabled := false
     for key in ["Attack", "Dismount", "Mining", "MiningGeode"
         , "Breakblocks", "Map", "Zoom", "ClipCam", "LockCam", "Animation"
-        , "AutoBtn_Key_Click_LEFT", "AutoBtn_Key_Click_RIGHT"
+        , "AutoBtn_Key_Click_LEFT", "AutoBtn_Key_Click_RIGHT", "AutoBtn_NoTop"
         , "Interval", "SelectAction", "AutoRestart", "Account", "Password"]
         try MainGui[key].Value := ""
         catch
@@ -291,7 +295,7 @@ Start(GuiCtrlObj, Info) {
             case "钓鱼":
                 Game.Lists[MainGui["SelectGame"].Text].AutoFish()
             default:
-                for key in ["HotKeyBox", "AutoBtn_Key_Click_LEFT", "AutoBtn_Key_Click_RIGHT"]
+                for key in ["HotKeyBox", "AutoBtn_Key_Click_LEFT", "AutoBtn_Key_Click_RIGHT", "AutoBtn_NoTop"]
                     MainGui[key].Enabled := true
                 Game.Lists[MainGui["SelectGame"].Text].AutoBtn()
         }
@@ -305,7 +309,7 @@ Start(GuiCtrlObj, Info) {
             case "钓鱼":
                 Game.Lists[MainGui["SelectGame"].Text].AutoFish()
             default:
-                for key in ["HotKeyBox", "AutoBtn_Key_Click_LEFT", "AutoBtn_Key_Click_RIGHT"]
+                for key in ["HotKeyBox", "AutoBtn_Key_Click_LEFT", "AutoBtn_Key_Click_RIGHT", "AutoBtn_NoTop"]
                     MainGui[key].Enabled := false
                 Game.Lists[MainGui["SelectGame"].Text].AutoBtn()
         }
@@ -383,18 +387,18 @@ SelectAction(GuiCtrlObj, Info := unset) {
         MainGui[key].Enabled := true
         MainGui[key].Value := Game.Lists[MainGui["SelectGame"].Text].setting["Features"][key]
     }
-    for key in ["HotKeyBox", "AutoBtn_Key_Click_LEFT", "AutoBtn_Key_Click_RIGHT"]
+    for key in ["HotKeyBox", "AutoBtn_Key_Click_LEFT", "AutoBtn_Key_Click_RIGHT", "AutoBtn_NoTop"]
         MainGui[key].Enabled := false
     MainGui["HotKeyBox"].Delete()
     for key in Game.Lists[MainGui["SelectGame"].Text].setting["AutoBtn"]["keys"]
         MainGui["HotKeyBox"].Add(key.enabled ? "+Check" : "-Check", key.key, key.holdtime, key.interval, key.count)
-    for key in ["Key_Click_LEFT", "Key_Click_RIGHT"]
+    for key in ["Key_Click_LEFT", "Key_Click_RIGHT", "NoTop"]
         MainGui["AutoBtn_" key].Value := Game.Lists[MainGui["SelectGame"].Text].setting["AutoBtn"][key]
     switch GuiCtrlObj.Text {
         case "自动按键":
             MainGui["Interval"].Value := Game.Lists[MainGui["SelectGame"].Text].setting["AutoBtn"]["interval"]
             if (!Game.Lists[MainGui["SelectGame"].Text].running)
-                for key in ["HotKeyBox", "AutoBtn_Key_Click_LEFT", "AutoBtn_Key_Click_RIGHT"]
+                for key in ["HotKeyBox", "AutoBtn_Key_Click_LEFT", "AutoBtn_Key_Click_RIGHT", "AutoBtn_NoTop"]
                     MainGui[key].Enabled := true
         case "钓鱼":
             MainGui["Interval"].Value := Game.Lists[MainGui["SelectGame"].Text].setting["Fish"]["interval"]
@@ -417,6 +421,9 @@ AutoBtn_Key_Click_LEFT(GuiCtrlObj, Info) {
 }
 AutoBtn_Key_Click_RIGHT(GuiCtrlObj, Info) {
     Game.Lists[MainGui["SelectGame"].Text].setting["AutoBtn"]["Key_Click_RIGHT"] := GuiCtrlObj.Value
+}
+AutoBtn_NoTop(GuiCtrlObj, Info) {
+    Game.Lists[MainGui["SelectGame"].Text].setting["AutoBtn"]["NoTop"] := GuiCtrlObj.Value
 }
 HotKeyMenu(GuiCtrlObj, Item, IsRightClick, X, Y) {
     HotKeyBoxMenu := Menu()
@@ -571,9 +578,9 @@ class Game {
         }
         NatualPress(npbtn,pid,holdtime := 0) {
             SetKeyDelay(,Random(66, 122) + holdtime)
-            ControlSend("{" npbtn "}",, "ahk_pid " pid)
+            ControlSend("{Blind}" "{" npbtn "}",, "ahk_pid " pid)
         }
-        AutoBtn(Pid,Interval) {
+        AutoBtn(Pid,Interval,NoTop) {
             Global STOP, keys
             loop{
                 Sleep(500)
@@ -584,16 +591,19 @@ class Game {
                     for key in keys["btn"]
                         if (key.enabled)
                             Loop key.count {
-                                NatualPress(key.key, Pid, key.holdtime)
                                 if(STOP)
                                     return
+                                if(NoTop and WinGetPID("A") == Pid)
+                                    break
+                                NatualPress(key.key, Pid, key.holdtime)
                                 Sleep(key.interval)
                             }
                     for key in ["LEFT", "RIGHT"]
                         if (keys["Click_" key] and not STOP)
                             if (WinGetPID("A") != Pid)
                                 ControlClick(, "ahk_pid " Pid, , key, , "NA")
-                            else Click(key)
+                            else if(not NoTop)
+                                Click(key)
                 }
             }until(STOP)
         }
@@ -639,6 +649,7 @@ class Game {
             "state_address", Map(),
         ),
         "AutoBtn", Map(
+            "NoTop", false,
             "interval", "1000",
             "keys", [
                 Game.Key(false, "Esc", 0, 500),
@@ -727,8 +738,8 @@ class Game {
             this.thread["STOP"] := true
         if (this.running)
         {
-            this.thread := Worker(Format(Game.ScriptAHK, Format('{1}({2},{3})'
-                , "AutoBtn", this.pid, this.setting["AutoBtn"]["interval"])))
+            this.thread := Worker(Format(Game.ScriptAHK, Format('{1}({2},{3},{4})'
+                , "AutoBtn", this.pid, this.setting["AutoBtn"]["interval"], this.setting["AutoBtn"]["NoTop"])))
             this.thread["keys"] := Map(
                 "btn", this.setting["AutoBtn"]["keys"],
                 "Click_LEFT", this.setting["AutoBtn"]["Key_Click_LEFT"],
@@ -799,7 +810,7 @@ class Game {
         if keepStatus
             this.running := running
     }
-    Features_Attack(){
+    Features_Attack() {
         this.WriteMemory(
             config.data["Address"]["Attack"],
             StrSplit(config.data["Features_Change"]["Attack"], ",")[1]
@@ -811,8 +822,8 @@ class Game {
         )
     }
     Features(Name, Value) {
-        if(Name == "Attack")
-            SetTimer(this.FeaturesAttackFunc,Value?1000:0)
+        if (Name == "Attack")
+            SetTimer(this.FeaturesAttackFunc, Value ? 1000 : 0)
 
         this.WriteMemory(
             config.data["Address"][Name],
