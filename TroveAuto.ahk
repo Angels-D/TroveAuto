@@ -15,8 +15,8 @@ config := _Config(
         "Global", Map(
             "GameTitle", "Trove.exe",
             "GamePath", "",
-            "ConfigVersion", "20240702180000",
-            "AppVersion", "20240702180000",
+            "ConfigVersion", "20240705080000",
+            "AppVersion", "20240705080000",
             "Source", "https://github.com/Angels-D/TroveAuto/",
             "Mirror", "https://github.moeyy.xyz/",
         ),
@@ -25,18 +25,18 @@ config := _Config(
             "Fish", "f",
         ),
         "Address", Map(
-            "Animation", "0x73F805",
-            "Attack", "0xAF6D48",
-            "Breakblocks", "0x820E43",
-            "ClipCam", "0xA331CA",
-            "Dismount", "0x32D61E",
-            "Fish", "0x1080634",
-            "LockCam", "0xA1C8D5",
-            "Map", "0x83368D",
-            "Mining", "0xA744D8",
-            "MiningGeode", "0xAAA427",
-            "Name", "0x8D6168",
-            "Zoom", "0xA31146",
+            "Animation","0x73F805",
+            "Attack","0x8EA3F8",
+            "Breakblocks","0xA6BC13",
+            "ClipCam","0xB0CAEA",
+            "Dismount","0x33251E",
+            "Fish","0x1084364",
+            "LockCam","0xA4D625",
+            "Map","0x9903BD",
+            "Mining","0xB11E08",
+            "MiningGeode","0xAC76E7",
+            "Name","0xB47D98",
+            "Zoom","0xB0AA66",
         ),
         "Address_Offset", Map(
             "Name", "0x0,0x10,0x0",
@@ -180,13 +180,12 @@ MainGui.Add("Button", "ys w75 vUpdateFromLocalBtn", "本地更新")
 MainGui["Tab"].UseTab("关于")
 MainGui.Add("ActiveX", "w150 h150 y+100 Center",
     "mshtml:<img src='https://cdn.jsdelivr.net/gh/Angels-D/Angels-D.github.io/medias/avatar.jpg' style='width:150px;'/>")
-MainGui.Add("Text", , "作者: AnglesD 游戏ID: D_FairyTail")
+MainGui.Add("Text", , "作者: AnglesD")
 MainGui.Add("Text", "cRed", "本软件完全开源免费, 仅供学习使用！")
 MainGui.Add("Link", , "
     (
         博客: `n<a href="https://Angels-D.github.io/">https://Angels-D.github.io/</a>`n
         源码: `n<a href="https://github.com/Angels-D/TroveAuto">https://github.com/Angels-D/TroveAuto</a>`n
-        公会推广: `n<a target="_blank" href="https://qm.qq.com/cgi-bin/qm/qr?k=vOppyOHhd2WOrA6jJ9Yd-qi8EZQvHjnk&jump_from=webapi">AshesWithoutFire[群号:423933990]</a>
     )"
 )
 MainGui.Add("Button", "y+30 w200 h60 vDownloadBtn", "最新版脚本下载")
@@ -578,7 +577,7 @@ class Game {
         }
         NatualPress(npbtn,pid,holdtime := 0) {
             SetKeyDelay(,Random(66, 122) + holdtime)
-            ControlSend("{Blind}" "{" npbtn "}",, "ahk_pid " pid)
+            ControlSend("{Blind}" "{" Format("VK{{}:X{}}", GetKeyVK(npbtn)) "}",, "ahk_pid " pid)
         }
         AutoBtn(Pid,Interval,NoTop) {
             Global STOP, keys
@@ -655,10 +654,10 @@ class Game {
                 Game.Key(false, "Esc", 0, 500),
                 Game.Key(false, "1", 0, 500),
                 Game.Key(false, "2", 0, 500),
-                Game.Key(false, "q", 0, 500),
-                Game.Key(false, "r", 5000, 500),
-                Game.Key(false, "t", 5000, 500),
-                Game.Key(false, "e", 5000, 500)
+                Game.Key(false, "Q", 0, 500),
+                Game.Key(false, "R", 5000, 500),
+                Game.Key(false, "T", 5000, 500),
+                Game.Key(false, "E", 5000, 500)
             ],
             "Key_Click_LEFT", false,
             "Key_Click_RIGHT", false,
