@@ -1,6 +1,6 @@
 ;@Ahk2Exe-UpdateManifest 2
 ;@Ahk2Exe-SetName TroveAuto
-;@Ahk2Exe-SetProductVersion 2.2.8
+;@Ahk2Exe-SetProductVersion 2.2.9
 ;@Ahk2Exe-SetCopyright GPL-3.0 license
 ;@Ahk2Exe-SetLanguage Chinese_PRC
 ;@Ahk2Exe-SetMainIcon TroveAuto.ico
@@ -15,8 +15,8 @@ config := _Config(
         "Global", Map(
             "GameTitle", "Trove.exe",
             "GamePath", "",
-            "ConfigVersion", "20240705080000",
-            "AppVersion", "20240705080000",
+            "ConfigVersion", "20240719090000",
+            "AppVersion", "20240719090000",
             "Source", "https://github.com/Angels-D/TroveAuto/",
             "Mirror", "https://github.moeyy.xyz/",
         ),
@@ -25,18 +25,18 @@ config := _Config(
             "Fish", "f",
         ),
         "Address", Map(
-            "Animation","0x73F805",
-            "Attack","0x8EA3F8",
-            "Breakblocks","0xA6BC13",
-            "ClipCam","0xB0CAEA",
-            "Dismount","0x33251E",
-            "Fish","0x1084364",
-            "LockCam","0xA4D625",
-            "Map","0x9903BD",
-            "Mining","0xB11E08",
-            "MiningGeode","0xAC76E7",
-            "Name","0xB47D98",
-            "Zoom","0xB0AA66",
+            "Animation", "0x73F835",
+            "Attack", "0x84AF28",
+            "Breakblocks", "0x972C63",
+            "ClipCam", "0x9C65EA",
+            "Dismount", "0x37B0DE",
+            "Fish", "0x105B964",
+            "LockCam", "0x93C005",
+            "Map", "0x9E793D",
+            "Mining", "0xB1EBC8",
+            "MiningGeode", "0xA2B3B7",
+            "Name", "0x81B0F8",
+            "Zoom", "0x9C4556",
         ),
         "Address_Offset", Map(
             "Name", "0x0,0x10,0x0",
@@ -576,8 +576,10 @@ class Game {
             return NumGet(Mvalue,"Int")
         }
         NatualPress(npbtn,pid,holdtime := 0) {
-            SetKeyDelay(,Random(66, 122) + holdtime)
-            ControlSend("{Blind}" "{" Format("VK{{}:X{}}", GetKeyVK(npbtn)) "}",, "ahk_pid " pid)
+            ; SetKeyDelay(,Random(66, 122) + holdtime)
+            ControlSend("{Blind}" "{" Format("VK{{}:X{}}", GetKeyVK(npbtn)) " down" "}",, "ahk_pid " pid)
+            Sleep(Random(66, 122) + holdtime)
+            ControlSend("{Blind}" "{" Format("VK{{}:X{}}", GetKeyVK(npbtn)) " up" "}",, "ahk_pid " pid)
         }
         AutoBtn(Pid,Interval,NoTop) {
             Global STOP, keys
