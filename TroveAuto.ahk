@@ -1,6 +1,6 @@
 ;@Ahk2Exe-UpdateManifest 2
 ;@Ahk2Exe-SetName TroveAuto
-;@Ahk2Exe-SetProductVersion 2.2.9
+;@Ahk2Exe-SetProductVersion 2.2.10
 ;@Ahk2Exe-SetCopyright GPL-3.0 license
 ;@Ahk2Exe-SetLanguage Chinese_PRC
 ;@Ahk2Exe-SetMainIcon TroveAuto.ico
@@ -15,8 +15,8 @@ config := _Config(
         "Global", Map(
             "GameTitle", "Trove.exe",
             "GamePath", "",
-            "ConfigVersion", "20240719090000",
-            "AppVersion", "20240719090000",
+            "ConfigVersion", "20240901120000",
+            "AppVersion", "20240901120000",
             "Source", "https://github.com/Angels-D/TroveAuto/",
             "Mirror", "https://github.moeyy.xyz/",
         ),
@@ -25,18 +25,18 @@ config := _Config(
             "Fish", "f",
         ),
         "Address", Map(
-            "Animation", "0x73F835",
-            "Attack", "0x84AF28",
-            "Breakblocks", "0x972C63",
-            "ClipCam", "0x9C65EA",
-            "Dismount", "0x37B0DE",
-            "Fish", "0x105B964",
-            "LockCam", "0x93C005",
-            "Map", "0x9E793D",
-            "Mining", "0xB1EBC8",
-            "MiningGeode", "0xA2B3B7",
-            "Name", "0x81B0F8",
-            "Zoom", "0x9C4556",
+            "Animation", "0x73FF55",
+            "Attack", "0x81CC48",
+            "Breakblocks", "0xA2C993",
+            "ClipCam", "0xA20A6A",
+            "Dismount", "0x33296E",
+            "Fish", "0x10852AC",
+            "LockCam", "0xA54A45",
+            "Map", "0xB11FED",
+            "Mining", "0x9B4758",
+            "MiningGeode", "0x8A2697",
+            "Name", "0x939718",
+            "Zoom", "0xA1E9D6",
         ),
         "Address_Offset", Map(
             "Name", "0x0,0x10,0x0",
@@ -428,12 +428,12 @@ HotKeyMenu(GuiCtrlObj, Item, IsRightClick, X, Y) {
     HotKeyBoxMenu := Menu()
     HotKeyBoxMenu.Add("添加", (ItemName, ItemPos, MyMenu) {
         HotKeyEdit(GuiCtrlObj, Item, true)
-        })
+    })
     if (Item)
         HotKeyBoxMenu.Add("删除", (ItemName, ItemPos, MyMenu) {
             GuiCtrlObj.Delete(Item)
-                Game.Lists[MainGui["SelectGame"].Text].setting["AutoBtn"]["keys"].RemoveAt(Item)
-            })
+            Game.Lists[MainGui["SelectGame"].Text].setting["AutoBtn"]["keys"].RemoveAt(Item)
+        })
     HotKeyBoxMenu.Show()
 }
 HotKeyEdit(GuiCtrlObj, Item, isAdd := false) {
@@ -454,27 +454,27 @@ HotKeyEdit(GuiCtrlObj, Item, isAdd := false) {
     HotKeyBoxEdit.Add("Button", "ys vHotKeyBox_Cancel", "取消")
     HotKeyBoxEdit["HotKeyBox_Save"].OnEvent("Click",
         (*) {
-            if not isAdd and Item
-                key := Game.Lists[MainGui["SelectGame"].Text].setting["AutoBtn"]["keys"][Item]
-            else {
-                if (Item)
-                    Item := GuiCtrlObj.Insert(Item, "+Check")
-                else Item := GuiCtrlObj.Add("+Check")
-                    key := Game.Key(true)
-                    Game.Lists[MainGui["SelectGame"].Text].setting["AutoBtn"]["keys"].InsertAt(Item, key)
-            }
-            GuiCtrlObj.Modify(Item, ,
-                HotKeyBoxEdit["HotKeyBox_Hotkey"].value,
-                HotKeyBoxEdit["HotKeyBox_HoldTime"].value,
-                HotKeyBoxEdit["HotKeyBox_Interval"].value,
-                HotKeyBoxEdit["HotKeyBox_Count"].value
-            )
-                key.key := HotKeyBoxEdit["HotKeyBox_Hotkey"].value
-                key.holdtime := HotKeyBoxEdit["HotKeyBox_HoldTime"].value
-                key.interval := HotKeyBoxEdit["HotKeyBox_Interval"].value
-                key.count := HotKeyBoxEdit["HotKeyBox_Count"].value
-                WinClose()
-        })
+        if not isAdd and Item
+            key := Game.Lists[MainGui["SelectGame"].Text].setting["AutoBtn"]["keys"][Item]
+        else {
+            if (Item)
+                Item := GuiCtrlObj.Insert(Item, "+Check")
+            else Item := GuiCtrlObj.Add("+Check")
+            key := Game.Key(true)
+            Game.Lists[MainGui["SelectGame"].Text].setting["AutoBtn"]["keys"].InsertAt(Item, key)
+        }
+        GuiCtrlObj.Modify(Item, ,
+            HotKeyBoxEdit["HotKeyBox_Hotkey"].value,
+            HotKeyBoxEdit["HotKeyBox_HoldTime"].value,
+            HotKeyBoxEdit["HotKeyBox_Interval"].value,
+            HotKeyBoxEdit["HotKeyBox_Count"].value
+        )
+        key.key := HotKeyBoxEdit["HotKeyBox_Hotkey"].value
+        key.holdtime := HotKeyBoxEdit["HotKeyBox_HoldTime"].value
+        key.interval := HotKeyBoxEdit["HotKeyBox_Interval"].value
+        key.count := HotKeyBoxEdit["HotKeyBox_Count"].value
+        WinClose()
+    })
     HotKeyBoxEdit["HotKeyBox_Cancel"].OnEvent("Click", (*) => (WinClose()))
     HotKeyBoxEdit.OnEvent("Close", (*) => (MainGui.Opt("-Disabled")))
     HotKeyBoxEdit.Show("AutoSize")
@@ -490,7 +490,6 @@ AutoRestart(GuiCtrlObj, Info) {
     }
     MainGui["Account"].Enabled := MainGui["Password"].Enabled := !GuiCtrlObj.Value
     Game.Lists[MainGui["SelectGame"].Text].setting["AutoRestart"] := GuiCtrlObj.Value
-    SetTimer(Game.Lists[MainGui["SelectGame"].Text].AutoRestartFunc, GuiCtrlObj.Value ? config.data["RestartTime"]["Value"] : false)
 }
 Account(GuiCtrlObj, Info) {
     Game.Lists[MainGui["SelectGame"].Text].setting["Account"] := GuiCtrlObj.Value
@@ -565,36 +564,37 @@ class Game {
         "钓鱼", "AutoFish",
         "自动按键", "AutoBtn",
     )
+    static AutoRestartFunc := ObjBindMethod(Game, "AutoRestart")
     static ScriptAHK := "
     (
         #NoTrayIcon
         STOP := false
-        ReadProcessMemory := DynaCall("ReadProcessMemory",["c=uiuituit"])
-        ReadMemoryINT(MADDRESS,PID,ProcessHandle) {
-            MVALUE := Buffer(4,0)
-            ReadProcessMemory(ProcessHandle,MADDRESS,MVALUE,4)
-            return NumGet(Mvalue,"Int")
+        ReadProcessMemory := DynaCall("ReadProcessMemory", ["c=uiuituit"])
+        ReadMemoryINT(MADDRESS, PID, ProcessHandle) {
+            MVALUE := Buffer(4, 0)
+            ReadProcessMemory(ProcessHandle, MADDRESS, MVALUE, 4)
+            return NumGet(Mvalue, "Int")
         }
-        NatualPress(npbtn,pid,holdtime := 0) {
+        NatualPress(npbtn, pid, holdtime := 0) {
             ; SetKeyDelay(,Random(66, 122) + holdtime)
-            ControlSend("{Blind}" "{" Format("VK{{}:X{}}", GetKeyVK(npbtn)) " down" "}",, "ahk_pid " pid)
+            ControlSend("{Blind}" "{" Format("VK{{}:X{}}", GetKeyVK(npbtn)) " down" "}", , "ahk_pid " pid)
             Sleep(Random(66, 122) + holdtime)
-            ControlSend("{Blind}" "{" Format("VK{{}:X{}}", GetKeyVK(npbtn)) " up" "}",, "ahk_pid " pid)
+            ControlSend("{Blind}" "{" Format("VK{{}:X{}}", GetKeyVK(npbtn)) " up" "}", , "ahk_pid " pid)
         }
-        AutoBtn(Pid,Interval,NoTop) {
+        AutoBtn(Pid, Interval, NoTop) {
             Global STOP, keys
-            loop{
+            loop {
                 Sleep(500)
-            }until(IsSet(keys) or STOP)
-            loop{
+            } until (IsSet(keys) or STOP)
+            loop {
                 Sleep(Interval)
                 try {
                     for key in keys["btn"]
                         if (key.enabled)
                             Loop key.count {
-                                if(STOP)
+                                if (STOP)
                                     return
-                                if(NoTop and WinGetPID("A") == Pid)
+                                if (NoTop and WinGetPID("A") == Pid)
                                     break
                                 NatualPress(key.key, Pid, key.holdtime)
                                 Sleep(key.interval)
@@ -603,37 +603,46 @@ class Game {
                         if (keys["Click_" key] and not STOP)
                             if (WinGetPID("A") != Pid)
                                 ControlClick(, "ahk_pid " Pid, , key, , "NA")
-                            else if(not NoTop)
+                            else if ( not NoTop)
                                 Click(key)
                 }
-            }until(STOP)
+            } until (STOP)
         }
-        AutoFish(Pid,FishKey,Interval,Take_Address,State_Address,ProcessHandle){
+        AutoFish(Pid, FishKey, Interval, Take_Address, State_Address, ProcessHandle) {
             Global STOP
             Flag := true
-            loop{
+            RePush := 0
+            loop {
                 Sleep(Interval)
-                TakeFlag := false
                 StateFlag := false
-                for key in Take_Address
-                    TakeFlag |= ReadMemoryINT(key,Pid,ProcessHandle)
                 for key in State_Address
-                    StateFlag |= ReadMemoryINT(key,Pid,ProcessHandle)
-                if(!StateFlag) {
-                    NatualPress(FishKey,Pid)
+                    StateFlag |= ReadMemoryINT(key, Pid, ProcessHandle)
+                if (!StateFlag) {
+                    if (RePush < 10)
+                        RePush := RePush + 1
+                    Sleep((Random(66, 122) + Interval) * RePush)
+                    for key in State_Address
+                        StateFlag |= ReadMemoryINT(key, Pid, ProcessHandle)
+                    if (!StateFlag)
+                        NatualPress(FishKey, Pid)
+                    Sleep(3000)
                     Flag := true
                 }
+                TakeFlag := false
+                for key in Take_Address
+                    TakeFlag |= ReadMemoryINT(key, Pid, ProcessHandle)
                 if (TakeFlag) {
                     if (Flag) {
                         Sleep(1000)
                         Flag := false
                     }
                     else {
-                        NatualPress(FishKey,Pid)
+                        NatualPress(FishKey, Pid)
+                        RePush := 0
                         Flag := true
                     }
                 }
-            }until(STOP)
+            } until (STOP)
         }
         {1}
     )"
@@ -671,7 +680,6 @@ class Game {
         for key in ["Attack", "Dismount", "Mining", "MiningGeode"
             , "Breakblocks", "Map", "Zoom", "ClipCam", "LockCam", "Animation",]
             this.setting["Features"][key] := false
-        this.AutoRestartFunc := ObjBindMethod(this, "AutoRestart")
         this.FeaturesAttackFunc := ObjBindMethod(this, "Features_Attack")
     }
     static Reset() {
@@ -718,7 +726,61 @@ class Game {
                 else LOADING := true
             }
         }
+        SetTimer(Game.AutoRestartFunc, config.data["RestartTime"]["Value"])
         return LOADING
+    }
+    static AutoRestart() {
+        NatureClick(ControlOrPos, WinTitle) {
+            SetControlDelay(-1)
+            ControlClick(ControlOrPos, WinTitle, , , , "NA")
+        }
+        for Key, theGame in Game.Lists {
+            if ( not theGame.setting["AutoRestart"])
+                Continue
+            if not WinExist("ahk_id " theGame.id) {
+                if Game.Refresh()
+                    return
+                try WinActivate("Glyph")
+                catch {
+                    GameStart()
+                    Sleep(10000)
+                }
+                try {
+                    if WinWaitActive("登录 Glyph", , 3) or WinWaitActive("Glyph", , 15) {
+                        WinSetAlwaysOnTop(1, "Glyph")
+                        WinGetPos(&X, &Y, &W, &H, "Glyph")
+                        if ( not WinWaitActive("登录 Glyph", , 0.5)
+                            and not ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/select1.png")
+                            and not ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/select2.png")
+                            and ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/select3.png")
+                            or ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/select4.png")) {
+                            NatureClick("x" OutputVarX " y" OutputVarY, "Glyph")
+                            ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "*2 image/logout1.png")
+                                or ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "*2 image/logout2.png")
+                            NatureClick("x" OutputVarX " y" OutputVarY, "Glyph")
+                            Sleep(3000)
+                        }
+                        if ( not WinWaitActive("登录 Glyph", , 3)
+                            and ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/select1.png")
+                            or ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/select2.png")) {
+                            ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/start1.png")
+                                or ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/start2.png")
+                                or ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/start3.png")
+                            NatureClick("x" OutputVarX " y" OutputVarY, "Glyph")
+                            Sleep(3000)
+                        }
+                        WinGetPos(&X, &Y, &W, &H, "登录 Glyph")
+                        if (ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/login1.png")
+                            or ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/login2.png")) {
+                            SetKeyDelay(10, 20)
+                            ControlSend(theGame.setting["Account"] "{Tab}" theGame.setting["Password"], , "登录 Glyph")
+                            NatureClick("x" OutputVarX " y" OutputVarY, "登录 Glyph")
+                            Sleep(30000)
+                        }
+                    }
+                }
+            }
+        }
     }
     GetBase(id) {
         this.id := id
@@ -757,51 +819,6 @@ class Game {
         if (this.running)
             this.thread := Worker(Format(Game.ScriptAHK, Format('{1}({2},"{3}",{4},[{5}],[{6}],{7})'
                 , "AutoFish", this.pid, config.data["Key"]["Fish"], this.setting["Fish"]["interval"], Take_Address, State_Address, this.ProcessHandle)))
-    }
-    AutoRestart() {
-        if not WinExist("ahk_id " this.id) {
-            if Game.Refresh()
-                return
-            try WinActivate("Glyph")
-            catch {
-                GameStart()
-                Sleep(10000)
-            }
-            try {
-                if WinWaitActive("登录 Glyph", , 3) or WinWaitActive("Glyph", , 15) {
-                    WinSetAlwaysOnTop(1, "Glyph")
-                    WinGetPos(&X, &Y, &W, &H, "Glyph")
-                    if ( not WinWaitActive("登录 Glyph", , 0.5)
-                        and not ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/select1.png")
-                        and not ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/select2.png")
-                        and ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/select3.png")
-                        or ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/select4.png")) {
-                        ControlClick("x" OutputVarX " y" OutputVarY, "Glyph", , , , "NA")
-                        ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "*2 image/logout1.png")
-                            or ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "*2 image/logout2.png")
-                        ControlClick("x" OutputVarX " y" OutputVarY, "Glyph", , , , "NA")
-                        Sleep(3000)
-                    }
-                    if ( not WinWaitActive("登录 Glyph", , 3)
-                        and ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/select1.png")
-                        or ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/select2.png")) {
-                        ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/start1.png")
-                            or ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/start2.png")
-                            or ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/start3.png")
-                        ControlClick("x" OutputVarX " y" OutputVarY, "Glyph", , , , "NA")
-                        Sleep(3000)
-                    }
-                    WinGetPos(&X, &Y, &W, &H, "登录 Glyph")
-                    if (ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/login1.png")
-                        or ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/login2.png")) {
-                        SetKeyDelay(10, 20)
-                        ControlSend(this.setting["Account"] "{Tab}" this.setting["Password"], , "登录 Glyph")
-                        ControlClick("x" OutputVarX " y" OutputVarY, "登录 Glyph", , , , "NA")
-                        Sleep(30000)
-                    }
-                }
-            }
-        }
     }
     StopAll(keepStatus := false) {
         running := this.running
