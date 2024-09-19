@@ -1,6 +1,6 @@
 ;@Ahk2Exe-UpdateManifest 2
 ;@Ahk2Exe-SetName TroveAuto
-;@Ahk2Exe-SetProductVersion 2.2.10
+;@Ahk2Exe-SetProductVersion 2.2.11
 ;@Ahk2Exe-SetCopyright GPL-3.0 license
 ;@Ahk2Exe-SetLanguage Chinese_PRC
 ;@Ahk2Exe-SetMainIcon TroveAuto.ico
@@ -15,8 +15,8 @@ config := _Config(
         "Global", Map(
             "GameTitle", "Trove.exe",
             "GamePath", "",
-            "ConfigVersion", "20240901120000",
-            "AppVersion", "20240901120000",
+            "ConfigVersion", "20240919120000",
+            "AppVersion", "20240919120000",
             "Source", "https://github.com/Angels-D/TroveAuto/",
             "Mirror", "https://github.moeyy.xyz/",
         ),
@@ -25,18 +25,18 @@ config := _Config(
             "Fish", "f",
         ),
         "Address", Map(
-            "Animation", "0x73FF55",
-            "Attack", "0x81CC48",
-            "Breakblocks", "0xA2C993",
-            "ClipCam", "0xA20A6A",
-            "Dismount", "0x33296E",
-            "Fish", "0x10852AC",
-            "LockCam", "0xA54A45",
-            "Map", "0xB11FED",
-            "Mining", "0x9B4758",
-            "MiningGeode", "0x8A2697",
-            "Name", "0x939718",
-            "Zoom", "0xA1E9D6",
+            "Animation", "0x820375",
+            "Attack", "0xB063F8",
+            "Breakblocks", "0xC86BF3",
+            "ClipCam", "0xC9678A",
+            "Dismount", "0x361ECE",
+            "Fish", "0x11E71E4",
+            "LockCam", "0xAA9585",
+            "Map", "0xA7CE5D",
+            "Mining", "0xBD83F8",
+            "MiningGeode", "0x9ED877",
+            "Name", "0x99E248",
+            "Zoom", "0xC946E6",
         ),
         "Address_Offset", Map(
             "Name", "0x0,0x10,0x0",
@@ -222,15 +222,15 @@ for key in ["Attack", "Dismount", "Mining", "MiningGeode"
 ; 托盘图标
 A_TrayMenu.Delete()
 A_TrayMenu.Add("显示", (ItemName, ItemPos, MyMenu) => (MainGui.Show()))
-A_TrayMenu.Add("重新启动", (ItemName, ItemPos, MyMenu) => (Reset(),Reload()))
-A_TrayMenu.Add("退出", (ItemName, ItemPos, MyMenu) => (Reset(),ExitApp()))
+A_TrayMenu.Add("重新启动", (ItemName, ItemPos, MyMenu) => (Game.Reset(), Reload()))
+A_TrayMenu.Add("退出", (ItemName, ItemPos, MyMenu) => (Game.Reset(), ExitApp()))
 
 ; 交互函数
 Close(thisGui) {
     Result := MsgBox("是: 关闭脚本`n否: 最小化到托盘", , 3)
     switch Result {
         case "Yes":
-            Reset()
+            Game.Reset()
             ExitApp
         case "No":
         default:
@@ -570,6 +570,7 @@ class Game {
     static ScriptAHK := "
     (
         #NoTrayIcon
+        InstallKeybdHook
         STOP := false
         ReadProcessMemory := DynaCall("ReadProcessMemory", ["c=uiuituit"])
         ReadMemoryINT(MADDRESS, PID, ProcessHandle) {
@@ -578,12 +579,8 @@ class Game {
             return NumGet(Mvalue, "Int")
         }
         NatualPress(npbtn, pid, holdtime := 0) {
-            ; SetKeyDelay(,Random(66, 122) + holdtime)
-            try {
-                ControlSend("{Blind}" "{" Format("VK{{}:X{}}", GetKeyVK(npbtn)) " down" "}", , "ahk_pid " pid)
-                Sleep(Random(66, 122) + holdtime)
-                ControlSend("{Blind}" "{" Format("VK{{}:X{}}", GetKeyVK(npbtn)) " up" "}", , "ahk_pid " pid)
-            }
+            SetKeyDelay(-1,Random(66, 122) + holdtime)
+            try ControlSend("{Blind}" "{" Format("VK{{}:X{}}", GetKeyVK(npbtn)) "}", , "ahk_pid " pid)
         }
         AutoBtn(Pid, Interval, NoTop) {
             Global STOP, keys
@@ -594,7 +591,7 @@ class Game {
                 Sleep(Interval)
                 try {
                     for key in keys["btn"]
-                        if (key.enabled)
+                        if (key.enabled and not STOP)
                             Loop key.count {
                                 if (STOP)
                                     return
@@ -800,8 +797,7 @@ class Game {
         }
     }
     AutoBtn() {
-        try
-            this.thread["STOP"] := true
+        try this.thread["STOP"] := true
         if (this.running)
         {
             this.thread := Worker(Format(Game.ScriptAHK, Format('{1}({2},{3},{4})'
