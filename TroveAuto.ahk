@@ -1,6 +1,6 @@
 ;@Ahk2Exe-UpdateManifest 2
 ;@Ahk2Exe-SetName TroveAuto
-;@Ahk2Exe-SetProductVersion 2.2.11
+;@Ahk2Exe-SetProductVersion 2.3.0
 ;@Ahk2Exe-SetCopyright GPL-3.0 license
 ;@Ahk2Exe-SetLanguage Chinese_PRC
 ;@Ahk2Exe-SetMainIcon TroveAuto.ico
@@ -15,8 +15,8 @@ config := _Config(
         "Global", Map(
             "GameTitle", "Trove.exe",
             "GamePath", "",
-            "ConfigVersion", "20240919120000",
-            "AppVersion", "20240919120000",
+            "ConfigVersion", "20241107210000",
+            "AppVersion", "20241107210000",
             "Source", "https://github.com/Angels-D/TroveAuto/",
             "Mirror", "https://github.moeyy.xyz/",
         ),
@@ -25,18 +25,18 @@ config := _Config(
             "Fish", "f",
         ),
         "Address", Map(
-            "Animation", "0x820375",
-            "Attack", "0xB063F8",
-            "Breakblocks", "0xC86BF3",
-            "ClipCam", "0xC9678A",
-            "Dismount", "0x361ECE",
-            "Fish", "0x11E71E4",
-            "LockCam", "0xAA9585",
-            "Map", "0xA7CE5D",
-            "Mining", "0xBD83F8",
-            "MiningGeode", "0x9ED877",
-            "Name", "0x99E248",
-            "Zoom", "0xC946E6",
+            "Animation", "0x7415C5",
+            "Attack", "0x984248",
+            "Breakblocks", "0x8BE773",
+            "ClipCam", "0xA286CA",
+            "Dismount", "0x37BC7E",
+            "Fish", "0x10894D4",
+            "LockCam", "0xB0B825",
+            "Map", "0x98363D",
+            "Mining", "0xA1FCB8",
+            "MiningGeode", "0x84E3F7",
+            "Name", "0xB4F1D8",
+            "Zoom", "0xA26646",
         ),
         "Address_Offset", Map(
             "Name", "0x0,0x10,0x0",
@@ -517,7 +517,7 @@ class _Config {
     Load(path := unset) {
         path := IsSet(path) ? path : this.path
         if ((NewConfigVersion := IniRead(path, "Global", "ConfigVersion", this.data["Global"]["ConfigVersion"])) <
-            (OldConfigVersion := this.data["Global"]["ConfigVersion"])) {
+        (OldConfigVersion := this.data["Global"]["ConfigVersion"])) {
             MsgBox(Format("警告: 配置文件非最新版本 {1} => {2}", OldConfigVersion, NewConfigVersion))
         }
         for sect, data in this.data
@@ -535,7 +535,7 @@ class _Config {
         try {
             Download(url, TempPath := A_Temp "\TroveAutoConfig.ini")
             if ((NewConfigVersion := IniRead(TempPath, "Global", "ConfigVersion")) >
-                (OldConfigVersion := this.data["Global"]["ConfigVersion"])) {
+            (OldConfigVersion := this.data["Global"]["ConfigVersion"])) {
                 NewAppVersion := IniRead(TempPath, "Global", "AppVersion")
                 OldAppVersion := this.data["Global"]["AppVersion"]
                 this.Load(TempPath)
@@ -579,8 +579,13 @@ class Game {
             return NumGet(Mvalue, "Int")
         }
         NatualPress(npbtn, pid, holdtime := 0) {
-            SetKeyDelay(-1,Random(66, 122) + holdtime)
-            try ControlSend("{Blind}" "{" Format("VK{{}:X{}}", GetKeyVK(npbtn)) "}", , "ahk_pid " pid)
+            ; SetKeyDelay(,Random(66, 122) + holdtime)
+            ; try ControlSend("{Blind}" "{" Format("VK{{}:X{}}", GetKeyVK(npbtn)) "}", , "ahk_pid " pid)
+            try {
+                ControlSend("{Blind}" "{" Format("VK{{}:X{}}", GetKeyVK(npbtn)) " down" "}", , "ahk_pid " pid)
+                Sleep(Random(66, 122) + holdtime)
+                ControlSend("{Blind}" "{" Format("VK{{}:X{}}", GetKeyVK(npbtn)) " up" "}", , "ahk_pid " pid)
+            }
         }
         AutoBtn(Pid, Interval, NoTop) {
             Global STOP, keys
@@ -750,28 +755,28 @@ class Game {
                         WinSetAlwaysOnTop(1, "Glyph")
                         WinGetPos(&X, &Y, &W, &H, "Glyph")
                         if ( not WinWaitActive("登录 Glyph", , 0.5)
-                            and not ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/select1.png")
-                            and not ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/select2.png")
-                            and ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/select3.png")
-                            or ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/select4.png")) {
+                        and not ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/select1.png")
+                        and not ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/select2.png")
+                        and ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/select3.png")
+                        or ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/select4.png")) {
                             NatureClick("x" OutputVarX " y" OutputVarY, "Glyph")
                             ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "*2 image/logout1.png")
-                                or ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "*2 image/logout2.png")
+                            or ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "*2 image/logout2.png")
                             NatureClick("x" OutputVarX " y" OutputVarY, "Glyph")
                             Sleep(3000)
                         }
                         if ( not WinWaitActive("登录 Glyph", , 3)
-                            and ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/select1.png")
-                            or ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/select2.png")) {
+                        and ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/select1.png")
+                        or ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/select2.png")) {
                             ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/start1.png")
-                                or ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/start2.png")
-                                or ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/start3.png")
+                            or ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/start2.png")
+                            or ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/start3.png")
                             NatureClick("x" OutputVarX " y" OutputVarY, "Glyph")
                             Sleep(3000)
                         }
                         WinGetPos(&X, &Y, &W, &H, "登录 Glyph")
                         if (ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/login1.png")
-                            or ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/login2.png")) {
+                        or ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/login2.png")) {
                             SetKeyDelay(10, 20)
                             ControlSend(theGame.setting["Account"] "{Tab}" theGame.setting["Password"], , "登录 Glyph")
                             NatureClick("x" OutputVarX " y" OutputVarY, "登录 Glyph")
