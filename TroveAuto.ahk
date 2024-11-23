@@ -239,9 +239,29 @@ Close(thisGui) {
 }
 GetGamePath(GuiCtrlObj, Info) {
     try {
-        GamePath := WinGetProcessPath("ahk_exe i)" config.data["Global"]["GameTitle"] "|Glyph.*")
-        RegExMatch(GamePath, "i)^(.*?Trove)", &GamePath)
-        MainGui["GamePath"].Value := GamePath[0]
+        GamePathFromReg := (){
+            for reg_path in ["HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FeatureUsage",
+                "HKCU\Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Compatibility Assistant\Store"]
+                loop reg reg_path, "R"
+                    if (InStr(A_LoopRegName, "Trove\GlyphClientApp.exe") && FileExist(A_LoopRegName)) {
+                        SplitPath(A_LoopRegName, , &dir)
+                        return dir
+                    }
+    
+            loop reg "HKLM\Software\Microsoft\Windows\CurrentVersion\Uninstall", "KR"
+            {
+                try
+                    if (RegRead(, "DisplayName") == "Trove")
+                        return RegRead(, "InstallLocation")
+            }
+        }()
+        if ( not GamePathFromReg) {
+            GamePath := WinGetProcessPath("ahk_exe i)" config.data["Global"]["GameTitle"] "|Glyph.*")
+            RegExMatch(GamePath, "i)^(.*?Trove)", &GamePath)
+            MainGui["GamePath"].Value := GamePath[0]
+        }
+        else
+            MainGui["GamePath"].Value := GamePathFromReg
         Save()
     }
     catch
