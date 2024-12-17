@@ -1,6 +1,6 @@
 ;@Ahk2Exe-UpdateManifest 2
 ;@Ahk2Exe-SetName TroveAuto
-;@Ahk2Exe-SetProductVersion 2.3.0
+;@Ahk2Exe-SetProductVersion 2.3.1
 ;@Ahk2Exe-SetCopyright GPL-3.0 license
 ;@Ahk2Exe-SetLanguage Chinese_PRC
 ;@Ahk2Exe-SetMainIcon TroveAuto.ico
@@ -15,31 +15,36 @@ config := _Config(
         "Global", Map(
             "GameTitle", "Trove.exe",
             "GamePath", "",
-            "ConfigVersion", "20241107210000",
-            "AppVersion", "20241107210000",
+            "ConfigVersion", "20241218031500",
+            "AppVersion", "20241218031500",
             "Source", "https://github.com/Angels-D/TroveAuto/",
             "Mirror", "https://github.moeyy.xyz/",
         ),
         "RestartTime", Map("Value", "5000",),
+        "AttackTime", Map("Value", "1000",),
+        "HealthTime", Map("Value", "3000",),
         "Key", Map(
+            "Press", "e",
             "Fish", "f",
         ),
         "Address", Map(
-            "Animation", "0x7415C5",
-            "Attack", "0x984248",
-            "Breakblocks", "0x8BE773",
-            "ClipCam", "0xA286CA",
-            "Dismount", "0x37BC7E",
-            "Fish", "0x10894D4",
-            "LockCam", "0xB0B825",
-            "Map", "0x98363D",
-            "Mining", "0xA1FCB8",
-            "MiningGeode", "0x84E3F7",
-            "Name", "0xB4F1D8",
-            "Zoom", "0xA26646",
+            "Animation", "0x741855",
+            "Attack", "0x9B7F68",
+            "Breakblocks", "0xAE0E93",
+            "ClipCam", "0x8C01EA",
+            "Dismount", "0x3330DE",
+            "Fish", "0x1089E64",
+            "Health", "0x10924F0",
+            "LockCam", "0x8657C5",
+            "Map", "0x95939D",
+            "Mining", "0xA81EF8",
+            "MiningGeode", "0x82C9F7",
+            "Name", "0x90FCA8",
+            "Zoom", "0x8BE166",
         ),
         "Address_Offset", Map(
             "Name", "0x0,0x10,0x0",
+            "Health", "0x4,0x18C,0x3B8",
             "Fish_Take_Water", "0x68,0xE4,0x3C4",
             "Fish_Take_Lava", "0x68,0xE4,0x898",
             "Fish_Take_Choco", "0x68,0xE4,0x62C",
@@ -50,30 +55,31 @@ config := _Config(
             "Fish_State_Plasma", "0x68,0xF4,0x6CC",
         ),
         "Features_Change", Map(
+            "Animation", "0x4C,0x44",
             "Attack", "0xF0,0xF1",
+            "Breakblocks", "0x01,0x00",
+            "ClipCam", "0x909090,0x0F2901",
             "Dismount", "0xEB,0x74",
+            "LockCam", "0xEB,0x74",
+            "Map", "0xEB,0x77",
             "Mining", "0xF0,0xF1",
             "MiningGeode", "0xF0,0xF1",
-            "Breakblocks", "0x01,0x00",
-            "Map", "0xEB,0x77",
             "Zoom", "0x57,0x5F",
-            "ClipCam", "0x909090,0x0F2901",
-            "LockCam", "0xEB,0x74",
-            "Animation", "0x4C,0x44",
         ),
         "Address_Offset_Signature", Map(
             "Attack", "1,DF F1 DD D8 72 1F",
+            "Animation", "3,F3 0F 11 44 24 24 F3 0F 58 84 24 80 00 00 00 50 F3 0F 11 43 24 E8 XX XX XX XX 8D 44 24 34 50",
+            "Breakblocks", "3,80 7F XX 00 0F 84 XX XX XX XX 8B 4B 08 E8 XX XX XX XX FF 75 0C 8B 4D 10 8B F0 FF 75 08 8B 45 14 83 EC 0C 8B 3E 8B D4 6A 01 89 0A 8B CE 89 42 04 8B 45 18",
+            "ClipCam", "0,0F 29 01 C7 41 34 00 00 00 00 0F",
             "Dismount", "0,74 XX 8B 07 8B CF 6A 00 6A 00 FF 50",
+            "Fish", "0,10 14 XX XX 00 00 00 00 FF 00 00 00 00",
+            "Health", "96,9C 24 CF 01 50 68 9B 01 84 68 9B 01",
+            "LockCam", "0,74 05 8B 01 FF 50 0C 8B E5",
+            "Map", "0,77 XX B8 XX XX XX XX F3 0F 10 08 F3 0F 11 89 XX XX XX XX 8B 89",
             "Mining", "1,DF F1 DD D8 72 61",
             "MiningGeode", "1,DF F1 DD D8 72 35 8D",
-            "Breakblocks", "3,80 7F XX 00 0F 84 XX XX XX XX 8B 4B 08 E8 XX XX XX XX FF 75 0C 8B 4D 10 8B F0 FF 75 08 8B 45 14 83 EC 0C 8B 3E 8B D4 6A 01 89 0A 8B CE 89 42 04 8B 45 18",
-            "Map", "0,77 XX B8 XX XX XX XX F3 0F 10 08 F3 0F 11 89 XX XX XX XX 8B 89",
-            "Zoom", "3,F3 0F 11 5F 2C",
-            "ClipCam", "0,0F 29 01 C7 41 34 00 00 00 00 0F",
-            "LockCam", "0,74 05 8B 01 FF 50 0C 8B E5",
-            "Animation", "3,F3 0F 11 44 24 24 F3 0F 58 84 24 80 00 00 00 50 F3 0F 11 43 24 E8 XX XX XX XX 8D 44 24 34 50",
-            "Fish", "0,10 14 XX XX 00 00 00 00 FF 00 00 00 00",
             "Name", "-9,FF 70 1C FF 70 18 8D 45 B0",
+            "Zoom", "3,F3 0F 11 5F 2C",
         )
     )
 )
@@ -84,7 +90,7 @@ MainGui.Add("Tab3", "vTab", ["主页", "面板", "设置", "关于"]) ; 监控,�
 
 ; 主页内容
 MainGui["Tab"].UseTab("主页")
-MainGui.Add("Text", "x+50 y+30", "游戏路径:")
+MainGui.Add("Text", "x+60 y+30", "游戏路径:")
 MainGui.Add("Edit", "w200 vGamePath", config.data["Global"]["GamePath"])
 MainGui.Add("Button", "Section vGamePathBtn", "获取游戏路径")
 MainGui.Add("Button", "ys vGameStartBtn", "启动游戏")
@@ -109,84 +115,94 @@ MainGui.Add("Link", "w200 cRed", "
 
 ; 面板内容
 MainGui["Tab"].UseTab("面板")
-MainGui.Add("Button", "x+40 y+20 w50 Section vResetBtn", "重置")
+MainGui.Add("Button", "x+50 y+20 w50 Section vResetBtn", "重置")
 MainGui.Add("Button", "ys w50 vRefreshBtn", "刷新")
-MainGui.Add("Button", "ys x+50 vStartBtn", "启动")
+MainGui.Add("Button", "ys x+50 w70 vStartBtn", "启动")
 MainGui.Add("Text", "xs w70 Section", "玩家列表:")
-MainGui.Add("DropDownList", "ys w130 vSelectGame")
+MainGui.Add("DropDownList", "ys w150 vSelectGame")
 MainGui.Add("Text", "xs w70 Section", "脚本动作:")
-MainGui.Add("DropDownList", "ys w130 vSelectAction", ["自动按键", "钓鱼"])
-MainGui.Add("GroupBox", "xs-20 y+20 w290 r9 Section", "自动按键配置区")
+MainGui.Add("DropDownList", "ys w150 vSelectAction", ["自动按键", "钓鱼"])
+MainGui.Add("GroupBox", "xs-20 y+20 w310 r9 Section", "自动按键配置区")
 MainGui.Add("Text", "xp+10 yp+30 Section", "频率(毫秒):")
-MainGui.Add("Edit", "ys w100 vInterval")
-MainGui.Add("ListView", "xs w250 Section NoSortHdr Checked -Multi vHotKeyBox", ["热键", "持续时间", "间隔时间", "次数"])
-MainGui.Add("CheckBox", "xs Section w130 vAutoBtn_Key_Click_LEFT", "自动左击")
-MainGui.Add("CheckBox", "ys w130 vAutoBtn_Key_Click_RIGHT", "自动右击")
+MainGui.Add("Edit", "ys w120 vInterval")
+MainGui.Add("ListView", "xs w290 Section NoSortHdr Checked -Multi vHotKeyBox", ["热键", "持续时间", "间隔时间", "次数"])
+MainGui.Add("CheckBox", "xs Section w140 vAutoBtn_Key_Click_LEFT", "自动左击")
+MainGui.Add("CheckBox", "ys w140 vAutoBtn_Key_Click_RIGHT", "自动右击")
 MainGui.Add("CheckBox", "xs Section w200 vAutoBtn_NoTop", "前台时禁用")
-MainGui.Add("GroupBox", "xs-10 ys+40 w290 r6 Section", "功能区")
+MainGui.Add("GroupBox", "xs-10 ys+40 w310 r6 Section", "功能区")
 for key, value in Map(
+    "Animation", "隐藏特效",
     "Attack", "自动攻击",
+    "Breakblocks", "打破障碍",
+    "ClipCam", "视角遮挡",
     "Dismount", "保持骑乘",
+    "Health", "自动复活",
+    "LockCam", "视角固定",
+    "Map", "地图放大",
     "Mining", "快速挖矿",
     "MiningGeode", "快速挖矿(晶洞)",
-    "Breakblocks", "打破障碍",
-    "Map", "地图放大",
     "Zoom", "视野放大",
-    "ClipCam", "视角遮挡",
-    "LockCam", "视角固定",
-    "Animation", "隐藏特效",
 )
-    MainGui.Add("CheckBox", (Mod(A_Index, 2) ? ((A_Index == 1 ? "xp+10 yp+30" : "xs") " Section") : "ys") " w130 v" key, value)
-MainGui.Add("GroupBox", "xs-10 ys+70 w290 r3 Section", "崩溃自启          实验性功能")
+    MainGui.Add("CheckBox", (Mod(A_Index, 2) ? ((A_Index == 1 ? "xp+10 yp+30" : "xs") " Section") : "ys") " w140 v" key, value)
+MainGui.Add("GroupBox", "xs-10 ys+70 w310 r3 Section", "崩溃自启          实验性功能")
 MainGui.Add("CheckBox", "xp+80 yp vAutoRestart")
 MainGui.Add("Text", "xs+10 ys+30 Section", "账号:")
-MainGui.Add("Edit", "ys w200 vAccount")
+MainGui.Add("Edit", "ys w220 vAccount")
 MainGui.Add("Text", "xs Section", "密码:")
-MainGui.Add("Edit", "ys w200 vPassword")
+MainGui.Add("Edit", "ys w220 vPassword")
 MainGui.Add("Text", "xs+40 ys+50 cRed", "任何脚本都有风险, 请慎用!")
 
 ; 设置内容
 MainGui["Tab"].UseTab("设置")
-MainGui.Add("Text", "x+50 y+50 w100 Section", "游戏标题:")
-MainGui.Add("Edit", "ys w100 vGameTitle", config.data["Global"]["GameTitle"])
+MainGui.Add("Text", "x+40 y+20 w100 Section", "游戏标题:")
+MainGui.Add("Edit", "ys w150 vGameTitle", config.data["Global"]["GameTitle"])
 for key, value in Map(
-    "Name", "账号",
-    "Fish", "钓鱼",
+    "Animation", "隐藏特效",
     "Attack", "自动攻击",
+    "Breakblocks", "打破障碍",
+    "ClipCam", "视角遮挡",
     "Dismount", "保持骑乘",
+    "Fish", "钓鱼",
+    "Health", "血量检测",
+    "LockCam", "视角固定",
+    "Map", "地图放大",
     "Mining", "快速挖矿",
     "MiningGeode", "快速挖矿(晶洞)",
-    "Breakblocks", "打破障碍",
-    "Map", "地图放大",
+    "Name", "账号",
     "Zoom", "视野放大",
-    "ClipCam", "视角遮挡",
-    "LockCam", "视角固定",
-    "Animation", "隐藏特效",
 ) {
     MainGui.Add("Text", "xs w100 Section", value "地址:")
-    MainGui.Add("Edit", "ys w100 v" key "Address", config.data["Address"][key])
+    MainGui.Add("Edit", "ys w150 v" key "Address", config.data["Address"][key])
 }
+MainGui.Add("Text", "xs w100 Section", "交互按键:")
+MainGui.Add("HotKey", "ys w150 vPressKey", config.data["Key"]["Press"])
 MainGui.Add("Text", "xs w100 Section", "钓鱼按键:")
-MainGui.Add("HotKey", "ys w100 vFishKey", config.data["Key"]["Fish"])
-MainGui.Add("Text", "xs w100 Section", "自启扫描(毫秒):")
-MainGui.Add("Edit", "ys w100 vRestartTime", config.data["RestartTime"]["Value"])
+MainGui.Add("HotKey", "ys w150 vFishKey", config.data["Key"]["Fish"])
+MainGui.Add("Text", "xs w100 Section", "自启扫描(ms):")
+MainGui.Add("Edit", "ys w150 vRestartTime", config.data["RestartTime"]["Value"])
+MainGui.Add("Text", "xs w100 Section", "攻击扫描(ms):")
+MainGui.Add("Edit", "ys w150 vAttackTime", config.data["AttackTime"]["Value"])
+MainGui.Add("Text", "xs w100 Section", "血量扫描(ms):")
+MainGui.Add("Edit", "ys w150 vHealthTime", config.data["HealthTime"]["Value"])
 MainGui.Add("Text", "xs w100 Section", "镜像源:")
-MainGui.Add("Edit", "ys w100 vMirror", config.data["Global"]["Mirror"])
-MainGui.Add("Button", "xs w40 Section vSaveBtn", "保存")
-MainGui.Add("Button", "ys w75 vUpdateFromInternetBtn", "联网更新")
-MainGui.Add("Button", "ys w75 vUpdateFromLocalBtn", "本地更新")
+MainGui.Add("Edit", "ys w150 vMirror", config.data["Global"]["Mirror"])
+MainGui.Add("Button", "xs w80 Section vSaveBtn", "保存")
+MainGui.Add("Button", "ys w80 vUpdateFromInternetBtn", "联网更新")
+MainGui.Add("Button", "ys w80 vUpdateFromLocalBtn", "本地更新")
 
 ; 关于内容
 MainGui["Tab"].UseTab("关于")
-MainGui.Add("ActiveX", "w150 h150 y+100 Center",
+MainGui.Add("ActiveX", "w150 h150 x+30 y+100 Center",
     "mshtml:<img src='https://cdn.jsdelivr.net/gh/Angels-D/Angels-D.github.io/medias/avatar.jpg' style='width:150px;'/>")
-MainGui.Add("Text", , "作者: AnglesD")
+MainGui.Add("Text", , "作者: とても残念だ(AnglesD)")
 MainGui.Add("Text", "cRed", "本软件完全开源免费, 仅供学习使用！")
-MainGui.Add("Link", , "
+MainGui.Add("Link", , Format("
     (
-        博客: `n<a href="https://Angels-D.github.io/">https://Angels-D.github.io/</a>`n
-        源码: `n<a href="https://github.com/Angels-D/TroveAuto">https://github.com/Angels-D/TroveAuto</a>`n
-    )"
+        许可协议: <a href="https://www.gnu.org/licenses/gpl-3.0.zh-cn.html/">GPL-3.0 license</a>`n
+        博客: <a href="https://Angels-D.github.io/">https://Angels-D.github.io</a>`n
+        源码: <a href="https://github.com/Angels-D/TroveAuto">Angels-D/TroveAuto On Github</a>`n
+        应用版本: {1}`n
+    )", config.data["Global"]["AppVersion"])
 )
 MainGui.Add("Button", "y+30 w200 h60 vDownloadBtn", "最新版脚本下载")
 
@@ -215,8 +231,8 @@ MainGui["AutoBtn_NoTop"].OnEvent("Click", AutoBtn_NoTop)
 MainGui["AutoRestart"].OnEvent("Click", AutoRestart)
 MainGui["Account"].OnEvent("Change", Account)
 MainGui["Password"].OnEvent("Change", Password)
-for key in ["Attack", "Dismount", "Mining", "MiningGeode"
-    , "Breakblocks", "Map", "Zoom", "ClipCam", "LockCam", "Animation"]
+for key in ["Animation", "Attack", "Breakblocks", "ClipCam", "Dismount"
+    , "Health", "LockCam", "Map", "Mining", "MiningGeode", "Zoom"]
     MainGui[key].OnEvent("Click", Features)
 
 ; 托盘图标
@@ -239,7 +255,7 @@ Close(thisGui) {
 }
 GetGamePath(GuiCtrlObj, Info) {
     try {
-        GamePathFromReg := (){
+        GamePathFromReg := () {
             for reg_path in ["HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FeatureUsage",
                 "HKCU\Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Compatibility Assistant\Store"]
                 loop reg reg_path, "R"
@@ -247,7 +263,7 @@ GetGamePath(GuiCtrlObj, Info) {
                         SplitPath(A_LoopRegName, , &dir)
                         return dir
                     }
-    
+
             loop reg "HKLM\Software\Microsoft\Windows\CurrentVersion\Uninstall", "KR"
             {
                 try
@@ -292,13 +308,13 @@ Refresh(GuiCtrlObj := unset, Info := unset) {
     UIReset()
 }
 UIReset() {
-    for key in ["Attack", "Dismount", "Mining", "MiningGeode"
-        , "Breakblocks", "Map", "Zoom", "ClipCam", "LockCam", "Animation"
+    for key in ["Animation", "Attack", "Breakblocks", "ClipCam", "Dismount"
+        , "Health", "LockCam", "Map", "Mining", "MiningGeode", "Zoom"
         , "AutoBtn_Key_Click_LEFT", "AutoBtn_Key_Click_RIGHT", "AutoBtn_NoTop", "HotKeyBox"
         , "Interval", "SelectAction", "StartBtn", "AutoRestart", "Account", "Password"]
         MainGui[key].Enabled := false
-    for key in ["Attack", "Dismount", "Mining", "MiningGeode"
-        , "Breakblocks", "Map", "Zoom", "ClipCam", "LockCam", "Animation"
+    for key in ["Animation", "Attack", "Breakblocks", "ClipCam", "Dismount"
+        , "Health", "LockCam", "Map", "Mining", "MiningGeode", "Zoom"
         , "AutoBtn_Key_Click_LEFT", "AutoBtn_Key_Click_RIGHT", "AutoBtn_NoTop"
         , "Interval", "SelectAction", "AutoRestart", "Account", "Password"]
         try MainGui[key].Value := ""
@@ -403,8 +419,8 @@ SelectAction(GuiCtrlObj, Info := unset) {
     MainGui["Password"].Value := Game.Lists[MainGui["SelectGame"].Text].setting["Password"]
     MainGui["Account"].Enabled := MainGui["Password"].Enabled := !Game.Lists[MainGui["SelectGame"].Text].setting["AutoRestart"]
     MainGui["AutoRestart"].Value := Game.Lists[MainGui["SelectGame"].Text].setting["AutoRestart"]
-    for key in ["Attack", "Dismount", "Mining", "MiningGeode"
-        , "Breakblocks", "Map", "Zoom", "ClipCam", "LockCam", "Animation"] {
+    for key in ["Animation", "Attack", "Breakblocks", "ClipCam", "Dismount"
+        , "Health", "LockCam", "Map", "Mining", "MiningGeode", "Zoom"] {
         MainGui[key].Enabled := true
         MainGui[key].Value := Game.Lists[MainGui["SelectGame"].Text].setting["Features"][key]
     }
@@ -537,7 +553,7 @@ class _Config {
     Load(path := unset) {
         path := IsSet(path) ? path : this.path
         if ((NewConfigVersion := IniRead(path, "Global", "ConfigVersion", this.data["Global"]["ConfigVersion"])) <
-        (OldConfigVersion := this.data["Global"]["ConfigVersion"])) {
+            (OldConfigVersion := this.data["Global"]["ConfigVersion"])) {
             MsgBox(Format("警告: 配置文件非最新版本 {1} => {2}", OldConfigVersion, NewConfigVersion))
         }
         for sect, data in this.data
@@ -555,7 +571,7 @@ class _Config {
         try {
             Download(url, TempPath := A_Temp "\TroveAutoConfig.ini")
             if ((NewConfigVersion := IniRead(TempPath, "Global", "ConfigVersion")) >
-            (OldConfigVersion := this.data["Global"]["ConfigVersion"])) {
+                (OldConfigVersion := this.data["Global"]["ConfigVersion"])) {
                 NewAppVersion := IniRead(TempPath, "Global", "AppVersion")
                 OldAppVersion := this.data["Global"]["AppVersion"]
                 this.Load(TempPath)
@@ -703,10 +719,11 @@ class Game {
     __New(id) {
         this.GetBase(id)
         this.name := this.GetName(config.data["Address"]["Name"])
-        for key in ["Attack", "Dismount", "Mining", "MiningGeode"
-            , "Breakblocks", "Map", "Zoom", "ClipCam", "LockCam", "Animation",]
+        for key in ["Animation", "Attack", "Breakblocks", "ClipCam", "Dismount"
+            , "Health", "LockCam", "Map", "Mining", "MiningGeode", "Zoom"]
             this.setting["Features"][key] := false
         this.FeaturesAttackFunc := ObjBindMethod(this, "Features_Attack")
+        this.FeaturesHealthFunc := ObjBindMethod(this, "Features_Health")
     }
     static Reset() {
         for Key, Value in Game.Lists
@@ -741,8 +758,8 @@ class Game {
                                     theGame.AutoBtn()
                             }
                         }
-                        for key in ["Attack", "Dismount", "Mining", "MiningGeode"
-                            , "Breakblocks", "Map", "Zoom", "ClipCam", "LockCam", "Animation",]
+                        for key in ["Animation", "Attack", "Breakblocks", "ClipCam", "Dismount"
+                            , "Health", "LockCam", "Map", "Mining", "MiningGeode", "Zoom"]
                             theGame.Features(key, theGame.setting["Features"][key])
                     }
                     else Game.Lists[theGame.name] := theGame
@@ -775,28 +792,28 @@ class Game {
                         WinSetAlwaysOnTop(1, "Glyph")
                         WinGetPos(&X, &Y, &W, &H, "Glyph")
                         if ( not WinWaitActive("登录 Glyph", , 0.5)
-                        and not ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/select1.png")
-                        and not ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/select2.png")
-                        and ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/select3.png")
-                        or ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/select4.png")) {
+                            and not ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/select1.png")
+                            and not ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/select2.png")
+                            and ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/select3.png")
+                            or ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/select4.png")) {
                             NatureClick("x" OutputVarX " y" OutputVarY, "Glyph")
                             ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "*2 image/logout1.png")
-                            or ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "*2 image/logout2.png")
+                                or ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "*2 image/logout2.png")
                             NatureClick("x" OutputVarX " y" OutputVarY, "Glyph")
                             Sleep(3000)
                         }
                         if ( not WinWaitActive("登录 Glyph", , 3)
-                        and ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/select1.png")
-                        or ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/select2.png")) {
+                            and ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/select1.png")
+                            or ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/select2.png")) {
                             ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/start1.png")
-                            or ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/start2.png")
-                            or ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/start3.png")
+                                or ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/start2.png")
+                                or ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/start3.png")
                             NatureClick("x" OutputVarX " y" OutputVarY, "Glyph")
                             Sleep(3000)
                         }
                         WinGetPos(&X, &Y, &W, &H, "登录 Glyph")
                         if (ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/login1.png")
-                        or ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/login2.png")) {
+                            or ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/login2.png")) {
                             SetKeyDelay(10, 20)
                             ControlSend(theGame.setting["Account"] "{Tab}" theGame.setting["Password"], , "登录 Glyph")
                             NatureClick("x" OutputVarX " y" OutputVarY, "登录 Glyph")
@@ -863,9 +880,19 @@ class Game {
             StrSplit(config.data["Features_Change"]["Attack"], ",")[2]
         )
     }
+    Features_Health() {
+        if ( not this.GetHealth(config.data["Address"]["Health"])) {
+            this.NatualPress("E")
+            Sleep(5000)
+        }
+    }
     Features(Name, Value) {
         if (Name == "Attack")
-            SetTimer(this.FeaturesAttackFunc, Value ? 1000 : 0)
+            SetTimer(this.FeaturesAttackFunc, Value ? config.data["AttackTime"]["Value"] : 0)
+        else if (Name == "Health") {
+            SetTimer(this.FeaturesHealthFunc, Value ? config.data["HealthTime"]["Value"] : 0)
+            return
+        }
 
         this.WriteMemory(
             config.data["Address"][Name],
@@ -875,6 +902,10 @@ class Game {
     GetName(Address) {
         Address := this.GetAddressOffset(Address, StrSplit(config.data["Address_Offset"]["Name"], ","))
         return this.ReadMemory(Address, "Str")
+    }
+    GetHealth(Address) {
+        Address := this.GetAddressOffset(Address, StrSplit(config.data["Address_Offset"]["Health"], ","))
+        return this.ReadMemory(Address, "Int")
     }
     GetAddressOffset(Address, Offset) {
         Address := this.ReadMemory(this.BaseaAddress + Address, "Int")
@@ -906,6 +937,13 @@ class Game {
         loop Len
             NumPut("UChar", "0x" SubStr(Value, 1 + A_Index * 2, 2), Mvalue, A_Index - 1)
         WriteProcessMemory(this.ProcessHandle, this.BaseaAddress + Address, Mvalue, Len)
+    }
+    NatualPress(npbtn, holdtime := 0) {
+        try {
+            ControlSend("{Blind}" "{" Format("VK{:X}", GetKeyVK(npbtn)) " down" "}", , "ahk_pid " this.pid)
+            Sleep(Random(66, 122) + holdtime)
+            ControlSend("{Blind}" "{" Format("VK{:X}", GetKeyVK(npbtn)) " up" "}", , "ahk_pid " this.pid)
+        }
     }
 }
 
