@@ -1,6 +1,6 @@
 ;@Ahk2Exe-UpdateManifest 2
 ;@Ahk2Exe-SetName TroveAuto
-;@Ahk2Exe-SetProductVersion 2.3.1
+;@Ahk2Exe-SetProductVersion 2.3.2
 ;@Ahk2Exe-SetCopyright GPL-3.0 license
 ;@Ahk2Exe-SetLanguage Chinese_PRC
 ;@Ahk2Exe-SetMainIcon TroveAuto.ico
@@ -15,8 +15,8 @@ config := _Config(
         "Global", Map(
             "GameTitle", "Trove.exe",
             "GamePath", "",
-            "ConfigVersion", "20241218031500",
-            "AppVersion", "20241218031500",
+            "ConfigVersion", "20250124074000",
+            "AppVersion", "20250124074000",
             "Source", "https://github.com/Angels-D/TroveAuto/",
             "Mirror", "https://github.moeyy.xyz/",
         ),
@@ -28,23 +28,23 @@ config := _Config(
             "Fish", "f",
         ),
         "Address", Map(
-            "Animation", "0x741855",
-            "Attack", "0x9B7F68",
-            "Breakblocks", "0xAE0E93",
-            "ClipCam", "0x8C01EA",
-            "Dismount", "0x3330DE",
-            "Fish", "0x1089E64",
-            "Health", "0x10924F0",
-            "LockCam", "0x8657C5",
-            "Map", "0x95939D",
-            "Mining", "0xA81EF8",
-            "MiningGeode", "0x82C9F7",
-            "Name", "0x90FCA8",
-            "Zoom", "0x8BE166",
+            "Animation", "0x741A25",
+            "Attack", "0x8CDFB8",
+            "Breakblocks", "0xAE8F73",
+            "ClipCam", "0x9C95BA",
+            "Dismount", "0x3333EE",
+            "Fish", "0x10600A4",
+            "Health", "0x1092F46",
+            "LockCam", "0x880985",
+            "Map", "0xA6536D",
+            "Mining", "0x852B28",
+            "MiningGeode", "0xAA9F47",
+            "Name", "0xB0A918",
+            "Zoom", "0x9C7536",
         ),
         "Address_Offset", Map(
             "Name", "0x0,0x10,0x0",
-            "Health", "0x4,0x18C,0x3B8",
+            "Health", "0x4,0x58,0xC4,0x64,0x3B8",
             "Fish_Take_Water", "0x68,0xE4,0x3C4",
             "Fish_Take_Lava", "0x68,0xE4,0x898",
             "Fish_Take_Choco", "0x68,0xE4,0x62C",
@@ -73,7 +73,7 @@ config := _Config(
             "ClipCam", "0,0F 29 01 C7 41 34 00 00 00 00 0F",
             "Dismount", "0,74 XX 8B 07 8B CF 6A 00 6A 00 FF 50",
             "Fish", "0,10 14 XX XX 00 00 00 00 FF 00 00 00 00",
-            "Health", "96,9C 24 CF 01 50 68 9B 01 84 68 9B 01",
+            "Health", "4,40 3F 00 00 00 00 90 E5",
             "LockCam", "0,74 05 8B 01 FF 50 0C 8B E5",
             "Map", "0,77 XX B8 XX XX XX XX F3 0F 10 08 F3 0F 11 89 XX XX XX XX 8B 89",
             "Mining", "1,DF F1 DD D8 72 61",
@@ -377,15 +377,18 @@ UpdateFromInternet(GuiCtrlObj, Info) {
     else MsgBox("更新失败, 请检查网络连接")
 }
 UpdateFromLocal(GuiCtrlObj, Info) {
-    if not WinExist("Trove") {
+    try GameID := WinGetID("ahk_exe " config.data["Global"]["GameTitle"])
+    catch {
         MsgBox("请先启动游戏, 再进行扫描")
         return
     }
-    shell := ComObject("WScript.Shell")
+    BaseAddress := GetProcessBaseAddress(GameID, -6)
+    Result := Buffer(1024, 0)
+
     for key, value in config.data["Address"] {
         signature := StrSplit(config.data["Address_Offset_Signature"][key], ',')
-        exec := shell.Exec("PtrFind.exe " signature[2])
-        value := Format("0x{1:X}", exec.StdOut.ReadAll() + signature[1])
+        size := AobScan(Result, Result.Size, WinGetPID(GameID), RegExReplace(StrReplace(signature[2], " "), "X|x", "?"), BaseAddress, 0x7FFFFFFF, 1)
+        value := size ? Format("0x{1:X}", NumGet(Result, "UInt") + signature[1] - BaseAddress) : "0xFFFFFFFF"
         MainGui[key "Address"].Text := value
     }
     Msgbox("检测完毕, 确认无误后请手动保存")
@@ -537,8 +540,11 @@ Password(GuiCtrlObj, Info) {
 }
 
 ; DLL封装
+#DllLoad AobScan
+AobScan := DynaCall("AobScan\FindSig", ["ui=tuiuiaui6ui6i"])
 CloseHandle := DynaCall("CloseHandle", ["c=ui"])
 OpenProcess := DynaCall("OpenProcess", ["ui=uicui", 3], 0x38, 0)
+GetProcessBaseAddress := DynaCall("GetWindowLongPtr", ["ui=tiui"])
 ReadProcessMemory := DynaCall("ReadProcessMemory", ["c=uiuituit"])
 WriteProcessMemory := DynaCall("WriteProcessMemory", ["c=uiuituit"])
 
@@ -828,7 +834,7 @@ class Game {
         this.id := id
         this.pid := WingetPID("ahk_id " id)
         this.ProcessHandle := OpenProcess(this.pid)
-        this.BaseaAddress := this.getProcessBaseAddress(id)
+        this.BaseaAddress := GetProcessBaseAddress(id, -6)
         for key in ["Water", "Lava", "Choco", "Plasma"] {
             this.setting["Fish"]["take_address"][key] := this.GetAddressOffset(
                 config.data["Address"]["Fish"], StrSplit(config.data["Address_Offset"]["Fish_" "Take_" key], ",")
@@ -913,30 +919,24 @@ class Game {
             Address := this.ReadMemory(Address + Offset[A_Index], "Int")
         return Address + Offset[-1]
     }
-    getProcessBaseAddress(id) {
-        return DllCall(A_PtrSize = 4 ? "GetWindowLong" : "GetWindowLongPtr", "Ptr", id, "Int", -6, "Int64")
-    }
     ReadMemory(Maddress, Readtype, Len := unset) {
         if (Readtype == "Int") {
-            Len := IsSet(Len) ? Len : 4
-            Mvalue := Buffer(Len, 0)
-            ReadProcessMemory(this.ProcessHandle, Maddress, Mvalue, Len)
+            Mvalue := Buffer(IsSet(Len) ? Len : 4, 0)
+            ReadProcessMemory(this.ProcessHandle, Maddress, Mvalue, Mvalue.Size)
             return NumGet(Mvalue, "Int")
         }
         else if (Readtype == "Str") {
-            Len := IsSet(Len) ? Len : 15
-            Mvalue := Buffer(Len, 0)
-            ReadProcessMemory(this.ProcessHandle, Maddress, Mvalue, Len)
+            Mvalue := Buffer(IsSet(Len) ? Len : 15, 0)
+            ReadProcessMemory(this.ProcessHandle, Maddress, Mvalue, Mvalue.Size)
             return StrGet(Mvalue, "utf-8")
         }
         throw ValueError("错误的读取类型", -1, Readtype)
     }
     WriteMemory(Address, Value) {
-        Len := (StrLen(Value) - 2) // 2
-        Mvalue := Buffer(Len)
-        loop Len
+        Mvalue := Buffer((StrLen(Value) - 2) // 2)
+        loop Mvalue.Size
             NumPut("UChar", "0x" SubStr(Value, 1 + A_Index * 2, 2), Mvalue, A_Index - 1)
-        WriteProcessMemory(this.ProcessHandle, this.BaseaAddress + Address, Mvalue, Len)
+        WriteProcessMemory(this.ProcessHandle, this.BaseaAddress + Address, Mvalue, Mvalue.Size)
     }
     NatualPress(npbtn, holdtime := 0) {
         try {
