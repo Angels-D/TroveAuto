@@ -1,6 +1,6 @@
 ;@Ahk2Exe-UpdateManifest 2
 ;@Ahk2Exe-SetName TroveAuto
-;@Ahk2Exe-SetProductVersion 2.3.2
+;@Ahk2Exe-SetProductVersion 2.3.3
 ;@Ahk2Exe-SetCopyright GPL-3.0 license
 ;@Ahk2Exe-SetLanguage Chinese_PRC
 ;@Ahk2Exe-SetMainIcon TroveAuto.ico
@@ -15,14 +15,15 @@ config := _Config(
         "Global", Map(
             "GameTitle", "Trove.exe",
             "GamePath", "",
-            "ConfigVersion", "20250124074000",
-            "AppVersion", "20250124074000",
+            "ConfigVersion", "20250206044000",
+            "AppVersion", "20250206044000",
             "Source", "https://github.com/Angels-D/TroveAuto/",
             "Mirror", "https://github.moeyy.xyz/",
         ),
         "RestartTime", Map("Value", "5000",),
         "AttackTime", Map("Value", "1000",),
         "HealthTime", Map("Value", "3000",),
+        "UseLogTime", Map("Value", "3000",),
         "Key", Map(
             "Press", "e",
             "Fish", "f",
@@ -80,6 +81,8 @@ config := _Config(
             "MiningGeode", "1,DF F1 DD D8 72 35 8D",
             "Name", "-9,FF 70 1C FF 70 18 8D 45 B0",
             "Zoom", "3,F3 0F 11 5F 2C",
+            "Use_R", "-384,FE FF FF FF 00 00 00 00 65 CF XX XX 0C 00 00 00 55 CF",
+            "Use_T", "-384,FE FF FF FF 00 00 00 00 65 CF XX XX 0E 00 00 00 55 CF",
         )
     )
 )
@@ -90,7 +93,7 @@ MainGui.Add("Tab3", "vTab", ["主页", "面板", "设置", "关于"]) ; 监控,�
 
 ; 主页内容
 MainGui["Tab"].UseTab("主页")
-MainGui.Add("Text", "x+60 y+30", "游戏路径:")
+MainGui.Add("Text", "x+60 y+40", "游戏路径:")
 MainGui.Add("Edit", "w200 vGamePath", config.data["Global"]["GamePath"])
 MainGui.Add("Button", "Section vGamePathBtn", "获取游戏路径")
 MainGui.Add("Button", "ys vGameStartBtn", "启动游戏")
@@ -112,10 +115,11 @@ MainGui.Add("Link", "w200 cRed", "
         工具管理你的Mod和CFG文件, 还有装备推荐、模拟加点、模组开发管理、模组下载等功能
     )"
 )
+MainGui.Add("Button", "w200 h40 vUseLogPathBtn", "物品栏使用日志文件夹")
 
 ; 面板内容
 MainGui["Tab"].UseTab("面板")
-MainGui.Add("Button", "x+50 y+20 w50 Section vResetBtn", "重置")
+MainGui.Add("Button", "x+50 y+30 w50 Section vResetBtn", "重置")
 MainGui.Add("Button", "ys w50 vRefreshBtn", "刷新")
 MainGui.Add("Button", "ys x+50 w70 vStartBtn", "启动")
 MainGui.Add("Text", "xs w70 Section", "玩家列表:")
@@ -142,6 +146,7 @@ for key, value in Map(
     "Mining", "快速挖矿",
     "MiningGeode", "快速挖矿(晶洞)",
     "Zoom", "视野放大",
+    "UseLog", "物品栏计数",
 )
     MainGui.Add("CheckBox", (Mod(A_Index, 2) ? ((A_Index == 1 ? "xp+10 yp+30" : "xs") " Section") : "ys") " w140 v" key, value)
 MainGui.Add("GroupBox", "xs-10 ys+70 w310 r3 Section", "崩溃自启          实验性功能")
@@ -184,6 +189,8 @@ MainGui.Add("Text", "xs w100 Section", "攻击扫描(ms):")
 MainGui.Add("Edit", "ys w150 vAttackTime", config.data["AttackTime"]["Value"])
 MainGui.Add("Text", "xs w100 Section", "血量扫描(ms):")
 MainGui.Add("Edit", "ys w150 vHealthTime", config.data["HealthTime"]["Value"])
+MainGui.Add("Text", "xs w100 Section", "物品扫描(ms):")
+MainGui.Add("Edit", "ys w150 vUseLogTime", config.data["UseLogTime"]["Value"])
 MainGui.Add("Text", "xs w100 Section", "镜像源:")
 MainGui.Add("Edit", "ys w150 vMirror", config.data["Global"]["Mirror"])
 MainGui.Add("Button", "xs w80 Section vSaveBtn", "保存")
@@ -212,6 +219,7 @@ MainGui["GamePathBtn"].OnEvent("Click", GetGamePath)
 MainGui["GameStartBtn"].OnEvent("Click", GameStart)
 MainGui["ModsPathBtn"].OnEvent("Click", OpenModsPath)
 MainGui["ModCfgsPathBtn"].OnEvent("Click", OpenModCfgsPath)
+MainGui["UseLogPathBtn"].OnEvent("Click", OpenUseLogPath)
 MainGui["ResetBtn"].OnEvent("Click", Reset)
 MainGui["RefreshBtn"].OnEvent("Click", Refresh)
 MainGui["StartBtn"].OnEvent("Click", Start)
@@ -232,7 +240,7 @@ MainGui["AutoRestart"].OnEvent("Click", AutoRestart)
 MainGui["Account"].OnEvent("Change", Account)
 MainGui["Password"].OnEvent("Change", Password)
 for key in ["Animation", "Attack", "Breakblocks", "ClipCam", "Dismount"
-    , "Health", "LockCam", "Map", "Mining", "MiningGeode", "Zoom"]
+    , "Health", "LockCam", "Map", "Mining", "MiningGeode", "Zoom", "UseLog"]
     MainGui[key].OnEvent("Click", Features)
 
 ; 托盘图标
@@ -298,6 +306,12 @@ OpenModCfgsPath(GuiCtrlObj, Info) {
     catch
         MsgBox("ModCfgs文件夹打开失败, 请检查文件夹是否存在")
 }
+OpenUseLogPath(GuiCtrlObj, Info) {
+    DirCreate("UseLog")
+    try Run("explore UseLog\")
+    catch
+        MsgBox("日志文件夹打开失败, 请检查文件夹是否存在")
+}
 Reset(GuiCtrlObj := unset, Info := unset) {
     Game.Reset()
     Game.Refresh()
@@ -309,12 +323,12 @@ Refresh(GuiCtrlObj := unset, Info := unset) {
 }
 UIReset() {
     for key in ["Animation", "Attack", "Breakblocks", "ClipCam", "Dismount"
-        , "Health", "LockCam", "Map", "Mining", "MiningGeode", "Zoom"
+        , "Health", "LockCam", "Map", "Mining", "MiningGeode", "Zoom", "UseLog"
         , "AutoBtn_Key_Click_LEFT", "AutoBtn_Key_Click_RIGHT", "AutoBtn_NoTop", "HotKeyBox"
         , "Interval", "SelectAction", "StartBtn", "AutoRestart", "Account", "Password"]
         MainGui[key].Enabled := false
     for key in ["Animation", "Attack", "Breakblocks", "ClipCam", "Dismount"
-        , "Health", "LockCam", "Map", "Mining", "MiningGeode", "Zoom"
+        , "Health", "LockCam", "Map", "Mining", "MiningGeode", "Zoom", "UseLog"
         , "AutoBtn_Key_Click_LEFT", "AutoBtn_Key_Click_RIGHT", "AutoBtn_NoTop"
         , "Interval", "SelectAction", "AutoRestart", "Account", "Password"]
         try MainGui[key].Value := ""
@@ -423,7 +437,7 @@ SelectAction(GuiCtrlObj, Info := unset) {
     MainGui["Account"].Enabled := MainGui["Password"].Enabled := !Game.Lists[MainGui["SelectGame"].Text].setting["AutoRestart"]
     MainGui["AutoRestart"].Value := Game.Lists[MainGui["SelectGame"].Text].setting["AutoRestart"]
     for key in ["Animation", "Attack", "Breakblocks", "ClipCam", "Dismount"
-        , "Health", "LockCam", "Map", "Mining", "MiningGeode", "Zoom"] {
+        , "Health", "LockCam", "Map", "Mining", "MiningGeode", "Zoom", "UseLog"] {
         MainGui[key].Enabled := true
         MainGui[key].Value := Game.Lists[MainGui["SelectGame"].Text].setting["Features"][key]
     }
@@ -620,6 +634,11 @@ class Game {
             ReadProcessMemory(ProcessHandle, MADDRESS, MVALUE, 4)
             return NumGet(Mvalue, "Int")
         }
+        ReadMemoryDouble(MADDRESS, PID, ProcessHandle) {
+            MVALUE := Buffer(8, 0)
+            ReadProcessMemory(ProcessHandle, MADDRESS, MVALUE, 8)
+            return NumGet(Mvalue, "Double")
+        }
         NatualPress(npbtn, pid, holdtime := 0) {
             ; SetKeyDelay(,Random(66, 122) + holdtime)
             ; try ControlSend("{Blind}" "{" Format("VK{{}:X{}}", GetKeyVK(npbtn)) "}", , "ahk_pid " pid)
@@ -692,6 +711,33 @@ class Game {
                 }
             } until (STOP)
         }
+        UseLog(Pid, Name, BaseAddress, ProcessHandle, Interval, Use_R, Use_T) {
+            Global STOP
+            DirCreate("UseLog")
+            AobScan := DynaCall("AobScan\FindSig", ["ui=tuiuiaui6ui6i"])
+            FileObj := FileOpen("UseLog\" Name " " FormatTime(,"yyyy-MM-dd") ".txt", "a")
+            Result := Buffer(1024, 0)
+            signature_r := StrSplit(RegExReplace(StrReplace(Use_R, " "), "X|x", "?"), ',')
+            signature_t := StrSplit(RegExReplace(StrReplace(Use_T, " "), "X|x", "?"), ',')
+            value_r_old := 0
+            value_t_old := 0
+            Loop {
+                size := AobScan(Result, Result.Size, Pid, signature_r[2], BaseAddress, 0x7FFFFFFF, 1)
+                address_r := size ? Format("0x{{}1:X{}}", NumGet(Result, "UInt") + signature_r[1]) : "0xFFFFFFFF"
+                size := AobScan(Result, Result.Size, Pid, signature_t[2], BaseAddress, 0x7FFFFFFF, 1)
+                address_t := size ? Format("0x{{}1:X{}}", NumGet(Result, "UInt") + signature_t[1]) : "0xFFFFFFFF"
+                value_r := Integer(ReadMemoryDouble(address_r, Pid, ProcessHandle))
+                value_t := Integer(ReadMemoryDouble(address_t, Pid, ProcessHandle))
+                if(value_r_old != value_r || value_t_old != value_t) {
+                    FileObj.WriteLine(FormatTime(,"yyyy-MM-dd hh:mm:ss") " R:" value_r " | T:" value_t)
+                    FileObj.Read(0)
+                    value_r_old := value_r
+                    value_t_old := value_t
+                }
+                Sleep(Interval)
+            } until (STOP)
+            FileObj.Close()
+        }
         {1}
     )"
     action := "自动按键"
@@ -726,7 +772,7 @@ class Game {
         this.GetBase(id)
         this.name := this.GetName(config.data["Address"]["Name"])
         for key in ["Animation", "Attack", "Breakblocks", "ClipCam", "Dismount"
-            , "Health", "LockCam", "Map", "Mining", "MiningGeode", "Zoom"]
+            , "Health", "LockCam", "Map", "Mining", "MiningGeode", "Zoom", "UseLog"]
             this.setting["Features"][key] := false
         this.FeaturesAttackFunc := ObjBindMethod(this, "Features_Attack")
         this.FeaturesHealthFunc := ObjBindMethod(this, "Features_Health")
@@ -765,7 +811,7 @@ class Game {
                             }
                         }
                         for key in ["Animation", "Attack", "Breakblocks", "ClipCam", "Dismount"
-                            , "Health", "LockCam", "Map", "Mining", "MiningGeode", "Zoom"]
+                            , "Health", "LockCam", "Map", "Mining", "MiningGeode", "Zoom", "UseLog"]
                             theGame.Features(key, theGame.setting["Features"][key])
                     }
                     else Game.Lists[theGame.name] := theGame
@@ -834,7 +880,7 @@ class Game {
         this.id := id
         this.pid := WingetPID("ahk_id " id)
         this.ProcessHandle := OpenProcess(this.pid)
-        this.BaseaAddress := GetProcessBaseAddress(id, -6)
+        this.BaseAddress := GetProcessBaseAddress(id, -6)
         for key in ["Water", "Lava", "Choco", "Plasma"] {
             this.setting["Fish"]["take_address"][key] := this.GetAddressOffset(
                 config.data["Address"]["Fish"], StrSplit(config.data["Address_Offset"]["Fish_" "Take_" key], ",")
@@ -871,6 +917,7 @@ class Game {
         running := this.running
         this.running := false
         try this.thread["STOP"] := true
+        try this.logThread["STOP"] := true
         CloseHandle(this.ProcessHandle)
         if keepStatus
             this.running := running
@@ -895,6 +942,15 @@ class Game {
     Features(Name, Value) {
         if (Name == "Attack")
             SetTimer(this.FeaturesAttackFunc, Value ? config.data["AttackTime"]["Value"] : 0)
+        else if (Name == "UseLog") {
+            try this.logThread["STOP"] := true
+            if (Value)
+            {
+                this.logThread := Worker(Format(Game.ScriptAHK, Format('{1}({2},"{3}",{4},{5},{6},"{7}","{8}")'
+                    , "UseLog", this.pid, this.name, this.BaseAddress, this.ProcessHandle, config.data["UseLogTime"]["Value"], config.data["Address_Offset_Signature"]["Use_R"], config.data["Address_Offset_Signature"]["Use_T"])))
+            }
+            return
+        }
         else if (Name == "Health") {
             SetTimer(this.FeaturesHealthFunc, Value ? config.data["HealthTime"]["Value"] : 0)
             return
@@ -914,7 +970,7 @@ class Game {
         return this.ReadMemory(Address, "Int")
     }
     GetAddressOffset(Address, Offset) {
-        Address := this.ReadMemory(this.BaseaAddress + Address, "Int")
+        Address := this.ReadMemory(this.BaseAddress + Address, "Int")
         loop Offset.Length - 1
             Address := this.ReadMemory(Address + Offset[A_Index], "Int")
         return Address + Offset[-1]
@@ -936,7 +992,7 @@ class Game {
         Mvalue := Buffer((StrLen(Value) - 2) // 2)
         loop Mvalue.Size
             NumPut("UChar", "0x" SubStr(Value, 1 + A_Index * 2, 2), Mvalue, A_Index - 1)
-        WriteProcessMemory(this.ProcessHandle, this.BaseaAddress + Address, Mvalue, Mvalue.Size)
+        WriteProcessMemory(this.ProcessHandle, this.BaseAddress + Address, Mvalue, Mvalue.Size)
     }
     NatualPress(npbtn, holdtime := 0) {
         try {

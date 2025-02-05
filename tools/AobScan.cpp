@@ -16,6 +16,11 @@
  * 快速挖矿（晶洞）: (+1 Address) DF F1 DD D8 72 35 8D
  * 账号地址: (-9 Address) FF 70 1C FF 70 18 8D 45 B0
  * 视野放大: (+3 Address) F3 0F 11 5F 2C
+ * 技能栏: 5X CF XX XX 55 CF XX XX 5X CF XX XX 55 CF XX XX FE FF FF FF 00 00 00 00 65 CF XX XX 0X 00 00 00 55 CF XX XX XX XX XX XX 55 CF XX XX 55 CF XX XX
+ *            (-170H Value) 数量
+ *            (+0 Value) 55释放,5D按下
+ *            (+8 Value) 55未装备,5D装备
+ *            (+28 Value) 00 右键 | 02 1技能 | 04 2技能 | 06 SHIFT | 08 未知 | 0A 药瓶 | 0C R物品 | 0E T物品
  */
 
 #include <Windows.h>
@@ -42,24 +47,24 @@ extern "C" __declspec(dllexport) DWORD FindSig(DWORD *Result, DWORD Size, DWORD 
     return size;
 }
 
-// #include <iostream>
-// #include <string>
-// int main(int argc, char *argv[])
-// {
-//     if (argc < 6)
-//         std::cout << 0xFFFFFFFF;
-//     else
-//     {
-//         for (DWORD result : AobScan::FindSig(
-//                  std::stoi(argv[1]),
-//                  argv[2],
-//                  std::stoi(argv[3]),
-//                  std::strtol(argv[4], nullptr, 0),
-//                  std::strtol(argv[5], nullptr, 0)))
-//             std::cout << result << ' ';
-//     }
-//     return 0;
-// }
+#include <iostream>
+#include <string>
+int main(int argc, char *argv[])
+{
+    if (argc < 6)
+        std::cout << 0xFFFFFFFF;
+    else
+    {
+        for (DWORD result : AobScan::FindSig(
+                 std::stoi(argv[1]),
+                 argv[2],
+                 std::stoi(argv[3]),
+                 std::strtol(argv[4], nullptr, 0),
+                 std::strtol(argv[5], nullptr, 0)))
+            std::cout << result << ' ';
+    }
+    return 0;
+}
 
 bool FHexCharValid(char c)
 {
