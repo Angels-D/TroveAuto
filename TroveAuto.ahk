@@ -35,7 +35,7 @@ config := _Config(
             "ClipCam", "0x9C95BA",
             "Dismount", "0x3333EE",
             "Fish", "0x10600A4",
-            "Health", "0x1092F46",
+            "Player", "0x108BD70",
             "LockCam", "0x880985",
             "Map", "0xA6536D",
             "Mining", "0x852B28",
@@ -45,7 +45,7 @@ config := _Config(
         ),
         "Address_Offset", Map(
             "Name", "0x0,0x10,0x0",
-            "Health", "0x4,0x58,0xC4,0x64,0x3B8",
+            "Health", "0x0,0x28,0x1A4,0x80",
             "Fish_Take_Water", "0x68,0xE4,0x3C4",
             "Fish_Take_Lava", "0x68,0xE4,0x898",
             "Fish_Take_Choco", "0x68,0xE4,0x62C",
@@ -74,7 +74,7 @@ config := _Config(
             "ClipCam", "0,0F 29 01 C7 41 34 00 00 00 00 0F",
             "Dismount", "0,74 XX 8B 07 8B CF 6A 00 6A 00 FF 50",
             "Fish", "0,10 14 XX XX 00 00 00 00 FF 00 00 00 00",
-            "Health", "4,40 3F 00 00 00 00 90 E5",
+            "Player", "20,55 8B EC 83 E4 F8 83 EC 08 F3 0F 2A 45 10 56 8B F1 57 8B 3D",
             "LockCam", "0,74 05 8B 01 FF 50 0C 8B E5",
             "Map", "0,77 XX B8 XX XX XX XX F3 0F 10 08 F3 0F 11 89 XX XX XX XX 8B 89",
             "Mining", "1,DF F1 DD D8 72 61",
@@ -168,7 +168,7 @@ for key, value in Map(
     "ClipCam", "视角遮挡",
     "Dismount", "保持骑乘",
     "Fish", "钓鱼",
-    "Health", "血量检测",
+    "Player", "玩家",
     "LockCam", "视角固定",
     "Map", "地图放大",
     "Mining", "快速挖矿",
@@ -400,10 +400,21 @@ UpdateFromLocal(GuiCtrlObj, Info) {
     Result := Buffer(1024, 0)
 
     for key, value in config.data["Address"] {
+        pid := WinGetPID(GameID)
         signature := StrSplit(config.data["Address_Offset_Signature"][key], ',')
-        size := AobScan(Result, Result.Size, WinGetPID(GameID), RegExReplace(StrReplace(signature[2], " "), "X|x", "?"), BaseAddress, 0x7FFFFFFF, 1)
-        value := size ? Format("0x{1:X}", NumGet(Result, "UInt") + signature[1] - BaseAddress) : "0xFFFFFFFF"
-        MainGui[key "Address"].Text := value
+        size := AobScan(Result, Result.Size, pid, RegExReplace(StrReplace(signature[2], " "), "X|x", "?"), BaseAddress, 0x7FFFFFFF, 1)
+        if (size) {
+            value := NumGet(Result, "UInt") + signature[1]
+            if (size and key == "Player") {
+                ProcessHandle := OpenProcess(Pid)
+                ReadProcessMemory(ProcessHandle, value, Result, 4)
+                value := NumGet(Result, "UInt")
+                CloseHandle(ProcessHandle)
+            }
+            MainGui[key "Address"].Text := Format("0x{1:X}", value - BaseAddress)
+        }
+        else
+            MainGui[key "Address"].Text := "0xFFFFFFFF"
     }
     Msgbox("检测完毕, 确认无误后请手动保存")
 }
@@ -934,7 +945,8 @@ class Game {
         )
     }
     Features_Health() {
-        if ( not this.GetHealth(config.data["Address"]["Health"])) {
+        ToolTip(this.GetHealth(config.data["Address"]["Player"]))
+        if ( not this.GetHealth(config.data["Address"]["Player"])) {
             this.NatualPress("E")
             Sleep(5000)
         }
@@ -967,7 +979,7 @@ class Game {
     }
     GetHealth(Address) {
         Address := this.GetAddressOffset(Address, StrSplit(config.data["Address_Offset"]["Health"], ","))
-        return this.ReadMemory(Address, "Int")
+        return this.ReadMemory(Address, "Double")
     }
     GetAddressOffset(Address, Offset) {
         Address := this.ReadMemory(this.BaseAddress + Address, "Int")
@@ -980,6 +992,11 @@ class Game {
             Mvalue := Buffer(IsSet(Len) ? Len : 4, 0)
             ReadProcessMemory(this.ProcessHandle, Maddress, Mvalue, Mvalue.Size)
             return NumGet(Mvalue, "Int")
+        }
+        else if (Readtype == "Double") {
+            Mvalue := Buffer(IsSet(Len) ? Len : 8, 0)
+            ReadProcessMemory(this.ProcessHandle, Maddress, Mvalue, Mvalue.Size)
+            return NumGet(Mvalue, "Double")
         }
         else if (Readtype == "Str") {
             Mvalue := Buffer(IsSet(Len) ? Len : 15, 0)
