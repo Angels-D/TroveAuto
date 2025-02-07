@@ -8,8 +8,11 @@
   - 自动按键时干扰用户输入, 并行按键越多越容易卡键
 
 - 脚本功能
-  > - 各功能的CE参考：https://www.mpgh.net/forum/forumdisplay.php?f=848  
-  > - 寻址查找教程：https://www.youtube.com/watch?v=FYzix68bxFA  
+  > - 各功能的CE参考
+  >   - https://www.mpgh.net/forum/forumdisplay.php?f=848
+  >   - https://www.mpgh.net/forum/showthread.php?t=1583283
+  >   - https://www.mpgh.net/forum/showthread.php?t=1583596
+  > - 寻址查找教程：https://www.youtube.com/watch?v=FYzix68bxFA
   >   - 账号指针偏移：`"Trove.exe" + 0x115EF64 + 0x10 + 0`
   - [X] `自动钓鱼`: 使用CE进行内存检测游戏账号和钓鱼判定
     - 钓鱼上钩判定：`"Trove.exe" + 0x113268C + 0x68 + 0xE4`

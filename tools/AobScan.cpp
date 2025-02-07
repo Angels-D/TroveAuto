@@ -25,6 +25,10 @@
  *            (+28 Value) 00 右键 | 02 1技能 | 04 2技能 | 06 SHIFT | 08 未知 | 0A 药瓶 | 0C R物品 | 0E T物品
  */
 
+
+// Author: wanttobeno
+// Src: https://github.com/wanttobeno/x64_AOB_Search
+
 #include <Windows.h>
 #include <Psapi.h>
 #include <algorithm>
