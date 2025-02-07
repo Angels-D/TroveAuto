@@ -1,6 +1,6 @@
 ;@Ahk2Exe-UpdateManifest 2
 ;@Ahk2Exe-SetName TroveAuto
-;@Ahk2Exe-SetProductVersion 2.3.3
+;@Ahk2Exe-SetProductVersion 2.3.4
 ;@Ahk2Exe-SetCopyright GPL-3.0 license
 ;@Ahk2Exe-SetLanguage Chinese_PRC
 ;@Ahk2Exe-SetMainIcon TroveAuto.ico
@@ -15,8 +15,8 @@ config := _Config(
         "Global", Map(
             "GameTitle", "Trove.exe",
             "GamePath", "",
-            "ConfigVersion", "20250206044000",
-            "AppVersion", "20250206044000",
+            "ConfigVersion", "20250207213000",
+            "AppVersion", "20250207213000",
             "Source", "https://github.com/Angels-D/TroveAuto/",
             "Mirror", "https://github.moeyy.xyz/",
         ),
@@ -24,6 +24,12 @@ config := _Config(
         "AttackTime", Map("Value", "1000",),
         "HealthTime", Map("Value", "3000",),
         "UseLogTime", Map("Value", "3000",),
+        "TP", Map(
+            "Delay", "50",
+            "Step", "4",
+            "Distance", "4",
+            "HotKey", "3",
+        ),
         "Key", Map(
             "Press", "e",
             "Fish", "f",
@@ -32,20 +38,34 @@ config := _Config(
             "Animation", "0x741A25",
             "Attack", "0x8CDFB8",
             "Breakblocks", "0xAE8F73",
+            "ByPass", "0x161BC6",
             "ClipCam", "0x9C95BA",
             "Dismount", "0x3333EE",
             "Fish", "0x10600A4",
-            "Player", "0x108BD70",
             "LockCam", "0x880985",
             "Map", "0xA6536D",
             "Mining", "0x852B28",
             "MiningGeode", "0xAA9F47",
             "Name", "0xB0A918",
+            "NoClip", "0x63B895",
+            "Player", "0x108BD70",
+            "World", "0x108BDE0",
             "Zoom", "0x9C7536",
         ),
         "Address_Offset", Map(
             "Name", "0x0,0x10,0x0",
             "Health", "0x0,0x28,0x1A4,0x80",
+            "PlayerCoord_Base", "0xC,0x28,0x54,0x88,0xAC,0x4",
+            "PlayerCam_Base", "0x4,0x24,0x84,0x0",
+            "PlayerCoord_X", "0x80",
+            "PlayerCoord_Y", "0x84",
+            "PlayerCoord_Z", "0x88",
+            "PlayerCoord_XVel", "0xB0",
+            "PlayerCoord_YVel", "0xB4",
+            "PlayerCoord_ZVel", "0xB8",
+            "PlayerCam_XPer", "0x100",
+            "PlayerCam_YPer", "0x104",
+            "PlayerCam_ZPer", "0x108",
             "Fish_Take_Water", "0x68,0xE4,0x3C4",
             "Fish_Take_Lava", "0x68,0xE4,0x898",
             "Fish_Take_Choco", "0x68,0xE4,0x62C",
@@ -59,27 +79,32 @@ config := _Config(
             "Animation", "0x4C,0x44",
             "Attack", "0xF0,0xF1",
             "Breakblocks", "0x01,0x00",
+            "ByPass", "0x47,0x67",
             "ClipCam", "0x909090,0x0F2901",
             "Dismount", "0xEB,0x74",
             "LockCam", "0xEB,0x74",
             "Map", "0xEB,0x77",
             "Mining", "0xF0,0xF1",
             "MiningGeode", "0xF0,0xF1",
+            "NoClip", "0xEB,0x74",
             "Zoom", "0x57,0x5F",
         ),
         "Address_Offset_Signature", Map(
             "Attack", "1,DF F1 DD D8 72 1F",
             "Animation", "3,F3 0F 11 44 24 24 F3 0F 58 84 24 80 00 00 00 50 F3 0F 11 43 24 E8 XX XX XX XX 8D 44 24 34 50",
             "Breakblocks", "3,80 7F XX 00 0F 84 XX XX XX XX 8B 4B 08 E8 XX XX XX XX FF 75 0C 8B 4D 10 8B F0 FF 75 08 8B 45 14 83 EC 0C 8B 3E 8B D4 6A 01 89 0A 8B CE 89 42 04 8B 45 18",
+            "ByPass", "1,DC 67 68 C6",
             "ClipCam", "0,0F 29 01 C7 41 34 00 00 00 00 0F",
             "Dismount", "0,74 XX 8B 07 8B CF 6A 00 6A 00 FF 50",
             "Fish", "0,10 14 XX XX 00 00 00 00 FF 00 00 00 00",
-            "Player", "20,55 8B EC 83 E4 F8 83 EC 08 F3 0F 2A 45 10 56 8B F1 57 8B 3D",
             "LockCam", "0,74 05 8B 01 FF 50 0C 8B E5",
             "Map", "0,77 XX B8 XX XX XX XX F3 0F 10 08 F3 0F 11 89 XX XX XX XX 8B 89",
             "Mining", "1,DF F1 DD D8 72 61",
             "MiningGeode", "1,DF F1 DD D8 72 35 8D",
             "Name", "-9,FF 70 1C FF 70 18 8D 45 B0",
+            "NoClip", "0,74 31 FF 73 14 8B 47 04 2B 07",
+            "Player", "20,55 8B EC 83 E4 F8 83 EC 08 F3 0F 2A 45 10 56 8B F1 57 8B 3D",
+            "World", "10,55 8B EC 83 7D 08 04 75 10 A1 XX XX XX XX 85 C0 74 07 C6 80 59 01 00 00 01 5D C2 04 00",
             "Zoom", "3,F3 0F 11 5F 2C",
             "Use_R", "-384,FE FF FF FF 00 00 00 00 65 CF XX XX 0C 00 00 00 55 CF",
             "Use_T", "-384,FE FF FF FF 00 00 00 00 65 CF XX XX 0E 00 00 00 55 CF",
@@ -89,7 +114,7 @@ config := _Config(
 config.Load()
 
 MainGui := Gui("-DPIScale", "Trove辅助")
-MainGui.Add("Tab3", "vTab", ["主页", "面板", "设置", "关于"]) ; 监控,注册账号
+MainGui.Add("Tab3", "vTab", ["主页", "面板", "其他功能", "设置", "关于"])
 
 ; 主页内容
 MainGui["Tab"].UseTab("主页")
@@ -133,11 +158,12 @@ MainGui.Add("ListView", "xs w290 Section NoSortHdr Checked -Multi vHotKeyBox", [
 MainGui.Add("CheckBox", "xs Section w140 vAutoBtn_Key_Click_LEFT", "自动左击")
 MainGui.Add("CheckBox", "ys w140 vAutoBtn_Key_Click_RIGHT", "自动右击")
 MainGui.Add("CheckBox", "xs Section w200 vAutoBtn_NoTop", "前台时禁用")
-MainGui.Add("GroupBox", "xs-10 ys+40 w310 r6 Section", "功能区")
+MainGui.Add("GroupBox", "xs-10 ys+40 w310 r7 Section", "功能区")
 for key, value in Map(
     "Animation", "隐藏特效",
     "Attack", "自动攻击",
     "Breakblocks", "打破障碍",
+    "ByPass", "绕过",
     "ClipCam", "视角遮挡",
     "Dismount", "保持骑乘",
     "Health", "自动复活",
@@ -145,8 +171,9 @@ for key, value in Map(
     "Map", "地图放大",
     "Mining", "快速挖矿",
     "MiningGeode", "快速挖矿(晶洞)",
-    "Zoom", "视野放大",
+    "NoClip", "穿墙",
     "UseLog", "物品栏计数",
+    "Zoom", "视野放大",
 )
     MainGui.Add("CheckBox", (Mod(A_Index, 2) ? ((A_Index == 1 ? "xp+10 yp+30" : "xs") " Section") : "ys") " w140 v" key, value)
 MainGui.Add("GroupBox", "xs-10 ys+70 w310 r3 Section", "崩溃自启          实验性功能")
@@ -157,6 +184,30 @@ MainGui.Add("Text", "xs Section", "密码:")
 MainGui.Add("Edit", "ys w220 vPassword")
 MainGui.Add("Text", "xs+40 ys+50 cRed", "任何脚本都有风险, 请慎用!")
 
+; 其他功能内容
+MainGui["Tab"].UseTab("其他功能")
+MainGui.Add("GroupBox", "xs-10 y+30 w310 r16 Section", "传送相关")
+MainGui.Add("Text", "xs+10 ys+30 w100 Section", "步进距离:")
+MainGui.Add("Edit", "ys w150 vTPStep", config.data["TP"]["Step"])
+MainGui.Add("Text", "xs ys+30 w100 Section", "传送频率(ms):")
+MainGui.Add("Edit", "ys w150 vTPDelay", config.data["TP"]["Delay"])
+MainGui.Add("GroupBox", "xs ys+40 w290 r3 Section", "当前玩家传送")
+MainGui.Add("CheckBox", "xp+110 yp vTP")
+MainGui.Add("Text", "xs+10 ys+30 w90 Section", "传送距离:")
+MainGui.Add("Edit", "ys w150 vTPDistance", config.data["TP"]["Distance"])
+MainGui.Add("Text", "xs w90 Section", "传送热键:")
+MainGui.Add("HotKey", "ys w150 vTPHotKey", config.data["TP"]["HotKey"])
+MainGui.Add("GroupBox", "xs-10 ys+50 w290 r7 Section", "指定坐标传送")
+MainGui.Add("Text", "xs+10 ys+30 w90 Section", "玩家名:")
+MainGui.Add("Edit", "ys w150 vTPPlayerName")
+MainGui.Add("Text", "xs w30 Section", "X:")
+MainGui.Add("Edit", "ys w210 vTPtoX", 0)
+MainGui.Add("Text", "xs w30 Section", "Y:")
+MainGui.Add("Edit", "ys w210 vTPtoY", 0)
+MainGui.Add("Text", "xs w30 Section", "Z:")
+MainGui.Add("Edit", "ys w210 vTPtoZ", 0)
+MainGui.Add("Button", "xs w250 vTPtoXYZBtn", "传送")
+
 ; 设置内容
 MainGui["Tab"].UseTab("设置")
 MainGui.Add("Text", "x+40 y+20 w100 Section", "游戏标题:")
@@ -165,15 +216,18 @@ for key, value in Map(
     "Animation", "隐藏特效",
     "Attack", "自动攻击",
     "Breakblocks", "打破障碍",
+    "ByPass", "绕过",
     "ClipCam", "视角遮挡",
     "Dismount", "保持骑乘",
     "Fish", "钓鱼",
-    "Player", "玩家",
     "LockCam", "视角固定",
     "Map", "地图放大",
     "Mining", "快速挖矿",
     "MiningGeode", "快速挖矿(晶洞)",
     "Name", "账号",
+    "NoClip", "穿墙",
+    "Player", "玩家",
+    "World", "世界",
     "Zoom", "视野放大",
 ) {
     MainGui.Add("Text", "xs w100 Section", value "地址:")
@@ -239,9 +293,11 @@ MainGui["AutoBtn_NoTop"].OnEvent("Click", AutoBtn_NoTop)
 MainGui["AutoRestart"].OnEvent("Click", AutoRestart)
 MainGui["Account"].OnEvent("Change", Account)
 MainGui["Password"].OnEvent("Change", Password)
-for key in ["Animation", "Attack", "Breakblocks", "ClipCam", "Dismount"
-    , "Health", "LockCam", "Map", "Mining", "MiningGeode", "Zoom", "UseLog"]
+for key in ["Animation", "Attack", "Breakblocks", "ByPass", "ClipCam", "Dismount"
+    , "Health", "LockCam", "Map", "Mining", "MiningGeode", "NoClip", "UseLog", "Zoom"]
     MainGui[key].OnEvent("Click", Features)
+MainGui["TP"].OnEvent("Click", TP)
+MainGui["TPtoXYZBtn"].OnEvent("Click", TPtoXYZ)
 
 ; 托盘图标
 A_TrayMenu.Delete()
@@ -322,13 +378,13 @@ Refresh(GuiCtrlObj := unset, Info := unset) {
     UIReset()
 }
 UIReset() {
-    for key in ["Animation", "Attack", "Breakblocks", "ClipCam", "Dismount"
-        , "Health", "LockCam", "Map", "Mining", "MiningGeode", "Zoom", "UseLog"
+    for key in ["Animation", "Attack", "Breakblocks", "ByPass", "ClipCam", "Dismount"
+        , "Health", "LockCam", "Map", "Mining", "MiningGeode", "NoClip", "UseLog", "Zoom"
         , "AutoBtn_Key_Click_LEFT", "AutoBtn_Key_Click_RIGHT", "AutoBtn_NoTop", "HotKeyBox"
         , "Interval", "SelectAction", "StartBtn", "AutoRestart", "Account", "Password"]
         MainGui[key].Enabled := false
-    for key in ["Animation", "Attack", "Breakblocks", "ClipCam", "Dismount"
-        , "Health", "LockCam", "Map", "Mining", "MiningGeode", "Zoom", "UseLog"
+    for key in ["Animation", "Attack", "Breakblocks", "ByPass", "ClipCam", "Dismount"
+        , "Health", "LockCam", "Map", "Mining", "MiningGeode", "NoClip", "UseLog", "Zoom"
         , "AutoBtn_Key_Click_LEFT", "AutoBtn_Key_Click_RIGHT", "AutoBtn_NoTop"
         , "Interval", "SelectAction", "AutoRestart", "Account", "Password"]
         try MainGui[key].Value := ""
@@ -405,7 +461,7 @@ UpdateFromLocal(GuiCtrlObj, Info) {
         size := AobScan(Result, Result.Size, pid, RegExReplace(StrReplace(signature[2], " "), "X|x", "?"), BaseAddress, 0x7FFFFFFF, 1)
         if (size) {
             value := NumGet(Result, "UInt") + signature[1]
-            if (size and key == "Player") {
+            if (key == "Player" or key == "World" and size) {
                 ProcessHandle := OpenProcess(Pid)
                 ReadProcessMemory(ProcessHandle, value, Result, 4)
                 value := NumGet(Result, "UInt")
@@ -447,8 +503,8 @@ SelectAction(GuiCtrlObj, Info := unset) {
     MainGui["Password"].Value := Game.Lists[MainGui["SelectGame"].Text].setting["Password"]
     MainGui["Account"].Enabled := MainGui["Password"].Enabled := !Game.Lists[MainGui["SelectGame"].Text].setting["AutoRestart"]
     MainGui["AutoRestart"].Value := Game.Lists[MainGui["SelectGame"].Text].setting["AutoRestart"]
-    for key in ["Animation", "Attack", "Breakblocks", "ClipCam", "Dismount"
-        , "Health", "LockCam", "Map", "Mining", "MiningGeode", "Zoom", "UseLog"] {
+    for key in ["Animation", "Attack", "Breakblocks", "ByPass", "ClipCam", "Dismount"
+        , "Health", "LockCam", "Map", "Mining", "MiningGeode", "NoClip", "UseLog", "Zoom"] {
         MainGui[key].Enabled := true
         MainGui[key].Value := Game.Lists[MainGui["SelectGame"].Text].setting["Features"][key]
     }
@@ -470,8 +526,51 @@ SelectAction(GuiCtrlObj, Info := unset) {
     }
 }
 Features(GuiCtrlObj, Info) {
+    if (GuiCtrlObj.Name == "NoClip" and GuiCtrlObj.Value) {
+        MainGui["ByPass"].Value := true
+        Game.Lists[MainGui["SelectGame"].Text].Features("ByPass", true)
+    }
     Game.Lists[MainGui["SelectGame"].Text].setting["Features"][GuiCtrlObj.Name] := GuiCtrlObj.Value
     Game.Lists[MainGui["SelectGame"].Text].Features(GuiCtrlObj.Name, GuiCtrlObj.Value)
+}
+TP(GuiCtrlObj, Info) {
+    if (GuiCtrlObj.Value)
+        Hotkey(MainGui["TPHotKey"].Value, (*) {
+            if (WinGetProcessName("A") == config.data["Global"]["GameTitle"]) {
+                for key, value in Game.Lists
+                    if (value.pid == WingetID("A")) {
+                        theGame := value
+                        break
+                    }
+                if not IsSet(theGame)
+                    theGame := Game(WingetID("A"))
+                coord := theGame.GetPlayerCoordinates()
+                xadd := MainGui["TPDistance"].Value * coord[4]
+                yadd := MainGui["TPDistance"].Value * coord[5]
+                zadd := MainGui["TPDistance"].Value * coord[6]
+                xdest := coord[1] + xadd
+                ydest := coord[2] + yadd
+                zdest := coord[3] + zadd
+                theGame.MovePlayerCoordinates(xdest, ydest, zdest, MainGui["TPDistance"].Value, MainGui["TPDelay"].Value)
+            }
+        })
+    else
+        Hotkey(MainGui["TPHotKey"].Value, , "Off")
+    for key in ["TPStep", "TPDelay", "TPDistance", "TPHotKey"]
+        MainGui[key].enabled := not GuiCtrlObj.Value
+}
+TPtoXYZ(GuiCtrlObj, Info) {
+    if (Game.Lists.Has(MainGui["TPPlayerName"].Value))
+        theGame := Game.Lists[MainGui["TPPlayerName"].Value]
+    else {
+        GameIDs := WinGetList("ahk_exe " config.data["Global"]["GameTitle"])
+        for id in GameIDs {
+            theGame := Game(id)
+            if theGame.name == MainGui["TPPlayerName"].Value
+                break
+        }
+    }
+    theGame.MovePlayerCoordinates(MainGui["TPtoX"].Value, MainGui["TPtoY"].Value, MainGui["TPtoZ"].Value, MainGui["TPDistance"].Value, MainGui["TPDelay"].Value)
 }
 Interval(GuiCtrlObj, Info) {
     switch MainGui["SelectAction"].Text {
@@ -640,15 +739,10 @@ class Game {
         InstallKeybdHook
         STOP := false
         ReadProcessMemory := DynaCall("ReadProcessMemory", ["c=uiuituit"])
-        ReadMemoryINT(MADDRESS, PID, ProcessHandle) {
-            MVALUE := Buffer(4, 0)
-            ReadProcessMemory(ProcessHandle, MADDRESS, MVALUE, 4)
-            return NumGet(Mvalue, "Int")
-        }
-        ReadMemoryDouble(MADDRESS, PID, ProcessHandle) {
-            MVALUE := Buffer(8, 0)
-            ReadProcessMemory(ProcessHandle, MADDRESS, MVALUE, 8)
-            return NumGet(Mvalue, "Double")
+        ReadMemory(Maddress, ProcessHandle, Readtype := "Int", Len := 4) {
+            Mvalue := Buffer(Len, 0)
+            ReadProcessMemory(ProcessHandle, Maddress, Mvalue, Mvalue.Size)
+            return NumGet(Mvalue, Readtype)
         }
         NatualPress(npbtn, pid, holdtime := 0) {
             ; SetKeyDelay(,Random(66, 122) + holdtime)
@@ -694,13 +788,13 @@ class Game {
                 Sleep(Interval)
                 StateFlag := false
                 for key in State_Address
-                    StateFlag |= ReadMemoryINT(key, Pid, ProcessHandle)
+                    StateFlag |= ReadMemory(key, ProcessHandle)
                 if (!StateFlag) {
                     if (RePush < 10)
                         RePush := RePush + 1
                     Sleep((Random(66, 122) + Interval) * RePush)
                     for key in State_Address
-                        StateFlag |= ReadMemoryINT(key, Pid, ProcessHandle)
+                        StateFlag |= ReadMemory(key, ProcessHandle)
                     if (!StateFlag)
                         NatualPress(FishKey, Pid)
                     Sleep(3000)
@@ -708,7 +802,7 @@ class Game {
                 }
                 TakeFlag := false
                 for key in Take_Address
-                    TakeFlag |= ReadMemoryINT(key, Pid, ProcessHandle)
+                    TakeFlag |= ReadMemory(key, ProcessHandle)
                 if (TakeFlag) {
                     if (Flag) {
                         Sleep(1000)
@@ -737,8 +831,8 @@ class Game {
                 address_r := size ? Format("0x{{}1:X{}}", NumGet(Result, "UInt") + signature_r[1]) : "0xFFFFFFFF"
                 size := AobScan(Result, Result.Size, Pid, signature_t[2], BaseAddress, 0x7FFFFFFF, 1)
                 address_t := size ? Format("0x{{}1:X{}}", NumGet(Result, "UInt") + signature_t[1]) : "0xFFFFFFFF"
-                value_r := Integer(ReadMemoryDouble(address_r, Pid, ProcessHandle))
-                value_t := Integer(ReadMemoryDouble(address_t, Pid, ProcessHandle))
+                value_r := Integer(ReadMemory(address_r, ProcessHandle, "Double", 8))
+                value_t := Integer(ReadMemory(address_t, ProcessHandle, "Double", 8))
                 if(value_r_old != value_r || value_t_old != value_t) {
                     FileObj.WriteLine(FormatTime(,"yyyy-MM-dd hh:mm:ss") " R:" value_r " | T:" value_t)
                     FileObj.Read(0)
@@ -782,8 +876,8 @@ class Game {
     __New(id) {
         this.GetBase(id)
         this.name := this.GetName(config.data["Address"]["Name"])
-        for key in ["Animation", "Attack", "Breakblocks", "ClipCam", "Dismount"
-            , "Health", "LockCam", "Map", "Mining", "MiningGeode", "Zoom", "UseLog"]
+        for key in ["Animation", "Attack", "Breakblocks", "ByPass", "ClipCam", "Dismount"
+            , "Health", "LockCam", "Map", "Mining", "MiningGeode", "NoClip", "UseLog", "Zoom"]
             this.setting["Features"][key] := false
         this.FeaturesAttackFunc := ObjBindMethod(this, "Features_Attack")
         this.FeaturesHealthFunc := ObjBindMethod(this, "Features_Health")
@@ -821,8 +915,8 @@ class Game {
                                     theGame.AutoBtn()
                             }
                         }
-                        for key in ["Animation", "Attack", "Breakblocks", "ClipCam", "Dismount"
-                            , "Health", "LockCam", "Map", "Mining", "MiningGeode", "Zoom", "UseLog"]
+                        for key in ["Animation", "Attack", "Breakblocks", "ByPass", "ClipCam", "Dismount"
+                            , "Health", "LockCam", "Map", "Mining", "MiningGeode", "NoClip", "UseLog", "Zoom"]
                             theGame.Features(key, theGame.setting["Features"][key])
                     }
                     else Game.Lists[theGame.name] := theGame
@@ -945,27 +1039,25 @@ class Game {
         )
     }
     Features_Health() {
-        ToolTip(this.GetHealth(config.data["Address"]["Player"]))
         if ( not this.GetHealth(config.data["Address"]["Player"])) {
             this.NatualPress("E")
             Sleep(5000)
         }
     }
     Features(Name, Value) {
-        if (Name == "Attack")
-            SetTimer(this.FeaturesAttackFunc, Value ? config.data["AttackTime"]["Value"] : 0)
-        else if (Name == "UseLog") {
-            try this.logThread["STOP"] := true
-            if (Value)
-            {
-                this.logThread := Worker(Format(Game.ScriptAHK, Format('{1}({2},"{3}",{4},{5},{6},"{7}","{8}")'
-                    , "UseLog", this.pid, this.name, this.BaseAddress, this.ProcessHandle, config.data["UseLogTime"]["Value"], config.data["Address_Offset_Signature"]["Use_R"], config.data["Address_Offset_Signature"]["Use_T"])))
-            }
-            return
-        }
-        else if (Name == "Health") {
-            SetTimer(this.FeaturesHealthFunc, Value ? config.data["HealthTime"]["Value"] : 0)
-            return
+        switch Name {
+            case "Attack":
+                SetTimer(this.FeaturesAttackFunc, Value ? config.data["AttackTime"]["Value"] : 0)
+            case "Health":
+                SetTimer(this.FeaturesHealthFunc, Value ? config.data["HealthTime"]["Value"] : 0)
+                return
+            case "UseLog":
+                try this.logThread["STOP"] := true
+                if (Value) {
+                    this.logThread := Worker(Format(Game.ScriptAHK, Format('{1}({2},"{3}",{4},{5},{6},"{7}","{8}")'
+                        , "UseLog", this.pid, this.name, this.BaseAddress, this.ProcessHandle, config.data["UseLogTime"]["Value"], config.data["Address_Offset_Signature"]["Use_R"], config.data["Address_Offset_Signature"]["Use_T"])))
+                }
+                return
         }
 
         this.WriteMemory(
@@ -975,40 +1067,72 @@ class Game {
     }
     GetName(Address) {
         Address := this.GetAddressOffset(Address, StrSplit(config.data["Address_Offset"]["Name"], ","))
-        return this.ReadMemory(Address, "Str")
+        return this.ReadMemory(Address, "utf-8", 16, false)
     }
     GetHealth(Address) {
         Address := this.GetAddressOffset(Address, StrSplit(config.data["Address_Offset"]["Health"], ","))
-        return this.ReadMemory(Address, "Double")
+        return this.ReadMemory(Address, "Double", 8)
+    }
+    GetPlayerCoordinates() {
+        CoordBaseAddress := this.GetAddressOffset(config.data["Address"]["Player"], StrSplit(config.data["Address_Offset"]["PlayerCoord_Base"], ",")) - this.BaseAddress
+        CamBaseAddress := this.GetAddressOffset(config.data["Address"]["Player"], StrSplit(config.data["Address_Offset"]["PlayerCam_Base"], ",")) - this.BaseAddress
+        x := this.ReadMemory(this.GetAddressOffset(CoordBaseAddress, StrSplit(config.data["Address_Offset"]["PlayerCoord_X"], ",")), "Float")
+        y := this.ReadMemory(this.GetAddressOffset(CoordBaseAddress, StrSplit(config.data["Address_Offset"]["PlayerCoord_Y"], ",")), "Float")
+        z := this.ReadMemory(this.GetAddressOffset(CoordBaseAddress, StrSplit(config.data["Address_Offset"]["PlayerCoord_Z"], ",")), "Float")
+        xper := this.ReadMemory(this.GetAddressOffset(CamBaseAddress, StrSplit(config.data["Address_Offset"]["PlayerCam_XPer"], ",")), "Float")
+        yper := this.ReadMemory(this.GetAddressOffset(CamBaseAddress, StrSplit(config.data["Address_Offset"]["PlayerCam_YPer"], ",")), "Float")
+        zper := this.ReadMemory(this.GetAddressOffset(CamBaseAddress, StrSplit(config.data["Address_Offset"]["PlayerCam_ZPer"], ",")), "Float")
+        return [x, y, z, xper, yper, zper]
+    }
+    SetPlayerCoordinates(X, Y, Z) {
+        CoordBaseAddress := this.GetAddressOffset(config.data["Address"]["Player"], StrSplit(config.data["Address_Offset"]["PlayerCoord_Base"], ",")) - this.BaseAddress
+        this.WriteMemory(this.GetAddressOffset(CoordBaseAddress, StrSplit(config.data["Address_Offset"]["PlayerCoord_X"], ",")) - this.BaseAddress, X, false, "Float")
+        this.WriteMemory(this.GetAddressOffset(CoordBaseAddress, StrSplit(config.data["Address_Offset"]["PlayerCoord_Y"], ",")) - this.BaseAddress, Y, false, "Float")
+        this.WriteMemory(this.GetAddressOffset(CoordBaseAddress, StrSplit(config.data["Address_Offset"]["PlayerCoord_Z"], ",")) - this.BaseAddress, Z, false, "Float")
+
+    }
+    MovePlayerCoordinates(Xtarget, Ytarget, Ztarget, SkipDist, SkipDelay) {
+        if ( not this.setting["Features"]["ByPass"])
+            this.Features("ByPass", true)
+        if ( not this.setting["Features"]["NoClip"])
+            this.Features("NoClip", true)
+        coord := this.GetPlayerCoordinates()
+        dist := sqrt((Xtarget - coord[1]) ** 2 + (Ytarget - coord[2]) ** 2 + (Ztarget - coord[3]) ** 2)
+        loop {
+            if (dist <= SkipDist)
+                this.SetPlayerCoordinates(Xtarget, Ytarget, Ztarget)
+            else
+                this.SetPlayerCoordinates(coord[1] + SkipDist * (Xtarget - coord[1]) / dist, coord[2] + SkipDist * (Ytarget - coord[2]) / dist, coord[3] + SkipDist * (Ztarget - coord[3]) / dist)
+            Sleep(SkipDelay)
+            coord := this.GetPlayerCoordinates()
+            dist := sqrt((Xtarget - coord[1]) ** 2 + (Ytarget - coord[2]) ** 2 + (Ztarget - coord[3]) ** 2)
+        } until (dist <= SkipDist)
+        if ( not this.setting["Features"]["ByPass"])
+            this.Features("ByPass", false)
+        if ( not this.setting["Features"]["NoClip"])
+            this.Features("NoClip", false)
     }
     GetAddressOffset(Address, Offset) {
-        Address := this.ReadMemory(this.BaseAddress + Address, "Int")
+        Address := this.ReadMemory(this.BaseAddress + Address)
         loop Offset.Length - 1
-            Address := this.ReadMemory(Address + Offset[A_Index], "Int")
+            Address := this.ReadMemory(Address + Offset[A_Index])
         return Address + Offset[-1]
     }
-    ReadMemory(Maddress, Readtype, Len := unset) {
-        if (Readtype == "Int") {
-            Mvalue := Buffer(IsSet(Len) ? Len : 4, 0)
-            ReadProcessMemory(this.ProcessHandle, Maddress, Mvalue, Mvalue.Size)
-            return NumGet(Mvalue, "Int")
-        }
-        else if (Readtype == "Double") {
-            Mvalue := Buffer(IsSet(Len) ? Len : 8, 0)
-            ReadProcessMemory(this.ProcessHandle, Maddress, Mvalue, Mvalue.Size)
-            return NumGet(Mvalue, "Double")
-        }
-        else if (Readtype == "Str") {
-            Mvalue := Buffer(IsSet(Len) ? Len : 15, 0)
-            ReadProcessMemory(this.ProcessHandle, Maddress, Mvalue, Mvalue.Size)
-            return StrGet(Mvalue, "utf-8")
-        }
-        throw ValueError("错误的读取类型", -1, Readtype)
+    ReadMemory(Maddress, Readtype := "Int", Len := 4, isNumber := True) {
+        Mvalue := Buffer(Len, 0)
+        ReadProcessMemory(this.ProcessHandle, Maddress, Mvalue, Mvalue.Size)
+        return isNumber ? NumGet(Mvalue, Readtype) : StrGet(Mvalue, Readtype)
     }
-    WriteMemory(Address, Value) {
-        Mvalue := Buffer((StrLen(Value) - 2) // 2)
-        loop Mvalue.Size
-            NumPut("UChar", "0x" SubStr(Value, 1 + A_Index * 2, 2), Mvalue, A_Index - 1)
+    WriteMemory(Address, Value, IsBinary := True, Writetype := "Int", Len := 4, IsNumber := True) {
+        if (IsBinary) {
+            Mvalue := Buffer((StrLen(Value) - 2) // 2)
+            loop Mvalue.Size
+                NumPut("UChar", "0x" SubStr(Value, 1 + A_Index * 2, 2), Mvalue, A_Index - 1)
+            WriteProcessMemory(this.ProcessHandle, this.BaseAddress + Address, Mvalue, Mvalue.Size)
+            return
+        }
+        Mvalue := Buffer(Len, 0)
+        IsNumber ? NumPut(Writetype, Value, Mvalue) : StrPut(Value, Mvalue, Mvalue.Size, Writetype)
         WriteProcessMemory(this.ProcessHandle, this.BaseAddress + Address, Mvalue, Mvalue.Size)
     }
     NatualPress(npbtn, holdtime := 0) {
