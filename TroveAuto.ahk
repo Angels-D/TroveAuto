@@ -118,8 +118,8 @@ MainGui.Add("Tab3", "vTab", ["主页", "面板", "其他功能", "设置", "关�
 
 ; 主页内容
 MainGui["Tab"].UseTab("主页")
-MainGui.Add("Text", "x+60 y+40", "游戏路径:")
-MainGui.Add("Edit", "w200 vGamePath", config.data["Global"]["GamePath"])
+MainGui.Add("Text", "x+60 y+70", "游戏路径:")
+MainGui.Add("Edit", "w200 h70 vGamePath", config.data["Global"]["GamePath"])
 MainGui.Add("Button", "Section vGamePathBtn", "获取游戏路径")
 MainGui.Add("Button", "ys vGameStartBtn", "启动游戏")
 MainGui.Add("Text", "xs w200", "说明: 当前使用Steam打开游戏会强制绑定账号, 直接使用官方启动器即可跳过绑定")
@@ -151,7 +151,7 @@ MainGui.Add("Text", "xs w70 Section", "玩家列表:")
 MainGui.Add("DropDownList", "ys w150 vSelectGame")
 MainGui.Add("Text", "xs w70 Section", "脚本动作:")
 MainGui.Add("DropDownList", "ys w150 vSelectAction", ["自动按键", "钓鱼"])
-MainGui.Add("GroupBox", "xs-20 y+20 w310 r9 Section", "自动按键配置区")
+MainGui.Add("GroupBox", "xs-40 y+20 w310 r9 Section", "自动按键配置区")
 MainGui.Add("Text", "xp+10 yp+30 Section", "频率(毫秒):")
 MainGui.Add("Edit", "ys w120 vInterval")
 MainGui.Add("ListView", "xs w290 Section NoSortHdr Checked -Multi vHotKeyBox", ["热键", "持续时间", "间隔时间", "次数"])
@@ -176,7 +176,11 @@ for key, value in Map(
     "Zoom", "视野放大",
 )
     MainGui.Add("CheckBox", (Mod(A_Index, 2) ? ((A_Index == 1 ? "xp+10 yp+30" : "xs") " Section") : "ys") " w140 v" key, value)
-MainGui.Add("GroupBox", "xs-10 ys+70 w310 r3 Section", "崩溃自启          实验性功能")
+MainGui.Add("GroupBox", "xs-10 ys+40 w310 r2 Section", "跟踪玩家")
+MainGui.Add("CheckBox", "xp+80 yp vFollowPlayer")
+MainGui.Add("Text", "xs+10 ys+30 Section", "玩家名:")
+MainGui.Add("Edit", "ys w220 vFollowPlayerName")
+MainGui.Add("GroupBox", "xs-10 ys+80 w310 r3 Section", "崩溃自启          实验性功能")
 MainGui.Add("CheckBox", "xp+80 yp vAutoRestart")
 MainGui.Add("Text", "xs+10 ys+30 Section", "账号:")
 MainGui.Add("Edit", "ys w220 vAccount")
@@ -188,15 +192,15 @@ MainGui.Add("Text", "xs+40 ys+50 cRed", "任何脚本都有风险, 请慎用!")
 MainGui["Tab"].UseTab("其他功能")
 MainGui.Add("GroupBox", "xs-10 y+30 w310 r16 Section", "传送相关")
 MainGui.Add("Text", "xs+10 ys+30 w100 Section", "步进距离:")
-MainGui.Add("Edit", "ys w150 vTPStep", config.data["TP"]["Step"])
+MainGui.Add("Edit", "ys w150 vStepTP", config.data["TP"]["Step"])
 MainGui.Add("Text", "xs ys+30 w100 Section", "传送频率(ms):")
-MainGui.Add("Edit", "ys w150 vTPDelay", config.data["TP"]["Delay"])
+MainGui.Add("Edit", "ys w150 vDelayTP", config.data["TP"]["Delay"])
 MainGui.Add("GroupBox", "xs ys+40 w290 r3 Section", "当前玩家传送")
 MainGui.Add("CheckBox", "xp+110 yp vTP")
 MainGui.Add("Text", "xs+10 ys+30 w90 Section", "传送距离:")
-MainGui.Add("Edit", "ys w150 vTPDistance", config.data["TP"]["Distance"])
+MainGui.Add("Edit", "ys w150 vDistanceTP", config.data["TP"]["Distance"])
 MainGui.Add("Text", "xs w90 Section", "传送热键:")
-MainGui.Add("HotKey", "ys w150 vTPHotKey", config.data["TP"]["HotKey"])
+MainGui.Add("HotKey", "ys w150 vHotKeyTP", config.data["TP"]["HotKey"])
 MainGui.Add("GroupBox", "xs-10 ys+50 w290 r7 Section", "指定坐标传送")
 MainGui.Add("Text", "xs+10 ys+30 w90 Section", "玩家名:")
 MainGui.Add("Edit", "ys w150 vTPPlayerName")
@@ -429,7 +433,7 @@ Save(GuiCtrlObj := unset, Info := unset) {
         for key in data
             try config.data[sect][key] := MainGui[key sect].Value
             catch
-                try config.data[sect][key] := MainGui[key].Value
+                try config.data[sect][key] := MainGui[sect].Value
     }
     config.Save()
 }
@@ -535,7 +539,7 @@ Features(GuiCtrlObj, Info) {
 }
 TP(GuiCtrlObj, Info) {
     if (GuiCtrlObj.Value)
-        Hotkey(MainGui["TPHotKey"].Value, (*) {
+        Hotkey(MainGui["HotKeyTP"].Value, (*) {
             if (WinGetProcessName("A") == config.data["Global"]["GameTitle"]) {
                 for key, value in Game.Lists
                     if (value.pid == WingetID("A")) {
@@ -545,18 +549,18 @@ TP(GuiCtrlObj, Info) {
                 if not IsSet(theGame)
                     theGame := Game(WingetID("A"))
                 coord := theGame.GetPlayerCoordinates()
-                xadd := MainGui["TPDistance"].Value * coord[4]
-                yadd := MainGui["TPDistance"].Value * coord[5]
-                zadd := MainGui["TPDistance"].Value * coord[6]
+                xadd := MainGui["DistanceTP"].Value * coord[4]
+                yadd := MainGui["DistanceTP"].Value * coord[5]
+                zadd := MainGui["DistanceTP"].Value * coord[6]
                 xdest := coord[1] + xadd
                 ydest := coord[2] + yadd
                 zdest := coord[3] + zadd
-                theGame.MovePlayerCoordinates(xdest, ydest, zdest, MainGui["TPDistance"].Value, MainGui["TPDelay"].Value)
+                theGame.MovePlayerCoordinates(xdest, ydest, zdest, MainGui["StepTP"].Value, MainGui["DelayTP"].Value)
             }
         })
     else
-        Hotkey(MainGui["TPHotKey"].Value, , "Off")
-    for key in ["TPStep", "TPDelay", "TPDistance", "TPHotKey"]
+        Hotkey(MainGui["HotKeyTP"].Value, , "Off")
+    for key in ["StepTP", "DelayTP", "DistanceTP", "HotKeyTP"]
         MainGui[key].enabled := not GuiCtrlObj.Value
 }
 TPtoXYZ(GuiCtrlObj, Info) {
@@ -570,7 +574,7 @@ TPtoXYZ(GuiCtrlObj, Info) {
                 break
         }
     }
-    theGame.MovePlayerCoordinates(MainGui["TPtoX"].Value, MainGui["TPtoY"].Value, MainGui["TPtoZ"].Value, MainGui["TPDistance"].Value, MainGui["TPDelay"].Value)
+    theGame.MovePlayerCoordinates(MainGui["TPtoX"].Value, MainGui["TPtoY"].Value, MainGui["TPtoZ"].Value, MainGui["StepTP"].Value, MainGui["DelayTP"].Value)
 }
 Interval(GuiCtrlObj, Info) {
     switch MainGui["SelectAction"].Text {
@@ -1089,7 +1093,6 @@ class Game {
         this.WriteMemory(this.GetAddressOffset(CoordBaseAddress, StrSplit(config.data["Address_Offset"]["PlayerCoord_X"], ",")) - this.BaseAddress, X, false, "Float")
         this.WriteMemory(this.GetAddressOffset(CoordBaseAddress, StrSplit(config.data["Address_Offset"]["PlayerCoord_Y"], ",")) - this.BaseAddress, Y, false, "Float")
         this.WriteMemory(this.GetAddressOffset(CoordBaseAddress, StrSplit(config.data["Address_Offset"]["PlayerCoord_Z"], ",")) - this.BaseAddress, Z, false, "Float")
-
     }
     MovePlayerCoordinates(Xtarget, Ytarget, Ztarget, SkipDist, SkipDelay) {
         if ( not this.setting["Features"]["ByPass"])
