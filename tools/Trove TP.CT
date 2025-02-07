@@ -1,0 +1,1724 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CheatTable CheatEngineTableVersion="45">
+  <CheatEntries/>
+  <UserdefinedSymbols/>
+  <LuaScript> while getOpenedProcessID() == 0 do
+      openProcess("Trove.exe")
+      Sleep(1000)
+end
+local registerSymbols = [[
+aobscanmodule(noclip,Trove.exe,DC 67 68 C6)
+registersymbol(noclip)
+aobscanmodule(u1,Trove.exe,75 0B 6A 21 FF 15)
+registersymbol(u1)
+aobscanmodule(u,Trove.exe,C6 46 04 00 85 FF 74 1E)
+registersymbol(u)
+aobscanmodule(n,Trove.exe,74 31 FF 73 14 8B 47 04 2B 07)
+registersymbol(n)
+aobscanmodule(autoAttack,Trove.exe,DF F1 DD D8 72 1F)
+registersymbol(autoAttack)
+]]
+local bS = [[
+noclip:
+ db DC 47
+]]
+local disablebS = [[
+noclip:
+ db DC 67
+]]
+local uncapScript = [[
+u1:
+ db EB
+]]
+local disableUncapScript = [[
+u1:
+ db 75
+]]
+local antigravScript = [[
+aobscanmodule(antiGravAOB,Trove.exe,F3 0F 11 45 FC D9 45 FC 8B E5 5D C3 D9 05 ???????? 8B E5 5D C3 D9 05 ???????? 8B E5 5D C3)
+alloc(gravmem,$1000)
+label(code)
+label(return)
+label(antigrav)
+
+gravmem:
+
+code:
+  movss xmm0,[antigrav]
+  movss [ebp-04],xmm0
+  jmp return
+
+antigrav:
+  dd (float)-10000.0
+
+antiGravAOB:
+  jmp gravmem
+
+return:
+registersymbol(antiGravAOB)
+registersymbol(antigrav)
+]]
+local disableAntigravScript = [[
+antiGravAOB:
+  db F3 0F 11 45 FC
+
+unregistersymbol(antiGravAOB)
+unregistersymbol(antigrav)
+dealloc(gravmem)
+]]
+
+local noclipScript = [[
+n:
+  db EB
+]]
+local disableNoclipScript = [[
+n:
+  db 74
+]]
+
+local aaScript = [[
+autoAttack:
+  db DF F0
+]]
+local disableAAScript = [[
+autoAttack:
+  db DF F1
+]]
+
+autoAssemble(registerSymbols)
+local bypass = false
+local uncapFPS = true
+local antigrav = false
+local noclip = false
+local aa = false
+local isTeleporting = false
+
+script = [[
+aobscanmodule(ptrScan, Trove.exe, A1 ?? ?? ?? ?? 8B 40 ?? 85 C0 74 ?? 0F 28 ?? ?? EB 07 0F 28 05 ?? ?? ?? ?? 80)
+registersymbol(ptrScan)
+aobscanmodule(zoomScan, Trove.exe, 8B 0D ?? ?? ?? ?? 85 C9 74 0D A1)
+registersymbol(zoomScan)
+aobscanmodule(worldScan, Trove.exe, A1 ?? ?? ?? ?? 85 C0 74 07 C6 80 59 01 00 00 01 5D C2 04 00)
+registersymbol(worldScan)
+]]
+
+autoAssemble(script)
+local Base = getAddress("Trove.exe")
+
+local ptrScanAddr = getAddress("ptrScan")
+local pointerAddr = readInteger(ptrScanAddr + 1)
+local offset = pointerAddr - Base
+local basePtr = string.format("trove.exe+%X", offset)
+
+local coordAddress = string.format("[[[[[[%s]+C]+28]+54]+88]+AC]+4", basePtr)
+local camAddress = string.format("[[[[%s]+4]+24]+84]+0", basePtr)
+
+xCoordAddr = string.format("[%s]+80", coordAddress)
+yCoordAddr = string.format("[%s]+84", coordAddress)
+zCoordAddr = string.format("[%s]+88", coordAddress)
+xVelAddr = string.format("[%s]+B0", coordAddress)
+yVelAddr = string.format("[%s]+B4", coordAddress)
+zVelAddr = string.format("[%s]+B8", coordAddress)
+xPerAddr = string.format("[%s]+100", camAddress)
+yPerAddr = string.format("[%s]+104", camAddress)
+zPerAddr = string.format("[%s]+108", camAddress)
+
+registerSymbol('xCoordAddr', xCoordAddr)
+registerSymbol('yCoordAddr', yCoordAddr)
+registerSymbol('zCoordAddr', zCoordAddr)
+registerSymbol('xVelAddr', xVelAddr)
+registerSymbol('yVelAddr', yVelAddr)
+registerSymbol('zVelAddr', zVelAddr)
+registerSymbol('xPerAddr', xPerAddr)
+registerSymbol('yPerAddr', yPerAddr)
+registerSymbol('zPerAddr', zPerAddr)
+
+local zoomScanAddr = getAddress("zoomScan")
+local zoomPointerAddr = readInteger(zoomScanAddr + 2)
+local zoomOffset = zoomPointerAddr - Base
+local zoomBasePtr = string.format("trove.exe+%X", zoomOffset)
+zoomAddr = string.format("[[[[%s]+30]+40]+D0]+50", zoomBasePtr)
+--print(zoomScanAddr .. " " .. zoomPointerAddr .. " " .. zoomOffset .. " " .. zoomBasePtr .. " " .. zoomAddr)
+
+local worldScanAddr = getAddress("worldScan")
+local worldPointerAddr = readInteger(worldScanAddr + 1)
+local worldOffset = worldPointerAddr - Base
+local worldBasePtr = string.format("trove.exe+%X", worldOffset)
+plrCountAddr = string.format("[[%s]+FC]+2C", worldBasePtr)
+
+local captions = {
+    "loadding...",
+    "chloehook - basic",
+    "uhhh...",
+    "welcome",
+    "OwO",
+    "*wags tail*"
+}
+
+function getRandomCaption()
+    return captions[math.random(#captions)]
+end
+
+local form = createForm()
+form.Caption = getRandomCaption()
+form.Width = 660
+form.Height = 330
+form.FormStyle = 'fsSystemStayOnTop'
+form.ShowInTaskBar = 'stAlways'
+form.BorderStyle = 'bsSizeable'
+form.AlphaBlend = true
+form.AlphaBlendValue = 230
+form.OnClose = function(form)
+    autoAssemble(disablebS)
+    autoAssemble(disableNoclipScript)
+    autoAssemble(disableAntigravScript)
+    autoAssemble(disableUncapScript)
+    autoAssemble(disableAAScript)
+    closeCE()
+end
+
+local lblStatus = createLabel(form)
+lblStatus.Caption = "Opacity:"
+lblStatus.Top = 215
+lblStatus.Left = 500
+
+local slider = createTrackBar(form)
+slider.Top = 230
+slider.Left = 450
+slider.Width = 200
+slider.Min = 0
+slider.Max = 255
+slider.Position = form.AlphaBlendValue
+
+
+
+local lblX = createLabel(form)
+lblX.Caption = "Destination X:"
+lblX.Top = 20
+lblX.Left = 10
+local edtX = createEdit(form)
+edtX.Top = lblX.Top
+edtX.Left = 120
+edtX.Width = 100
+
+local lblY = createLabel(form)
+lblY.Caption = "Destination Y:"
+lblY.Top = 50
+lblY.Left = 10
+local edtY = createEdit(form)
+edtY.Top = lblY.Top
+edtY.Left = 120
+edtY.Width = 100
+
+local lblZ = createLabel(form)
+lblZ.Caption = "Destination Z:"
+lblZ.Top = 80
+lblZ.Left = 10
+local edtZ = createEdit(form)
+edtZ.Top = lblZ.Top
+edtZ.Left = 120
+edtZ.Width = 100
+
+local lblT = createLabel(form)
+lblT.Caption = "Delay (ms):"
+lblT.Top = 110
+lblT.Left = 10
+local edtT = createEdit(form)
+edtT.Top = lblT.Top
+edtT.Left = 120
+edtT.Width = 100
+edtT.Text = 25
+
+local lblS = createLabel(form)
+lblS.Caption = "Step:"
+lblS.Top = 140
+lblS.Left = 10
+local edtS = createEdit(form)
+edtS.Top = lblS.Top
+edtS.Left = 120
+edtS.Width = 100
+edtS.Text = 4
+
+local lblDist = createLabel(form)
+lblDist.Caption = "Skip Distance:"
+lblDist.Top = 170
+lblDist.Left = 10
+local edtDist = createEdit(form)
+edtDist.Top = lblDist.Top
+edtDist.Left = 120
+edtDist.Width = 100
+edtDist.Text = 4
+
+local lblFly = createLabel(form)
+lblFly.Caption = "Fly speed:"
+lblFly.Top = 200
+lblFly.Left = 10
+local edtFly = createEdit(form)
+edtFly.Top = lblFly.Top
+edtFly.Left = 120
+edtFly.Width = 100
+edtFly.Text = 50
+
+local lblSpeed = createLabel(form)
+lblSpeed.Caption = "Speed:"
+lblSpeed.Top = 230
+lblSpeed.Left = 10
+
+local edtSpeed = createEdit(form)
+edtSpeed.Top = lblSpeed.Top
+edtSpeed.Left = 120
+edtSpeed.Width = 100
+edtSpeed.Text = 50
+
+local btnMove = createButton(form)
+btnMove.Caption = "Teleport"
+btnMove.Top = 260
+btnMove.Left = 0
+btnMove.Width = 50
+
+local someBool = true
+
+local smBool = createCheckBox(form)
+smBool.Caption = "PID Check"
+smBool.Left = 20
+smBool.Top = btnMove.Top + 30
+smBool.State = 1
+
+local unfps = createCheckBox(form)
+unfps.Caption = "CPU Usage Optimization"
+unfps.Left = 20
+unfps.Top = smBool.Top + 20
+unfps.State = 0
+unfps.OnChange = function()
+uncapFPS = not uncapFPS
+if uncapFPS then
+autoAssemble(uncapScript)
+else
+autoAssemble(disableUncapScript)
+end
+end
+
+local bpAlwaysOn = createCheckBox(form)
+bpAlwaysOn.Caption = "Bypass Always On"
+bpAlwaysOn.Left = 200
+bpAlwaysOn.Top = smBool.Top
+bpAlwaysOn.State = 0
+
+local btnLoad = createButton(form)
+btnLoad.Caption = "Save Pos"
+btnLoad.Top = btnMove.Top
+btnLoad.Left = 50
+btnLoad.Width = 50
+
+local btnAddWaypoint = createButton(form)
+btnAddWaypoint.Caption = "Quick WP"
+btnAddWaypoint.Top = btnMove.Top
+btnAddWaypoint.Left = 100
+btnAddWaypoint.Width = 50
+
+local btnWaypoints = createButton(form)
+btnWaypoints.Caption = "Waypoints"
+btnWaypoints.Top = btnMove.Top
+btnWaypoints.Left = 150
+btnWaypoints.Width = 75
+
+local waypoints = {}
+waypointForm = createForm()
+waypointForm.Caption = "Waypoints"
+waypointForm.Height = 300
+waypointForm.Width = 400
+waypointForm.FormStyle = 'fsSystemStayOnTop'
+waypointForm.ShowInTaskBar = 'stAlways'
+waypointForm.BorderStyle = 'bsSizeable'
+waypointForm.AlphaBlend = true
+waypointForm.AlphaBlendValue = form.AlphaBlendValue
+
+local waypointMemo = createMemo(waypointForm)
+waypointMemo.Top = 10
+waypointMemo.Left = 10
+waypointMemo.Width = 380
+waypointMemo.Height = 200
+waypointMemo.ReadOnly = true
+
+local lblSkipHotkey = createLabel(form)
+lblSkipHotkey.Caption = "Skip Hotkey:"
+lblSkipHotkey.Top = 20
+lblSkipHotkey.Left = 250
+local edtSkipHotkey = createEdit(form)
+edtSkipHotkey.Top = lblSkipHotkey.Top
+edtSkipHotkey.Left = 350
+edtSkipHotkey.Width = 100
+
+local lblTeleportHotkey = createLabel(form)
+lblTeleportHotkey.Caption = "Teleport Hotkey:"
+lblTeleportHotkey.Top = 50
+lblTeleportHotkey.Left = 250
+
+
+
+
+local edtTeleportHotkey = createEdit(form)
+edtTeleportHotkey.Top = lblTeleportHotkey.Top
+edtTeleportHotkey.Left = 350
+edtTeleportHotkey.Width = 100
+
+local lblSavePosHotkey = createLabel(form)
+lblSavePosHotkey.Caption = "Save Pos Hotkey:"
+lblSavePosHotkey.Top = 80
+lblSavePosHotkey.Left = 250
+local edtSavePosHotkey = createEdit(form)
+edtSavePosHotkey.Top = lblSavePosHotkey.Top
+edtSavePosHotkey.Left = 350
+edtSavePosHotkey.Width = 100
+
+
+local lblSpeedHotkey = createLabel(form)
+lblSpeedHotkey.Caption = "Speed Hotkey:"
+lblSpeedHotkey.Top = 110
+lblSpeedHotkey.Left = 250
+local edtSpeedHotkey = createEdit(form)
+edtSpeedHotkey.Top = lblSpeedHotkey.Top
+edtSpeedHotkey.Left = 350
+edtSpeedHotkey.Width = 100
+
+local lblSaveWPHotkey = createLabel(form)
+lblSaveWPHotkey.Caption = "Save WP Hotkey:"
+lblSaveWPHotkey.Top = 140
+lblSaveWPHotkey.Left = 250
+local edtSaveWPHotkey = createEdit(form)
+edtSaveWPHotkey.Top = lblSaveWPHotkey.Top
+edtSaveWPHotkey.Left = 350
+edtSaveWPHotkey.Width = 100
+
+local lblFlyHotkey = createLabel(form)
+lblFlyHotkey.Caption = "Fly Hotkey:"
+lblFlyHotkey.Top = 170
+lblFlyHotkey.Left = 250
+local edtFlyHotkey = createEdit(form)
+edtFlyHotkey.Top = lblFlyHotkey.Top
+edtFlyHotkey.Left = 350
+edtFlyHotkey.Width = 100
+
+local lblNcHotkey = createLabel(form)
+lblNcHotkey.Caption = "Noclip Hotkey:"
+lblNcHotkey.Top = 200
+lblNcHotkey.Left = 250
+local edtNcHotkey = createEdit(form)
+edtNcHotkey.Top = lblNcHotkey.Top
+edtNcHotkey.Left = 350
+edtNcHotkey.Width = 100
+
+local btnaahotkey = createButton(form)
+btnaahotkey.Caption = "Auto Attack:"
+btnaahotkey.Top = 230
+btnaahotkey.Left = 250
+btnaahotkey.OnClick = function()
+  aa = not aa
+  if aa then
+    autoAssemble(aaScript)
+  else
+    autoAssemble(disableAAScript)
+  end
+end
+
+local edtaahotkey = createEdit(form)
+edtaahotkey.Top = btnaahotkey.Top
+edtaahotkey.Left = 350
+edtaahotkey.Width = 100
+
+
+local lblStatus = createLabel(form)
+lblStatus.Caption = "Module Status:"
+lblStatus.Top = 20
+lblStatus.Left = 500
+lblStatus.Font.Size = 14
+
+local lblFlyStatus = createLabel(form)
+lblFlyStatus.Caption = "Fly:"
+lblFlyStatus.Top = 50
+lblFlyStatus.Left = lblStatus.Left
+
+local lblSpeedStatus = createLabel(form)
+lblSpeedStatus.Caption = "Speed:"
+lblSpeedStatus.Top = 80
+lblSpeedStatus.Left = lblStatus.Left
+
+local lblNoclipStatus = createLabel(form)
+lblNoclipStatus.Caption = "Noclip:"
+lblNoclipStatus.Top = 110
+lblNoclipStatus.Left = lblStatus.Left
+
+local lblTeleportStatus = createLabel(form)
+lblTeleportStatus.Caption = "Teleporting:"
+lblTeleportStatus.Top = 140
+lblTeleportStatus.Left = lblStatus.Left
+
+local lblAAStatus = createLabel(form)
+lblAAStatus.Caption = "Auto Attack:"
+lblAAStatus.Top = 170
+lblAAStatus.Left = lblStatus.Left
+
+local lblBypassStatus = createLabel(form)
+lblBypassStatus.Caption = "b:"
+lblBypassStatus.Top = 200
+lblBypassStatus.Left = lblStatus.Left
+
+function getDocumentsFolder()
+    return os.getenv("USERPROFILE") .. "\\Documents\\"
+end
+
+
+local statusUpdateTimer = createTimer(nil, false)
+statusUpdateTimer.Interval = 100
+statusUpdateTimer.OnTimer = function()
+    lblFlyStatus.Font.Color = flyOn and 0x00FF00 or 0x0000FF
+    lblFlyStatus.Caption = "Fly: " .. (flyOn and "Active" or "Inactive")
+
+    lblSpeedStatus.Font.Color = speedOn and 0x00FF00 or 0x0000FF
+    lblSpeedStatus.Caption = "Speed: " .. (speedOn and "Active" or "Inactive")
+
+    lblNoclipStatus.Font.Color = noclip and 0x00FF00 or 0x0000FF
+    lblNoclipStatus.Caption = "Noclip: " .. (noclip and "Active" or "Inactive")
+
+    lblTeleportStatus.Font.Color = isTeleporting and 0x00FF00 or 0x0000FF
+    lblTeleportStatus.Caption = "Teleporting: " .. (isTeleporting and "Active" or "Inactive")
+
+    lblAAStatus.Font.Color = aa and 0x00FF00 or 0x0000FF
+    lblAAStatus.Caption = "Auto Attack: " .. (aa and "Active" or "Inactive")
+
+    lblBypassStatus.Font.Color = bypass and 0x00FF00 or 0x0000FF
+    lblBypassStatus.Caption = "Bypass: " .. (bypass and "Active" or "Inactive")
+end
+
+statusUpdateTimer.Enabled = true
+
+local about = createButton(form)
+about.Caption = "About"
+about.Top = btnMove.Top + 30
+about.Left = lblStatus.Left - 130
+about.OnClick = function()
+    local aboutForm = createForm()
+    aboutForm.Caption = "About"
+    aboutForm.Width = 400
+    aboutForm.Height = 300
+    aboutForm.Position = poScreenCenter
+
+    local aboutMemo = createMemo(aboutForm)
+    aboutMemo.Align = alClient
+    aboutMemo.ReadOnly = true
+    aboutMemo.WordWrap = true
+    aboutMemo.ScrollBars = ssVertical
+    aboutMemo.Lines.Text = [[
+**TP Destination XYZ Fields:**
+Accepts both absolute and relative destinations. Use '~' for relative positions. For example, 'Destination X: ~1000' teleports you 1000 blocks east from your current position.
+
+**Delay (ms):**
+This field specifies the wait time between each teleportation step.
+Default: 25
+
+**Skip Distance:**
+Used by the skip module, which teleports you the specified number of blocks in the direction you're facing.
+Default: 4
+
+**Hotkeys:**
+Use Virtual Keycodes to map your hotkeys. See Keycodes (https://learn.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes) for reference.
+
+**Map Overlay:**
+Creates a semi-transparent overlay over the in-game map, allowing you to click and teleport to the desired location.
+
+**Alt Bypass:**
+Injects movement bypass into all running trove processes.
+
+**CPU Usage Optimization:**
+While disabled, your FPS will not be limited while tabbed out of the game, required for smooth teleportation.
+
+~OwO~
+    ]]
+end
+
+local altsBypassBtn = createButton(form)
+altsBypassBtn.Caption = "Alt Bypass"
+altsBypassBtn.Top = btnMove.Top + 30
+altsBypassBtn.Left = lblStatus.Left - 30
+altsBypassBtn.OnClick = function()
+local trovePIDs = {}
+local currentPID = getOpenedProcessID()
+
+for pid, name in pairs(getProcessList()) do
+    if name:lower() == "trove.exe" and pid ~= currentPID then
+        table.insert(trovePIDs, pid)
+    end
+end
+
+for _, pid in ipairs(trovePIDs) do
+    openProcess(pid)
+    autoAssemble(registerSymbols)
+    autoAssemble(bS)
+    autoAssemble(uncapScript)
+    print("Opening PID " .. pid)
+end
+
+if currentPID then
+openProcess(currentPID)
+print("Returning to PID " .. currentPID)
+end
+end
+
+local function updateWaypointList()
+    waypointMemo.Lines.Clear()
+    for i, wp in ipairs(waypoints) do
+        waypointMemo.Lines.Add(string.format("%d. %s (%.2f, %.2f, %.2f)", i, wp.name, wp.x, wp.y, wp.z))
+    end
+end
+
+btnAddWaypoint.OnClick = function()
+    local x, y, z = getPlayerCoordinates()
+
+    local function generateRandomString(length)
+        local chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+        local randomString = ''
+        for i = 1, length do
+            local randIndex = math.random(1, #chars)
+            randomString = randomString .. chars:sub(randIndex, randIndex)
+        end
+        return randomString
+    end
+
+    local function isUnique(name)
+        for _, waypoint in ipairs(waypoints) do
+            if waypoint.name == name then
+                return false
+            end
+        end
+        return true
+    end
+
+    local name
+    repeat
+        name = generateRandomString(5)
+    until isUnique(name)
+
+    table.insert(waypoints, {name = name, x = x, y = y, z = z})
+    updateWaypointList()
+end
+
+local btnCustomWaypoint = createButton(waypointForm)
+btnCustomWaypoint.Caption = "Add Custom"
+btnCustomWaypoint.Top = 220
+btnCustomWaypoint.Left = 95
+btnCustomWaypoint.Width = 75
+btnCustomWaypoint.OnClick = function()
+    local input = inputQuery("Custom Waypoint", "Name;x;y;z", "")
+    if input then
+        local name, x, y, z = input:match("([^;]+);([^;]+);([^;]+);([^;]+)")
+        x, y, z = tonumber(x), tonumber(y), tonumber(z)
+        if name and x and y and z then
+            table.insert(waypoints, {name = name, x = x, y = y, z = z})
+            updateWaypointList()
+        else
+            showMessage("Invalid format. Name;x;y;z.")
+        end
+    end
+end
+
+btnWaypoints.OnClick = function()
+    waypointForm.show()
+    updateWaypointList()
+end
+
+local btnTeleportWaypoint = createButton(waypointForm)
+btnTeleportWaypoint.Caption = "Teleport"
+btnTeleportWaypoint.Top = 220
+btnTeleportWaypoint.Left = 10
+btnTeleportWaypoint.Width = 75
+local waypointIndices = {}
+local currentIndex = 1
+
+local function parseInput(input)
+    local indices = {}
+    for part in string.gmatch(input, "[^;]+") do
+        if string.find(part, "-") then
+            local start, stop = string.match(part, "(%d+)%-(%d+)")
+            start, stop = tonumber(start), tonumber(stop)
+            if start and stop then
+                if start &lt; stop then
+                    for i = start, stop do
+                        table.insert(indices, i)
+                    end
+                else
+                    for i = start, stop, -1 do
+                        table.insert(indices, i)
+                    end
+                end
+            end
+        else
+            local num = tonumber(part)
+            if num then
+                table.insert(indices, num)
+            end
+        end
+    end
+    return indices
+end
+
+local function moveToNextWaypoint()
+    if currentIndex &lt;= #waypointIndices then
+        local index = waypointIndices[currentIndex]
+        if waypoints[index] then
+            local wp = waypoints[index]
+            local skipX = wp.x
+            local skipY = wp.y
+            local skipZ = wp.z
+            movePlayerTowardsAbsDestination(skipX, skipY, skipZ, tonumber(edtS.Text), tonumber(edtT.Text))
+            currentIndex = currentIndex + 1
+        end
+    end
+end
+
+btnTeleportWaypoint.OnClick = function()
+    local input = inputQuery("Teleport to Waypoints", "Enter waypoint numbers (1;2;4)/(1-4)/(1-4;6-2):", "")
+    if input then
+        waypointIndices = parseInput(input)
+        currentIndex = 1
+        if #waypointIndices &gt; 0 then
+            local pid = getOpenedProcessID()
+            if pid then
+                executeCodeLocal('SetForegroundWindow', pid)
+                moveToNextWaypoint()
+            end
+        end
+    end
+end
+
+local btnDeleteWaypoint = createButton(waypointForm)
+btnDeleteWaypoint.Caption = "Delete"
+btnDeleteWaypoint.Top = 250
+btnDeleteWaypoint.Left = 180
+btnDeleteWaypoint.Width = 75
+btnDeleteWaypoint.OnClick = function()
+    local index = tonumber(inputQuery("Delete Waypoint", "Enter waypoint number to delete:", ""))
+    if index and waypoints[index] then
+        table.remove(waypoints, index)
+        updateWaypointList()
+    end
+end
+local btnDeleteAllWaypoints = createButton(waypointForm)
+btnDeleteAllWaypoints.Caption = "Delete All"
+btnDeleteAllWaypoints.Top = 250
+btnDeleteAllWaypoints.Left = 265
+btnDeleteAllWaypoints.Width = 75
+btnDeleteAllWaypoints.OnClick = function()
+    for i = #waypoints, 1, -1 do
+        table.remove(waypoints, i)
+    end
+    updateWaypointList()
+end
+local btnSaveWaypoints = createButton(waypointForm)
+btnSaveWaypoints.Caption = "Save"
+btnSaveWaypoints.Top = 250
+btnSaveWaypoints.Left = 10
+btnSaveWaypoints.Width = 75
+btnSaveWaypoints.OnClick = function()
+    local fileName = getDocumentsFolder() .. "waypoints.txt"
+    local file = io.open(fileName, "w")
+    if file then
+        for _, wp in ipairs(waypoints) do
+            file:write(string.format("%s,%.2f,%.2f,%.2f\n", wp.name, wp.x, wp.y, wp.z))
+        end
+        file:close()
+    end
+end
+local btnLoadWaypoints = createButton(waypointForm)
+btnLoadWaypoints.Caption = "Load"
+btnLoadWaypoints.Top = 250
+btnLoadWaypoints.Left = 95
+btnLoadWaypoints.Width = 75
+btnLoadWaypoints.OnClick = function()
+    local fileName = getDocumentsFolder() .. "waypoints.txt"
+    local file = io.open(fileName, "r")
+    if file then
+        waypoints = {}
+        for line in file:lines() do
+            local name, x, y, z = line:match("([^,]+),([^,]+),([^,]+),([^,]+)")
+            if name and x and y and z then
+                table.insert(waypoints, {name = name, x = tonumber(x), y = tonumber(y), z = tonumber(z)})
+            end
+        end
+        file:close()
+        updateWaypointList()
+    end
+end
+
+waypointForm.OnClose = function()
+    closeAction = 0
+    waypointForm.Visible = false
+end
+
+updateWaypointList()
+waypointForm.hide()
+
+local timer = createTimer(nil, false)
+local stepSize = tonumber(edtS.Text)
+local currentX, currentY, currentZ
+local destX, destY, destZ
+local stepX, stepY, stepZ
+local stepsRemaining
+function getPlayerCoordinates()
+    local success, x, y, z = pcall(function()
+        local x = readFloat(xCoordAddr)
+        local y = readFloat(yCoordAddr)
+        local z = readFloat(zCoordAddr)
+
+        if not (x and y and z) then
+            error("One or more position records are missing")
+        end
+
+        return x, y, z
+    end)
+
+    if not success then
+        print("Error getting player coordinates: " .. tostring(x))
+        return nil, nil, nil
+    end
+
+    return x, y, z
+end
+
+function setPlayerCoordinates(x, y, z)
+    local success, error = pcall(function()
+        local posX = readFloat(xCoordAddr)
+        local posY = readFloat(yCoordAddr)
+        local posZ = readFloat(zCoordAddr)
+
+        if not (posX and posY and posZ) then
+            error("One or more position records are missing")
+        end
+
+        writeFloat(xCoordAddr, x)
+        writeFloat(yCoordAddr, y)
+        writeFloat(zCoordAddr, z)
+    end)
+
+    if not success then
+        print("Error setting player coordinates: " .. tostring(error))
+        return false
+    end
+
+    return true
+end
+
+local previousFlyOn = false
+local previousNoclipActive = false
+
+function stopTP()
+    timer.Enabled = false
+    flyOn = previousFlyOn
+    -- noclip.Active = previousNoclipActive
+    isTeleporting = false
+end
+
+local function isAnyVelocityNonZero()
+    return readFloat(xVelAddr) ~= 0 or readFloat(yVelAddr) ~= 0 or readFloat(zVelAddr) ~= 0
+end
+
+local function isAnyCoordNonNil()
+    return readFloat(xCoordAddr) ~= nil or readFloat(yCoordAddr) ~= nil or readFloat(zCoordAddr) ~= nil
+end
+
+function preciseSleep(ms)
+    if ms &lt;= 0 then return end
+
+    local start = os.clock()
+    local duration = ms / 1000
+    while os.clock() - start &lt; duration do end
+end
+
+function teleportStep()
+ local thread = createThread(function()
+    while isTeleporting do
+        if not isTeleporting then
+            stopTP()
+            return
+        end
+        if not isAnyCoordNonNil() then
+            stopTP()
+            return
+        end
+        currentX, currentY, currentZ = getPlayerCoordinates()
+        stepSize = tonumber(edtS.Text)
+        stepDelay = tonumber(edtT.Text)
+        local success, distance = pcall(function()
+            return math.sqrt((destX - currentX)^2 + (destY - currentY)^2 + (destZ - currentZ)^2)
+        end)
+
+        if not success or not distance or distance ~= distance then
+            stopTP()
+            return
+        end
+
+        if distance &gt; stepSize then
+            local success, error = pcall(function()
+                local directionX = (destX - currentX) / distance
+                local directionY = (destY - currentY) / distance
+                local directionZ = (destZ - currentZ) / distance
+
+                local newX = currentX + directionX * stepSize
+                local newY = currentY + directionY * stepSize
+                local newZ = currentZ + directionZ * stepSize
+
+                setPlayerCoordinates(newX, newY, newZ)
+            end)
+
+            if not success then
+                stopTP()
+                return
+            end
+        else
+            if not isTeleporting then
+                stopTP()
+                return
+            end
+            if not isAnyCoordNonNil() then
+                stopTP()
+                return
+            end
+            local success, error = pcall(function()
+                setPlayerCoordinates(destX, destY, destZ)
+                stopTP()
+                moveToNextWaypoint()
+            end)
+
+            if not success then
+                stopTP()
+            end
+            return
+        end
+        preciseSleep(stepDelay)
+    end
+end)
+end
+
+function movePlayerTowardsAbsDestination(skipX, skipY, skipZ, stepSize, stepDelay)
+    if isTeleporting then
+        stopTP()
+        return
+    end
+
+    previousFlyOn = flyOn
+    -- previousNoclipActive = noclip.Active
+
+    destX = skipX
+    destY = skipY
+    destZ = skipZ
+
+    flyOn = true
+    -- noclip.Active = true
+    isTeleporting = true
+
+    teleportStep()
+end
+
+local followedPlayerName = nil
+
+function followPlayer()
+    if not isTeleporting or not followedPlayerName then
+        stopTP()
+        return
+    end
+
+    if not isAnyCoordNonNil() then
+        stopTP()
+        return
+    end
+
+    currentX, currentY, currentZ = getPlayerCoordinates()
+    stepSize = tonumber(edtS.Text)
+    stepDelay = tonumber(edtT.Text)
+    local distance = math.sqrt((targX - currentX)^2 + (targY - currentY)^2 + (targZ - currentZ)^2)
+
+    if not distance or distance ~= distance then
+        stopTP()
+        return
+    end
+
+    if distance &gt; stepSize then
+            local directionX = (targX - currentX) / distance
+            local directionY = (targY - currentY) / distance
+            local directionZ = (targZ - currentZ) / distance
+
+            local newX = currentX + directionX * stepSize
+            local newY = currentY + directionY * stepSize
+            local newZ = currentZ + directionZ * stepSize
+
+            setPlayerCoordinates(newX, newY, newZ)
+    else
+        if not isTeleporting then
+            stopTP()
+            return
+        end
+        if not isAnyCoordNonNil() then
+            stopTP()
+            return
+        end
+            setPlayerCoordinates(targX, targY, targZ)
+    end
+end
+
+local overlay = createForm(true)
+overlay.Width = 768
+overlay.Height = 560
+overlay.Left = (1920 - overlay.Width) / 2.02
+overlay.Top = (1080 - overlay.Height) / 2.32
+overlay.Caption = ''
+
+
+overlay.AlphaBlend = true
+overlay.AlphaBlendValue = 200
+overlay.FormStyle = 'fsSystemStayOnTop'
+
+
+btnoverlay = createButton(form)
+btnoverlay.Caption = "Map Overlay"
+btnoverlay.Top = btnMove.Top
+btnoverlay.Left = lblStatus.Left - 30
+btnoverlay.Width = 100
+
+overlay.Hide()
+
+function getGridSize(zoomValue)
+    local baseZoomValue = 2.0
+    local baseGridWidth = 800
+    local baseGridHeight = baseGridWidth / 1.3333333
+    local zoomRatio = 0.93
+    local widthRatio = 1.075
+
+    local zoomLevel = math.log(zoomValue / baseZoomValue) / math.log(zoomRatio)
+
+    local gridWidth = baseGridWidth * (widthRatio ^ zoomLevel)
+
+    local gridHeight = gridWidth / 1.3333333
+
+    return gridWidth, gridHeight
+end
+
+function mapToWorldCoordinates(x, y)
+    local playerX, playerY, playerZ = getPlayerCoordinates()
+    local zoomValue = readFloat(zoomAddr)
+    local gridWidth, gridHeight = getGridSize(zoomValue)
+
+    local scaleX = gridWidth / overlay.Width
+    local scaleZ = gridHeight / overlay.Height
+
+    local mapX = (x - overlay.Width / 2) * scaleX
+    local mapZ = (y - overlay.Height / 2) * scaleZ
+
+    local worldX = playerX + mapX
+    local worldZ = playerZ + mapZ
+
+    return worldX, playerY, worldZ
+end
+
+overlay.OnMouseDown = function(sender, button, x, y)
+    if button == 0 then
+        local worldX, worldY, worldZ = mapToWorldCoordinates(x, y)
+        movePlayerTowardsAbsDestination(worldX, worldY, worldZ, tonumber(edtS.Text), tonumber(edtT.Text))
+    elseif button == 1 then
+        local worldX, worldY, worldZ = mapToWorldCoordinates(x, y)
+        local name = inputQuery("Enter Waypoint Name", "Name:", "")
+        if name and name ~= "" then
+            table.insert(waypoints, {name = name, x = worldX, y = worldY, z = worldZ})
+            updateWaypointList()
+        end
+    end
+end
+
+
+function getPlayers(index)
+    local basePlrPtr = string.format("[[[%s]+FC]+00]+%X", worldBasePtr, (index * 4))
+local name_addr = getAddress(string.format("[[%s]+1D0]+00", basePlrPtr))
+local x_addr = getAddress(string.format("[[[%s]+C4]+04]+80", basePlrPtr))
+local y_addr = getAddress(string.format("[[[%s]+C4]+04]+84", basePlrPtr))
+local z_addr = getAddress(string.format("[[[%s]+C4]+04]+88", basePlrPtr))
+local name = readString(name_addr)
+local x = readFloat(x_addr)
+local y = readFloat(y_addr)
+local z = readFloat(z_addr)
+    return name, x, y, z
+end
+
+local refreshTimer = createTimer(overlay, false)
+refreshTimer.Interval = 250
+
+function renderPlayers()
+    overlay.Canvas.clear()
+    if not isAnyCoordNonNil() then
+        refreshTimer.Enabled = false
+        return
+    end
+
+    local playerCount = readInteger(plrCountAddr)
+    local playerX, playerY, playerZ = getPlayerCoordinates()
+    local zoomValueMap = readFloat(zoomAddr)
+
+    local gridWidth, gridHeight = getGridSize(zoomValueMap)
+
+    local scaleX = gridWidth / overlay.Width
+    local scaleZ = gridHeight / overlay.Height
+
+    for _, waypoint in ipairs(waypoints) do
+        local name, wx, wz = waypoint.name, waypoint.x, waypoint.z
+
+        local relativeX = (wx - playerX) / scaleX
+        local relativeZ = (wz - playerZ) / scaleZ
+
+        local screenX = (overlay.Width / 2) + relativeX
+        local screenY = (overlay.Height / 2) + relativeZ
+
+        if screenX &gt;= 0 and screenX &lt;= overlay.Width and screenY &gt;= 0 and screenY &lt;= overlay.Height then
+            local iconSize = 8
+            overlay.Canvas.Pen.Color = 0x00CCFF
+            overlay.Canvas.Pen.Width = 1
+            overlay.Canvas.Brush.Color = 0x000000
+            overlay.Canvas.Ellipse(screenX - iconSize / 2, screenY - iconSize - 2, screenX + iconSize / 2, screenY - 2)
+            overlay.Canvas.TextOut(screenX, screenY + 2, name)
+        end
+    end
+
+    for i = 0, playerCount - 1 do
+        local name, x, y, z = getPlayers(i)
+        local relativeX = (x - playerX) / scaleX
+        local relativeZ = (z - playerZ) / scaleZ
+
+        local screenX = (overlay.Width / 2) + relativeX
+        local screenY = (overlay.Height / 2) + relativeZ
+        if screenX &gt;= 0 and screenX &lt;= overlay.Width and screenY &gt;= 0 and screenY &lt;= overlay.Height then
+            local iconSize = 10
+            overlay.Canvas.Pen.Color = 0x00FF00
+            overlay.Canvas.Pen.Width = 1
+            overlay.Canvas.Brush.Color = 0x000000
+            overlay.Canvas.Ellipse(screenX - iconSize / 2, screenY - iconSize - 2, screenX + iconSize / 2, screenY - 2)
+            overlay.Canvas.TextOut(screenX, screenY + 2, name)
+        else
+            local centerX, centerY = overlay.Width / 2, overlay.Height / 2
+            local dx, dy = screenX - centerX, screenY - centerY
+            local angle = math.atan2(dy, dx)
+            local edgeX, edgeY
+            if math.abs(dx) &gt; math.abs(dy) then
+                if dx &gt; 0 then
+                    edgeX = overlay.Width - 5
+                else
+                    edgeX = 5
+                end
+                edgeY = centerY + (edgeX - centerX) * dy / dx
+            else
+                if dy &gt; 0 then
+                    edgeY = overlay.Height - 5
+                else
+                    edgeY = 5
+                end
+                edgeX = centerX + (edgeY - centerY) * dx / dy
+            end
+            overlay.Canvas.Pen.Color = 0x0000FF
+            overlay.Canvas.Pen.Width = 2
+            overlay.Canvas.Brush.Color = 0x000000
+            overlay.Canvas.MoveTo(edgeX, edgeY)
+            local arrowSize = 10
+            overlay.Canvas.LineTo(edgeX - arrowSize * math.cos(angle + math.pi / 4), edgeY - arrowSize * math.sin(angle + math.pi / 4))
+            overlay.Canvas.MoveTo(edgeX, edgeY)
+            overlay.Canvas.LineTo(edgeX - arrowSize * math.cos(angle - math.pi / 4), edgeY - arrowSize * math.sin(angle - math.pi / 4))
+
+            -- render the player name under the arrow
+            --overlay.Canvas.TextOut(edgeX + 5 * math.cos(angle), edgeY + 5 * math.sin(angle) + 2, name)
+        end
+    end
+end
+
+
+
+
+refreshTimer.OnTimer = function(timer)
+    renderPlayers()
+end
+
+overlay.OnClose = function()
+closeAction = 0
+overlay.Visible = false
+refreshTimer.Enabled = false
+end
+btnoverlay.OnClick = function()
+if not overlay.Visible then
+overlay.Show()
+refreshTimer.Enabled = true
+else
+overlay.Visible = false
+refreshTimer.Enabled = false
+end
+end
+
+
+btnlist = createButton(form)
+btnlist.Caption = "Player List"
+btnlist.Top = btnMove.Top + 30
+btnlist.Left = lblStatus.Left + 50
+btnlist.Width = 80
+btnlist.OnClick = function()
+    pform = createForm()
+    pform.Caption = "Player List"
+    pform.Width = 425
+    pform.Height = 500
+    pform.FormStyle = 'fsSystemStayOnTop'
+    pform.ShowInTaskBar = 'stAlways'
+    pform.BorderStyle = 'bsSizeable'
+    pform.AlphaBlend = true
+    pform.AlphaBlendValue = form.AlphaBlendValue
+
+    local playerCountLabel = createLabel(pform)
+    playerCountLabel.Caption = "Player Count: "
+    playerCountLabel.Left = 10
+    playerCountLabel.Top = 10
+
+    local controls = {}
+
+    local function updatePlayerList()
+        if not isAnyCoordNonNil() then
+            if #controls == 0 then
+                local noDataLabel = createLabel(pform)
+                noDataLabel.Caption = "No valid player data available."
+                noDataLabel.Left = 10
+                noDataLabel.Top = 30
+                table.insert(controls, noDataLabel)
+            end
+            return
+        end
+
+        local playerCount = readInteger(plrCountAddr)
+        playerCountLabel.Caption = "Player Count: " .. playerCount
+        while #controls &lt; playerCount * 4 do
+            local nameLabel = createLabel(pform)
+            table.insert(controls, nameLabel)
+
+            local coordLabel = createLabel(pform)
+            table.insert(controls, coordLabel)
+
+            local teleportButton = createButton(pform)
+            table.insert(controls, teleportButton)
+
+            local followButton = createButton(pform)
+            table.insert(controls, followButton)
+        end
+        for i = 0, playerCount - 1 do
+            local name, x, y, z = getPlayers(i)
+            local yPos = 30 + i * 30
+
+            local nameLabel = controls[i * 4 + 1]
+            nameLabel.Caption = name
+            nameLabel.Left = 10
+            nameLabel.Top = yPos
+
+            local function safeFloor(value)
+                return value and math.floor(value) or 0
+            end
+
+            local coordLabel = controls[i * 4 + 2]
+            coordLabel.Caption = string.format("X: %d | Y: %d | Z: %d", safeFloor(x), safeFloor(y), safeFloor(z))
+            coordLabel.Left = 150
+            coordLabel.Top = yPos
+
+            local teleportButton = controls[i * 4 + 3]
+            teleportButton.Caption = "Teleport"
+            teleportButton.Left = 275
+            teleportButton.Top = yPos - 5
+            teleportButton.OnClick = function()
+                movePlayerTowardsAbsDestination(x, y, z)
+            end
+
+            if name == followedPlayerName then
+                targX, targY, targZ = x, y, z
+            end
+
+            local followButton = controls[i * 4 + 4]
+            followButton.Caption = followedPlayerName == name and "Stop" or "Follow"
+            followButton.Left = 350
+            followButton.Top = yPos - 5
+            followButton.OnClick = function()
+                if followedPlayerName == name then
+                    stopTP()
+                    followedPlayerName = nil
+                    followButton.Caption = "Follow"
+                else
+                    followedPlayerName = name
+                    isTeleporting = true
+                    local followThread = createThread(function()
+                        while isTeleporting do
+                            followPlayer()
+                            preciseSleep(tonumber(edtT.Text))
+                        end
+                    end)
+                    followButton.Caption = "Stop"
+                end
+            end
+        end
+        for i = playerCount * 4 + 1, #controls do
+            controls[i].Visible = false
+        end
+    end
+
+    local timer = createTimer(pform, true)
+    timer.Interval = 100
+    timer.OnTimer = updatePlayerList
+
+    updatePlayerList()
+
+    pform.Show()
+end
+
+slider.OnChange = function(s)
+    if form then
+        form.AlphaBlendValue = slider.Position
+    end
+
+    if pform then
+        pform.AlphaBlendValue = slider.Position
+    end
+
+    if waypointForm then
+        waypointForm.AlphaBlendValue = slider.Position
+    end
+end
+
+
+
+
+local function parseCoordinate(input, current)
+    if input:sub(1, 1) == "~" then
+        local offset = tonumber(input:sub(2))
+        if offset then
+            return current + offset
+        else
+            return current
+        end
+    else
+        return tonumber(input)
+    end
+end
+
+tphotkeyfunc = function()
+  local pid = getOpenedProcessID()
+  local fpid = getForegroundProcess()
+  if someBool then
+     if fpid == pid then
+      currentX, currentY, currentZ = getPlayerCoordinates()
+
+      destX = parseCoordinate(edtX.Text, currentX)
+      destY = parseCoordinate(edtY.Text, currentY)
+      destZ = parseCoordinate(edtZ.Text, currentZ)
+
+      StepSize = tonumber(edtS.Text)
+      StepDelay = tonumber(edtT.Text)
+
+      if destX and destY and destZ then
+          movePlayerTowardsAbsDestination(destX, destY, destZ, StepSize, StepDelay)
+      end
+    end
+  else
+      currentX, currentY, currentZ = getPlayerCoordinates()
+
+      destX = parseCoordinate(edtX.Text, currentX)
+      destY = parseCoordinate(edtY.Text, currentY)
+      destZ = parseCoordinate(edtZ.Text, currentZ)
+
+      StepSize = tonumber(edtS.Text)
+      StepDelay = tonumber(edtT.Text)
+
+      if destX and destY and destZ then
+          movePlayerTowardsAbsDestination(destX, destY, destZ, StepSize, StepDelay)
+      end
+  end
+end
+
+btnMove.OnClick = function()
+  local pid = getOpenedProcessID()
+    if pid then
+        executeCodeLocal('SetForegroundWindow', pid)
+        currentX, currentY, currentZ = getPlayerCoordinates()
+
+        destX = parseCoordinate(edtX.Text, currentX)
+        destY = parseCoordinate(edtY.Text, currentY)
+        destZ = parseCoordinate(edtZ.Text, currentZ)
+
+        StepSize = tonumber(edtS.Text)
+        StepDelay = tonumber(edtT.Text)
+
+        if destX and destY and destZ then
+            movePlayerTowardsAbsDestination(destX, destY, destZ, StepSize, StepDelay)
+        end
+    end
+end
+
+btnLoad.OnClick = function()
+edtX.Text, edtY.Text, edtZ.Text = getPlayerCoordinates()
+end
+
+speedOn = false
+flyOn = false
+
+local function speedSwitch()
+speedOn = not speedOn
+if speedOn then
+flyOn = false
+end
+end
+
+local function flySwitch()
+flyOn = not flyOn
+if flyOn then
+speedOn = false
+end
+end
+
+local function ncSwitch()
+    local pid = getOpenedProcessID()
+    local fpid = getForegroundProcess()
+
+    if someBool then
+        if fpid == pid then
+            if noclip then
+                noclip = false
+                autoAssemble(disableNoclipScript)
+            else
+                noclip = true
+                autoAssemble(noclipScript)
+            end
+        end
+    else
+        if noclip then
+            noclip = false
+            autoAssemble(disableNoclipScript)
+        else
+            noclip = true
+            autoAssemble(noclipScript)
+        end
+    end
+end
+
+local function isCtrlPressed()
+    return isKeyPressed(0x11)
+end
+local function isWPressed()
+    return isKeyPressed(0x57)
+end
+local function isAPressed()
+    return isKeyPressed(0x41)
+end
+local function isSPressed()
+    return isKeyPressed(0x53)
+end
+local function isDPressed()
+    return isKeyPressed(0x44)
+end
+local function isSpacePressed()
+    return isKeyPressed(0x20)
+end
+local function isZPressed()
+    return isKeyPressed(0x5A)
+end
+local function isShiftPressed()
+    return isKeyPressed(0x10)
+end
+
+local function isAnyKeyPressed()
+      local pid = getOpenedProcessID()
+      local fpid = getForegroundProcess()
+      if (isWPressed() or isAPressed() or isSPressed() or isDPressed() or isZPressed() or isShiftPressed() or isCtrlPressed() or isSpacePressed()) and fpid == pid then
+         return true
+      else return false
+      end
+end
+
+local flyTimer = createTimer(nil, false)
+flyTimer.Interval = 10
+flyTimer.OnTimer = function(flyTimer)
+    local pid = getOpenedProcessID()
+    local fpid = getForegroundProcess()
+
+    if flyOn then
+        local success, error = pcall(function()
+            local xper = readFloat(xPerAddr)
+            local yper = readFloat(yPerAddr)
+            local zper = readFloat(zPerAddr)
+            local xvel = readFloat(xVelAddr)
+            local yvel = readFloat(yVelAddr)
+            local zvel = readFloat(zVelAddr)
+            if not (xper and yper and zper and xvel and yvel and zvel) then
+                return
+            end
+
+            local xFlyNewVel = 0
+            local yFlyNewVel = 0.39
+            local zFlyNewVel = 0
+            local flySpeed = edtFly.Text
+            local hrzMagnitude = math.sqrt(xper * xper + zper * zper)
+            local xMagnitude = xper / hrzMagnitude
+            local zMagnitude = zper / hrzMagnitude
+
+            if isWPressed() and fpid == pid then
+                 xFlyNewVel = xFlyNewVel + xMagnitude * flySpeed
+                 zFlyNewVel = zFlyNewVel + zMagnitude * flySpeed
+            end
+            if isAPressed() and fpid == pid then
+                xFlyNewVel = xFlyNewVel + zMagnitude * flySpeed
+                zFlyNewVel = zFlyNewVel - xMagnitude * flySpeed
+            end
+            if isSPressed() and fpid == pid then
+                xFlyNewVel = xFlyNewVel - xMagnitude * flySpeed
+                zFlyNewVel = zFlyNewVel - zMagnitude * flySpeed
+            end
+            if isDPressed() and fpid == pid then
+                xFlyNewVel = xFlyNewVel - zMagnitude * flySpeed
+                zFlyNewVel = zFlyNewVel + xMagnitude * flySpeed
+            end
+            if isSpacePressed() and fpid == pid then
+                yFlyNewVel = yFlyNewVel + flySpeed
+            end
+            if isShiftPressed() and fpid == pid then
+                yFlyNewVel = yFlyNewVel - flySpeed
+            end
+            writeFloat(xVelAddr, xFlyNewVel)
+            writeFloat(yVelAddr, yFlyNewVel)
+            writeFloat(zVelAddr, zFlyNewVel)
+        end)
+    end
+end
+local accelSpeedTimer = createTimer(nil, false)
+accelSpeedTimer.Interval = 10
+accelSpeedTimer.OnTimer = function(accelSpeedTimer)
+    local pid = getOpenedProcessID()
+    local fpid = getForegroundProcess()
+
+    if speedOn then
+        local success, error = pcall(function()
+            local xper = readFloat(xPerAddr)
+            local yper = readFloat(yPerAddr)
+            local zper = readFloat(zPerAddr)
+            local xvel = readFloat(xVelAddr)
+            local yvel = readFloat(yVelAddr)
+            local zvel = readFloat(zVelAddr)
+
+            if not (xper and yper and zper and xvel and yvel and zvel) then
+                return
+            end
+
+            local xAccelNewVel = 0
+            local zAccelNewVel = 0
+            local accelSpeed = edtSpeed.Text
+            local hrzMagnitude = math.sqrt(xper * xper + zper * zper)
+            local xMagnitude = xper / hrzMagnitude
+            local zMagnitude = zper / hrzMagnitude
+
+            if isWPressed() and fpid == pid then
+                 xAccelNewVel = xAccelNewVel + xMagnitude * accelSpeed
+                 zAccelNewVel = zAccelNewVel + zMagnitude * accelSpeed
+            end
+            if isAPressed() and fpid == pid then
+                xAccelNewVel = xAccelNewVel + zMagnitude * accelSpeed
+                zAccelNewVel = zAccelNewVel - xMagnitude * accelSpeed
+            end
+            if isSPressed() and fpid == pid then
+                xAccelNewVel = xAccelNewVel - xMagnitude * accelSpeed
+                zAccelNewVel = zAccelNewVel - zMagnitude * accelSpeed
+            end
+            if isDPressed() and fpid == pid then
+                xAccelNewVel = xAccelNewVel - zMagnitude * accelSpeed
+                zAccelNewVel = zAccelNewVel + xMagnitude * accelSpeed
+            end
+            if isSpacePressed() and fpid == pid then
+                writeFloat(yVelAddr, 25)
+            end
+            if isShiftPressed() and fpid == pid then
+                writeFloat(yVelAddr, 0)
+            end
+            writeFloat(xVelAddr, xAccelNewVel)
+            writeFloat(zVelAddr, zAccelNewVel)
+        end)
+    end
+end
+
+autoAssemble(uncapScript)
+autoAssemble(antigravScript)
+local permaLoop = createTimer(nil, true)
+permaLoop.Interval = 100
+permaLoop.OnTimer = function()
+      local bpOn = bpAlwaysOn.State == 1
+	 local found = false
+	  local currentPID = getOpenedProcessID()
+	  local processList = getProcessList()
+      if isAnyKeyPressed() or isTeleporting or isAnyVelocityNonZero() or bpOn or flyOn then
+          if not bypass then
+          bypass = true
+          autoAssemble(bS)
+          end
+      else
+          if bypass then
+          bypass = false
+          autoAssemble(disablebS)
+          end
+      end
+
+      someBool = smBool.State == 1
+
+      smBool.Caption = "PID Check | Attached: " .. currentPID
+	  
+	  	  for ppid, name in pairs(processList) do
+		  if ppid == currentPID then
+			  found = true
+			  break
+		  end
+	  end
+
+	  if not found then
+		  for ppid, name in pairs(processList) do
+			  if name:lower() == "trove.exe" then
+				  openProcess(ppid)
+				  autoAssemble(registerSymbols)
+				  autoAssemble(antigravScript)
+				  if uncapFPS then
+				  autoAssemble(uncapScript)
+				  end
+				  if bpOn then
+				  autoAssemble(bS)
+				  end
+				  return
+			  end
+		  end
+	  end
+end
+
+accelSpeedTimer.setEnabled(true)
+flyTimer.setEnabled(true)
+
+function skip()
+    local pid = getOpenedProcessID()
+    local fpid = getForegroundProcess()
+
+    if fpid == pid then
+    local xper = readFloat(xPerAddr)
+    local yper = readFloat(yPerAddr)
+    local zper = readFloat(zPerAddr)
+    local xcoord = readFloat(xCoordAddr)
+    local ycoord = readFloat(yCoordAddr)
+    local zcoord = readFloat(zCoordAddr)
+    if not (xper and yper and zper and xcoord and ycoord and zcoord) then
+       return
+    end
+    local skipdist = tonumber(edtDist.Text)
+    local skipdelay = tonumber(edtT.Text)
+    local skipsize = tonumber(edtS.Text)
+    local xadd = xper * skipdist
+    local yadd = yper * skipdist
+    local zadd = zper * skipdist
+    local xdest = xcoord + xadd
+    local ydest = ycoord + yadd
+    local zdest = zcoord + zadd
+    local distance = math.sqrt(xadd^2 + yadd^2 + zadd^2)
+    if distance &lt; 5 then
+        writeFloat(xCoordAddr, xdest)
+        writeFloat(yCoordAddr, ydest)
+        writeFloat(zCoordAddr, zdest)
+    else
+        movePlayerTowardsAbsDestination(xdest, ydest, zdest, skipdist, skipdelay)
+    end
+	end
+end
+
+local btnSaveConfig = createButton(form)
+btnSaveConfig.Caption = "Save Config"
+btnSaveConfig.Top = btnMove.Top
+btnSaveConfig.Left = 250
+btnSaveConfig.Width = 100
+btnSaveConfig.OnClick = function()
+    if skipHotkey then skipHotkey.destroy() end
+    if teleportHotkey then teleportHotkey.destroy() end
+    if savePosHotkey then savePosHotkey.destroy() end
+    if speedHotkey then speedHotkey.destroy() end
+    if saveWPHotkey then saveWPHotkey.destroy() end
+    if flyHotkey then flyHotkey.destroy() end
+    if ncHotkey then ncHotkey.destroy() end
+    if aahotkey then aahotkey.destroy() end
+
+    if edtSkipHotkey.Text ~= "" then skipHotkey = createHotkey(skip, edtSkipHotkey.Text) end
+    if edtTeleportHotkey.Text ~= "" then teleportHotkey = createHotkey(tphotkeyfunc, edtTeleportHotkey.Text) end
+    if edtSavePosHotkey.Text ~= "" then savePosHotkey = createHotkey(btnLoad.OnClick, edtSavePosHotkey.Text) end
+    if edtSpeedHotkey.Text ~= "" then speedHotkey = createHotkey(speedSwitch, edtSpeedHotkey.Text) end
+    if edtSaveWPHotkey.Text ~= "" then saveWPHotkey = createHotkey(btnAddWaypoint.OnClick, edtSaveWPHotkey.Text) end
+    if edtFlyHotkey.Text ~= "" then flyHotkey = createHotkey(flySwitch, edtFlyHotkey.Text) end
+    if edtNcHotkey.Text ~= "" then ncHotkey = createHotkey(ncSwitch, edtNcHotkey.Text) end
+    if edtaahotkey.Text ~= "" then aahotkey = createHotkey(btnaahotkey.OnClick, edtaahotkey.Text) end
+    local fileName = getDocumentsFolder() .. "config.txt"
+    local file = io.open(fileName, "w")
+    if file then
+        file:write("delay=" .. edtT.Text .. "\n")
+        file:write("step=" .. edtS.Text .. "\n")
+        file:write("skipDistance=" .. edtDist.Text .. "\n")
+        file:write("flySpeed=" .. edtFly.Text .. "\n")
+        file:write("accelSpeed=" .. edtSpeed.Text .. "\n")
+        file:write("skipHotkey=" .. edtSkipHotkey.Text .. "\n")
+        file:write("teleportHotkey=" .. edtTeleportHotkey.Text .. "\n")
+        file:write("savePosHotkey=" .. edtSavePosHotkey.Text .. "\n")
+        file:write("speedHotkey=" .. edtSpeedHotkey.Text .. "\n")
+        file:write("saveWPHotkey=" .. edtSaveWPHotkey.Text .. "\n")
+        file:write("flyHotkey=" .. edtFlyHotkey.Text .. "\n")
+        file:write("ncHotkey=" .. edtNcHotkey.Text .. "\n")
+        file:write("aahotkey=" .. edtaahotkey.Text .. "\n")
+        file:close()
+    else
+        showMessage("Error saving configuration to file.")
+    end
+end
+
+function LoadConfig()
+    local fileName = getDocumentsFolder() .. "config.txt"
+    local file = io.open(fileName, "r")
+    if file then
+        for line in file:lines() do
+            local key, value = line:match("([^=]+)=([^=]+)")
+            if key and value then
+                if key == "delay" then edtT.Text = value end
+                if key == "step" then edtS.Text = value end
+                if key == "skipDistance" then edtDist.Text = value end
+                if key == "flySpeed" then edtFly.Text = value end
+                if key == "accelSpeed" then edtSpeed.Text = value end
+                if key == "skipHotkey" then edtSkipHotkey.Text = value end
+                if key == "teleportHotkey" then edtTeleportHotkey.Text = value end
+                if key == "savePosHotkey" then edtSavePosHotkey.Text = value end
+                if key == "speedHotkey" then edtSpeedHotkey.Text = value end
+                if key == "saveWPHotkey" then edtSaveWPHotkey.Text = value end
+                if key == "flyHotkey" then edtFlyHotkey.Text = value end
+                if key == "ncHotkey" then edtNcHotkey.Text = value end
+                if key == "aahotkey" then edtaahotkey.Text = value end
+            end
+        end
+        file:close()
+        if edtSkipHotkey.Text ~= "" then skipHotkey = createHotkey(skip, edtSkipHotkey.Text) end
+        if edtTeleportHotkey.Text ~= "" then teleportHotkey = createHotkey(tphotkeyfunc, edtTeleportHotkey.Text) end
+        if edtSavePosHotkey.Text ~= "" then savePosHotkey = createHotkey(btnLoad.OnClick, edtSavePosHotkey.Text) end
+        if edtSpeedHotkey.Text ~= "" then speedHotkey = createHotkey(speedSwitch, edtSpeedHotkey.Text) end
+        if edtSaveWPHotkey.Text ~= "" then saveWPHotkey = createHotkey(btnAddWaypoint.OnClick, edtSaveWPHotkey.Text) end
+        if edtFlyHotkey.Text ~= "" then flyHotkey = createHotkey(flySwitch, edtFlyHotkey.Text) end
+        if edtNcHotkey.Text ~= "" then ncHotkey = createHotkey(ncSwitch, edtNcHotkey.Text) end
+        if edtaahotkey.Text ~= "" then aahotkey = createHotkey(btnaahotkey.OnClick, edtaahotkey.Text) end
+    else
+        showMessage("Error loading configuration from file.")
+    end
+end
+
+local btnLoadConfig = createButton(form)
+btnLoadConfig.Caption = "Load Config"
+btnLoadConfig.Top = btnMove.Top
+btnLoadConfig.Left = 360
+btnLoadConfig.Width = 100
+btnLoadConfig.OnClick = function()
+LoadConfig()
+end
+LoadConfig()
+</LuaScript>
+</CheatTable>

@@ -16,6 +16,8 @@
  * 快速挖矿（晶洞）: (+1 Address) DF F1 DD D8 72 35 8D
  * 账号地址: (-9 Address) FF 70 1C FF 70 18 8D 45 B0
  * 视野放大: (+3 Address) F3 0F 11 5F 2C
+ * 穿墙: (+0 Address) 74 31 FF 73 14 8B 47 04 2B 07
+ * 绕道: (+1 Address) DC 67 68 C6
  * 技能栏: 5X CF XX XX 55 CF XX XX 5X CF XX XX 55 CF XX XX FE FF FF FF 00 00 00 00 65 CF XX XX 0X 00 00 00 55 CF XX XX XX XX XX XX 55 CF XX XX 55 CF XX XX
  *            (-170H Value) 数量
  *            (+0 Value) 55释放,5D按下
