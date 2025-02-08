@@ -1,6 +1,6 @@
 ;@Ahk2Exe-UpdateManifest 2
 ;@Ahk2Exe-SetName TroveAuto
-;@Ahk2Exe-SetProductVersion 2.3.4
+;@Ahk2Exe-SetProductVersion 2.3.5
 ;@Ahk2Exe-SetCopyright GPL-3.0 license
 ;@Ahk2Exe-SetLanguage Chinese_PRC
 ;@Ahk2Exe-SetMainIcon TroveAuto.ico
@@ -15,8 +15,8 @@ config := _Config(
         "Global", Map(
             "GameTitle", "Trove.exe",
             "GamePath", "",
-            "ConfigVersion", "20250207213000",
-            "AppVersion", "20250207213000",
+            "ConfigVersion", "20250208152000",
+            "AppVersion", "20250208152000",
             "Source", "https://github.com/Angels-D/TroveAuto/",
             "Mirror", "https://github.moeyy.xyz/",
         ),
@@ -70,6 +70,12 @@ config := _Config(
             "Player_Cam_XPer", "0x4,0x24,0x84,0x0,0x100",
             "Player_Cam_YPer", "0x4,0x24,0x84,0x0,0x104",
             "Player_Cam_ZPer", "0x4,0x24,0x84,0x0,0x108",
+            "World_Player_Count", "0xFC,0x2C",
+            "World_Player_Base", "0xFC,0x00",
+            "World_Player_Name", "0x1D0,0x00",
+            "World_Player_X", "0xC4,0x04,0x80",
+            "World_Player_Y", "0xC4,0x04,0x84",
+            "World_Player_Z", "0xC4,0x04,0x88",
             "Fish_Take_Water", "0x68,0xE4,0x3C4",
             "Fish_Take_Lava", "0x68,0xE4,0x898",
             "Fish_Take_Choco", "0x68,0xE4,0x62C",
@@ -117,7 +123,7 @@ config := _Config(
 )
 config.Load()
 
-MainGui := Gui("-DPIScale", "Trove辅助")
+MainGui := Gui("-DPIScale +Resize +MaxSize HScroll VScroll", "Trove辅助")
 MainGui.Add("Tab3", "vTab", ["主页", "面板", "其他功能", "设置", "关于"])
 
 ; 主页内容
@@ -362,7 +368,6 @@ GetGamePath(GuiCtrlObj, Info) {
                         SplitPath(A_LoopRegName, , &dir)
                         return dir
                     }
-
             loop reg "HKLM\Software\Microsoft\Windows\CurrentVersion\Uninstall", "KR"
             {
                 try
@@ -475,8 +480,10 @@ Save(GuiCtrlObj := unset, Info := unset) {
         for key in data {
             try value := MainGui[key sect].Value
             catch
-                try value := MainGui[sect].Value
-            if ( not value) {
+                try value := MainGui[key == "Value" ? sect : key].Value
+                catch
+                    value := config.data[sect][key]
+            if ( not value and key != "GamePath") {
                 MsgBox("配置项不能为空")
                 return
             }
@@ -506,7 +513,6 @@ UpdateFromLocal(GuiCtrlObj, Info) {
     }
     BaseAddress := GetProcessBaseAddress(GameID, -6)
     Result := Buffer(1024, 0)
-
     for key, value in config.data["Address"] {
         pid := WinGetPID(GameID)
         signature := StrSplit(config.data["Address_Offset_Signature"][key], ',')
@@ -718,6 +724,8 @@ FollowPlayer(GuiCtrlObj, Info) {
     MainGui["FollowPlayer_Name"].Enabled := !GuiCtrlObj.Value
     theGame := Game.Lists[MainGui["SelectGame"].Text]
     theGame.setting["FollowPlayer"]["On"] := GuiCtrlObj.Value
+    theGame.setting["Features"]["ByPass"] := MainGui["ByPass"].Value := true
+    theGame.Features("ByPass", true)
     theGame.FollowPlayer()
 }
 AutoAim(GuiCtrlObj, Info) {
@@ -838,10 +846,10 @@ class Game {
         STOP := false
         ReadProcessMemory := DynaCall("ReadProcessMemory", ["c=uiuituit"])
         WriteProcessMemory := DynaCall("WriteProcessMemory", ["c=uiuituit"])
-        ReadMemory(ProcessHandle, Maddress, Readtype := "Int", Len := 4) {
+        ReadMemory(ProcessHandle, Maddress, Readtype := "Int", Len := 4, isNumber := True) {
             Mvalue := Buffer(Len, 0)
             ReadProcessMemory(ProcessHandle, Maddress, Mvalue, Mvalue.Size)
-            return NumGet(Mvalue, Readtype)
+            return isNumber ? NumGet(Mvalue, Readtype) : StrGet(Mvalue, Readtype)
         }
         WriteMemory(ProcessHandle, Maddress, Value, IsBinary := True, Writetype := "Int", Len := 4, IsNumber := True) {
             if (IsBinary) {
@@ -854,6 +862,12 @@ class Game {
             Mvalue := Buffer(Len, 0)
             IsNumber ? NumPut(Writetype, Value, Mvalue) : StrPut(Value, Mvalue, Mvalue.Size, Writetype)
             WriteProcessMemory(ProcessHandle, Maddress, Mvalue, Mvalue.Size)
+        }
+        GetAddressOffset(Maddress, Offset, ProcessHandle) {
+            Address := ReadMemory(ProcessHandle, Maddress)
+            loop Offset.Length - 1
+                Address := ReadMemory(ProcessHandle, Address + Offset[A_Index])
+            return Address + Offset[-1]
         }
         GetPlayerCoordinates(AddressCoordXYZ, AddressCamXYZPer, ProcessHandle) {
             x := ReadMemory(ProcessHandle, AddressCoordXYZ[1], "Float")
@@ -870,6 +884,7 @@ class Game {
             WriteMemory(ProcessHandle, AddressCoordXYZ[3], Z, false, "Float")
         }
         MovePlayerCoordinates(Xtarget, Ytarget, Ztarget, SkipDist, SkipDelay, AddressCoordXYZ, AddressCamXYZPer, ProcessHandle) {
+            global STOP
             coord := GetPlayerCoordinates(AddressCoordXYZ, AddressCamXYZPer, ProcessHandle)
             dist := sqrt((Xtarget - coord[1]) ** 2 + (Ytarget - coord[2]) ** 2 + (Ztarget - coord[3]) ** 2)
             loop {
@@ -880,7 +895,7 @@ class Game {
                 Sleep(SkipDelay)
                 coord := GetPlayerCoordinates(AddressCoordXYZ, AddressCamXYZPer, ProcessHandle)
                 dist := sqrt((Xtarget - coord[1]) ** 2 + (Ytarget - coord[2]) ** 2 + (Ztarget - coord[3]) ** 2)
-            } until (dist <= SkipDist)
+            } until (dist <= SkipDist or STOP)
         }
         NatualPress(npbtn, pid, holdtime := 0) {
             ; SetKeyDelay(,Random(66, 122) + holdtime)
@@ -982,11 +997,36 @@ class Game {
             } until (STOP)
             FileObj.Close()
         }
-        FollowPlayer(ProcessHandle) {
-
+        FollowPlayer(ProcessHandle, WorldAddress
+            , AddressCoordXYZ, AddressCamXYZPer, WorldPlayerCountOffset, WorldPlayerBaseOffset
+            , WorldPlayerNameOffset, WorldPlayerXOffset, WorldPlayerYOffset, WorldPlayerZOffset
+            , TargetPlayerName, SkipDist, SkipDelay) {
+            global STOP
+            WorldPlayerCountAddress := GetAddressOffset(WorldAddress, StrSplit(WorldPlayerCountOffset, ","), ProcessHandle)
+            WorldPlayerBaseAddress := GetAddressOffset(WorldAddress, StrSplit(WorldPlayerBaseOffset, ","), ProcessHandle)
+            loop {
+                PlayerCount := ReadMemory(ProcessHandle, WorldPlayerCountAddress)
+                Index := 0
+                loop PlayerCount {
+                    WorldPlayerNameAddress := GetAddressOffset(WorldPlayerBaseAddress, StrSplit((A_Index - 1) * 4 "," WorldPlayerNameOffset, ","), ProcessHandle)
+                    WorldPlayerName := ReadMemory(ProcessHandle, WorldPlayerNameAddress, "utf-8", Len := 15, false)
+                    if (WorldPlayerName == TargetPlayerName)
+                        Index := A_Index
+                } until (STOP or Index)
+                if ( not Index)
+                    continue
+                WorldPlayerXAddress := GetAddressOffset(WorldPlayerBaseAddress, StrSplit((Index - 1) * 4 "," WorldPlayerXOffset, ","), ProcessHandle)
+                WorldPlayerYAddress := GetAddressOffset(WorldPlayerBaseAddress, StrSplit((Index - 1) * 4 "," WorldPlayerYOffset, ","), ProcessHandle)
+                WorldPlayerZAddress := GetAddressOffset(WorldPlayerBaseAddress, StrSplit((Index - 1) * 4 "," WorldPlayerZOffset, ","), ProcessHandle)
+                XTarget := ReadMemory(ProcessHandle, WorldPlayerXAddress, "Float")
+                YTarget := ReadMemory(ProcessHandle, WorldPlayerYAddress, "Float")
+                ZTarget := ReadMemory(ProcessHandle, WorldPlayerZAddress, "Float")
+                MovePlayerCoordinates(XTarget, YTarget, ZTarget, SkipDist, SkipDelay, AddressCoordXYZ, AddressCamXYZPer, ProcessHandle)
+            } until (STOP)
         }
-        AutoAim(ProcessHandle) {
-
+        AutoAim() {
+            global STOP
+            MsgBox("功能完善中...")
         }
         SpeedUp(Pid, ProcessHandle, AddressCoordXYZ, AddressCoordXYZVel, AddressCamXYZPer, SpeedUpRate, GravityRate, SpeedUpDelay) {
             global STOP
@@ -1086,7 +1126,7 @@ class Game {
     )
     __New(id) {
         this.GetBase(id)
-        this.name := this.GetName(config.data["Address"]["Name"])
+        this.name := this.GetName(this.BaseAddress + config.data["Address"]["Name"])
         for key in ["Animation", "Attack", "Breakblocks", "ByPass", "ClipCam", "Dismount"
             , "Health", "LockCam", "Map", "Mining", "MiningGeode", "NoClip", "UseLog", "Zoom"]
             this.setting["Features"][key] := false
@@ -1199,7 +1239,7 @@ class Game {
         this.BaseAddress := GetProcessBaseAddress(id, -6)
         for key in ["Water", "Lava", "Choco", "Plasma"] {
             this.setting["Fish"]["take_address"][key] := this.GetAddressOffset(
-                config.data["Address"]["Fish"], StrSplit(config.data["Address_Offset"]["Fish_" "Take_" key], ",")
+                this.BaseAddress + config.data["Address"]["Fish"], StrSplit(config.data["Address_Offset"]["Fish_" "Take_" key], ",")
             )
             this.setting["Fish"]["state_address"][key] := this.GetAddressOffset(
                 config.data["Address"]["Fish"], StrSplit(config.data["Address_Offset"]["Fish_" "State_" key], ",")
@@ -1209,7 +1249,7 @@ class Game {
             , "Player_Coord_XVel", "Player_Coord_YVel", "Player_Coord_ZVel"
             , "Player_Cam_XPer", "Player_Cam_YPer", "Player_Cam_ZPer"] {
             this.setting["Address"][key] := this.GetAddressOffset(
-                config.data["Address"]["Player"], StrSplit(config.data["Address_Offset"][key], ",")
+                this.BaseAddress + config.data["Address"]["Player"], StrSplit(config.data["Address_Offset"][key], ",")
             )
         }
     }
@@ -1237,9 +1277,17 @@ class Game {
                 , "AutoFish", this.pid, config.data["Key"]["Fish"], this.setting["Fish"]["interval"], Take_Address, State_Address, this.ProcessHandle)))
     }
     FollowPlayer() {
+        AddressCoordXYZ := this.setting["Address"]["Player_Coord_X"] "," this.setting["Address"]["Player_Coord_Y"] "," this.setting["Address"]["Player_Coord_Z"]
+        AddressCamXYZPer := this.setting["Address"]["Player_Cam_XPer"] "," this.setting["Address"]["Player_Cam_YPer"] "," this.setting["Address"]["Player_Cam_ZPer"]
         try this.threads["FollowPlayer"]["STOP"] := true
         if (this.setting["FollowPlayer"]["On"])
-            this.threads["FollowPlayer"] := Worker(Format(Game.ScriptAHK, Format('{1}()', "FollowPlayer")))
+            this.threads["FollowPlayer"] := Worker(Format(Game.ScriptAHK, Format('{1}({2},{3},[{4}],[{5}],"{6}","{7}","{8}","{9}","{10}","{11}","{12}",{13},{14})'
+                , "FollowPlayer", this.ProcessHandle, this.BaseAddress + config.data["Address"]["World"]
+                , AddressCoordXYZ, AddressCamXYZPer, config.data["Address_Offset"]["World_Player_Count"]
+                , config.data["Address_Offset"]["World_Player_Base"], config.data["Address_Offset"]["World_Player_Name"]
+                , config.data["Address_Offset"]["World_Player_X"], config.data["Address_Offset"]["World_Player_Y"]
+                , config.data["Address_Offset"]["World_Player_Z"], this.setting["FollowPlayer"]["Name"]
+                , config.data["TP"]["Step"], config.data["TP"]["Delay"])))
     }
     AutoAim() {
         try this.threads["AutoAim"]["STOP"] := true
@@ -1254,7 +1302,6 @@ class Game {
         if (this.setting["SpeedUp"]["On"])
             this.threads["SpeedUp"] := Worker(Format(Game.ScriptAHK, Format('{1}({2},{3},[{4}],[{5}],[{6}],{7},{8},{9})'
                 , "SpeedUp", this.pid, this.ProcessHandle, AddressCoordXYZ, AddressCoordXYZVel, AddressCamXYZPer, this.setting["SpeedUp"]["SpeedUpRate"], this.setting["SpeedUp"]["GravityRate"], config.data["SpeedUp"]["Delay"])))
-
     }
     StopAll(keepStatus := false) {
         running := this.running
@@ -1297,7 +1344,6 @@ class Game {
                 }
                 return
         }
-
         this.WriteMemory(
             this.BaseAddress + config.data["Address"][Name],
             StrSplit(config.data["Features_Change"][Name], ",")[Value ? 1 : 2]
@@ -1342,8 +1388,8 @@ class Game {
         if ( not this.setting["Features"]["NoClip"])
             this.Features("NoClip", false)
     }
-    GetAddressOffset(Address, Offset) {
-        Address := this.ReadMemory(this.BaseAddress + Address)
+    GetAddressOffset(Maddress, Offset) {
+        Address := this.ReadMemory(Maddress)
         loop Offset.Length - 1
             Address := this.ReadMemory(Address + Offset[A_Index])
         return Address + Offset[-1]
