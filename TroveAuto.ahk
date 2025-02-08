@@ -30,6 +30,12 @@ config := _Config(
             "Distance", "4",
             "HotKey", "3",
         ),
+        "SpeedUp", Map(
+            "Delay", "100",
+        ),
+        "AutoAim", Map(
+            "Delay", "500",
+        ),
         "Key", Map(
             "Press", "e",
             "Fish", "f",
@@ -54,18 +60,16 @@ config := _Config(
         ),
         "Address_Offset", Map(
             "Name", "0x0,0x10,0x0",
-            "Health", "0x0,0x28,0x1A4,0x80",
-            "PlayerCoord_Base", "0xC,0x28,0x54,0x88,0xAC,0x4",
-            "PlayerCam_Base", "0x4,0x24,0x84,0x0",
-            "PlayerCoord_X", "0x80",
-            "PlayerCoord_Y", "0x84",
-            "PlayerCoord_Z", "0x88",
-            "PlayerCoord_XVel", "0xB0",
-            "PlayerCoord_YVel", "0xB4",
-            "PlayerCoord_ZVel", "0xB8",
-            "PlayerCam_XPer", "0x100",
-            "PlayerCam_YPer", "0x104",
-            "PlayerCam_ZPer", "0x108",
+            "Player_Health", "0x0,0x28,0x1A4,0x80",
+            "Player_Coord_X", "0xC,0x28,0x54,0x88,0xAC,0x4,0x80",
+            "Player_Coord_Y", "0xC,0x28,0x54,0x88,0xAC,0x4,0x84",
+            "Player_Coord_Z", "0xC,0x28,0x54,0x88,0xAC,0x4,0x88",
+            "Player_Coord_XVel", "0xC,0x28,0x54,0x88,0xAC,0x4,0xB0",
+            "Player_Coord_YVel", "0xC,0x28,0x54,0x88,0xAC,0x4,0xB4",
+            "Player_Coord_ZVel", "0xC,0x28,0x54,0x88,0xAC,0x4,0xB8",
+            "Player_Cam_XPer", "0x4,0x24,0x84,0x0,0x100",
+            "Player_Cam_YPer", "0x4,0x24,0x84,0x0,0x104",
+            "Player_Cam_ZPer", "0x4,0x24,0x84,0x0,0x108",
             "Fish_Take_Water", "0x68,0xE4,0x3C4",
             "Fish_Take_Lava", "0x68,0xE4,0x898",
             "Fish_Take_Choco", "0x68,0xE4,0x62C",
@@ -144,7 +148,7 @@ MainGui.Add("Button", "w200 h40 vUseLogPathBtn", "物品栏使用日志文件夹
 
 ; 面板内容
 MainGui["Tab"].UseTab("面板")
-MainGui.Add("Button", "x+50 y+30 w50 Section vResetBtn", "重置")
+MainGui.Add("Button", "x+50 y+10 w50 Section vResetBtn", "重置")
 MainGui.Add("Button", "ys w50 vRefreshBtn", "刷新")
 MainGui.Add("Button", "ys x+50 w70 vStartBtn", "启动")
 MainGui.Add("Text", "xs w70 Section", "玩家列表:")
@@ -179,23 +183,34 @@ for key, value in Map(
 MainGui.Add("GroupBox", "xs-10 ys+40 w310 r2 Section", "跟踪玩家")
 MainGui.Add("CheckBox", "xp+80 yp vFollowPlayer")
 MainGui.Add("Text", "xs+10 ys+30 Section", "玩家名:")
-MainGui.Add("Edit", "ys w220 vFollowPlayerName")
-MainGui.Add("GroupBox", "xs-10 ys+80 w310 r3 Section", "崩溃自启          实验性功能")
+MainGui.Add("Edit", "ys w220 vFollowPlayer_Name")
+MainGui.Add("GroupBox", "xs-10 ys+50 w310 r2 Section", "加速")
+MainGui.Add("CheckBox", "xp+80 yp vSpeedUp")
+MainGui.Add("Text", "xs+10 ys+30 Section", "加速倍率:")
+MainGui.Add("Edit", "ys w55 vSpeedUp_SpeedUpRate")
+MainGui.Add("Text", "ys", "重力倍率:")
+MainGui.Add("Edit", "ys w55 vSpeedUp_GravityRate")
+MainGui.Add("GroupBox", "xs-10 ys+50 w310 r3 Section", "自瞄")
+MainGui.Add("CheckBox", "xp+80 yp vAutoAim")
+MainGui.Add("Text", "xs+10 ys+30 Section", "瞄准范围:")
+MainGui.Add("Edit", "ys w55 vAutoAim_AimRange")
+MainGui.Add("Text", "ys", "显示范围:")
+MainGui.Add("Edit", "ys w55 vAutoAim_ShowRange")
+MainGui.Add("CheckBox", "xs w90 Section vAutoAim_TargetBoss", "锁定Boss")
+MainGui.Add("CheckBox", "ys w90 vAutoAim_TargetNomal", "锁定小怪")
+MainGui.Add("CheckBox", "ys w90 vAutoAim_TargetPlant", "锁定植物")
+MainGui.Add("GroupBox", "xs-10 ys+60 w310 r3 Section", "崩溃自启          实验性功能")
 MainGui.Add("CheckBox", "xp+80 yp vAutoRestart")
 MainGui.Add("Text", "xs+10 ys+30 Section", "账号:")
-MainGui.Add("Edit", "ys w220 vAccount")
+MainGui.Add("Edit", "ys w220 vAutoRestart_Account")
 MainGui.Add("Text", "xs Section", "密码:")
-MainGui.Add("Edit", "ys w220 vPassword")
+MainGui.Add("Edit", "ys w220 vAutoRestart_Password")
 MainGui.Add("Text", "xs+40 ys+50 cRed", "任何脚本都有风险, 请慎用!")
 
 ; 其他功能内容
 MainGui["Tab"].UseTab("其他功能")
-MainGui.Add("GroupBox", "xs-10 y+30 w310 r16 Section", "传送相关")
-MainGui.Add("Text", "xs+10 ys+30 w100 Section", "步进距离:")
-MainGui.Add("Edit", "ys w150 vStepTP", config.data["TP"]["Step"])
-MainGui.Add("Text", "xs ys+30 w100 Section", "传送频率(ms):")
-MainGui.Add("Edit", "ys w150 vDelayTP", config.data["TP"]["Delay"])
-MainGui.Add("GroupBox", "xs ys+40 w290 r3 Section", "当前玩家传送")
+MainGui.Add("GroupBox", "xs-10 y+30 w310 r14 Section", "传送相关")
+MainGui.Add("GroupBox", "xs+10 ys+40 w290 r3 Section", "当前玩家传送")
 MainGui.Add("CheckBox", "xp+110 yp vTP")
 MainGui.Add("Text", "xs+10 ys+30 w90 Section", "传送距离:")
 MainGui.Add("Edit", "ys w150 vDistanceTP", config.data["TP"]["Distance"])
@@ -249,6 +264,14 @@ MainGui.Add("Text", "xs w100 Section", "血量扫描(ms):")
 MainGui.Add("Edit", "ys w150 vHealthTime", config.data["HealthTime"]["Value"])
 MainGui.Add("Text", "xs w100 Section", "物品扫描(ms):")
 MainGui.Add("Edit", "ys w150 vUseLogTime", config.data["UseLogTime"]["Value"])
+MainGui.Add("Text", "xs w100 Section", "步进距离:")
+MainGui.Add("Edit", "ys w150 vStepTP", config.data["TP"]["Step"])
+MainGui.Add("Text", "xs w100 Section", "传送频率(ms):")
+MainGui.Add("Edit", "ys w150 vDelayTP", config.data["TP"]["Delay"])
+MainGui.Add("Text", "xs w100 Section", "加速频率(ms):")
+MainGui.Add("Edit", "ys w150 vDelaySpeedUp", config.data["SpeedUp"]["Delay"])
+MainGui.Add("Text", "xs w100 Section", "自瞄频率(ms):")
+MainGui.Add("Edit", "ys w150 vDelayAutoAim", config.data["AutoAim"]["Delay"])
 MainGui.Add("Text", "xs w100 Section", "镜像源:")
 MainGui.Add("Edit", "ys w150 vMirror", config.data["Global"]["Mirror"])
 MainGui.Add("Button", "xs w80 Section vSaveBtn", "保存")
@@ -294,9 +317,17 @@ MainGui["HotKeyBox"].OnEvent("ItemCheck", HotKeyCheck)
 MainGui["AutoBtn_Key_Click_LEFT"].OnEvent("Click", AutoBtn_Key_Click_LEFT)
 MainGui["AutoBtn_Key_Click_RIGHT"].OnEvent("Click", AutoBtn_Key_Click_RIGHT)
 MainGui["AutoBtn_NoTop"].OnEvent("Click", AutoBtn_NoTop)
+MainGui["FollowPlayer"].OnEvent("Click", FollowPlayer)
+MainGui["AutoAim"].OnEvent("Click", AutoAim)
+MainGui["SpeedUp"].OnEvent("Click", SpeedUp)
 MainGui["AutoRestart"].OnEvent("Click", AutoRestart)
-MainGui["Account"].OnEvent("Change", Account)
-MainGui["Password"].OnEvent("Change", Password)
+for key in ["FollowPlayer_Name", "SpeedUp_SpeedUpRate", "SpeedUp_GravityRate", "AutoAim_AimRange"
+    , "AutoAim_ShowRange", "AutoAim_TargetBoss", "AutoAim_TargetNomal", "AutoAim_TargetPlant"
+    , "AutoRestart_Account", "AutoRestart_Password"] {
+    try MainGui[key].OnEvent("Change", SomeUiSetChangeEvent)
+    catch
+        MainGui[key].OnEvent("Click", SomeUiSetChangeEvent)
+}
 for key in ["Animation", "Attack", "Breakblocks", "ByPass", "ClipCam", "Dismount"
     , "Health", "LockCam", "Map", "Mining", "MiningGeode", "NoClip", "UseLog", "Zoom"]
     MainGui[key].OnEvent("Click", Features)
@@ -385,44 +416,55 @@ UIReset() {
     for key in ["Animation", "Attack", "Breakblocks", "ByPass", "ClipCam", "Dismount"
         , "Health", "LockCam", "Map", "Mining", "MiningGeode", "NoClip", "UseLog", "Zoom"
         , "AutoBtn_Key_Click_LEFT", "AutoBtn_Key_Click_RIGHT", "AutoBtn_NoTop", "HotKeyBox"
-        , "Interval", "SelectAction", "StartBtn", "AutoRestart", "Account", "Password"]
+        , "Interval", "SelectAction", "StartBtn", "FollowPlayer", "FollowPlayer_Name"
+        , "SpeedUp", "SpeedUp_SpeedUpRate", "SpeedUp_GravityRate", "AutoAim", "AutoAim_AimRange"
+        , "AutoAim_ShowRange", "AutoAim_TargetBoss", "AutoAim_TargetNomal", "AutoAim_TargetPlant"
+        , "AutoRestart", "AutoRestart_Account", "AutoRestart_Password"]
         MainGui[key].Enabled := false
     for key in ["Animation", "Attack", "Breakblocks", "ByPass", "ClipCam", "Dismount"
         , "Health", "LockCam", "Map", "Mining", "MiningGeode", "NoClip", "UseLog", "Zoom"
         , "AutoBtn_Key_Click_LEFT", "AutoBtn_Key_Click_RIGHT", "AutoBtn_NoTop"
-        , "Interval", "SelectAction", "AutoRestart", "Account", "Password"]
+        , "Interval", "SelectAction", "FollowPlayer", "FollowPlayer_Name"
+        , "SpeedUp", "SpeedUp_SpeedUpRate", "SpeedUp_GravityRate", "AutoAim", "AutoAim_AimRange"
+        , "AutoAim_ShowRange", "AutoAim_TargetBoss", "AutoAim_TargetNomal", "AutoAim_TargetPlant"
+        , "AutoRestart", "AutoRestart_Account", "AutoRestart_Password"]
         try MainGui[key].Value := ""
         catch
             MainGui[key].Value := 0
     MainGui["HotKeyBox"].Delete()
 }
 Start(GuiCtrlObj, Info) {
-    if (Game.Lists[MainGui["SelectGame"].Text].running) {
+    theGame := Game.Lists[MainGui["SelectGame"].Text]
+    if (theGame.running) {
         MainGui["StartBtn"].Text := "启动"
         for key in ["SelectAction", "Interval"]
             MainGui[key].Enabled := true
-        Game.Lists[MainGui["SelectGame"].Text].running := false
+        theGame.running := false
         switch MainGui["SelectAction"].Text {
             case "钓鱼":
-                Game.Lists[MainGui["SelectGame"].Text].AutoFish()
+                theGame.AutoFish()
             default:
                 for key in ["HotKeyBox", "AutoBtn_Key_Click_LEFT", "AutoBtn_Key_Click_RIGHT", "AutoBtn_NoTop"]
                     MainGui[key].Enabled := true
-                Game.Lists[MainGui["SelectGame"].Text].AutoBtn()
+                theGame.AutoBtn()
         }
     }
     else {
+        if not MainGui["Interval"].Value {
+            MsgBox("请设置频率")
+            return
+        }
         MainGui["StartBtn"].Text := "关闭"
         for key in ["SelectAction", "Interval"]
             MainGui[key].Enabled := false
-        Game.Lists[MainGui["SelectGame"].Text].running := true
+        theGame.running := true
         switch MainGui["SelectAction"].Text {
             case "钓鱼":
-                Game.Lists[MainGui["SelectGame"].Text].AutoFish()
+                theGame.AutoFish()
             default:
                 for key in ["HotKeyBox", "AutoBtn_Key_Click_LEFT", "AutoBtn_Key_Click_RIGHT", "AutoBtn_NoTop"]
                     MainGui[key].Enabled := false
-                Game.Lists[MainGui["SelectGame"].Text].AutoBtn()
+                theGame.AutoBtn()
         }
     }
 }
@@ -430,10 +472,16 @@ Save(GuiCtrlObj := unset, Info := unset) {
     for sect, data in config.data {
         if (sect == "Address_Offset" or sect == "Features_Change" or sect == "Address_Offset_Signature")
             Continue
-        for key in data
-            try config.data[sect][key] := MainGui[key sect].Value
+        for key in data {
+            try value := MainGui[key sect].Value
             catch
-                try config.data[sect][key] := MainGui[sect].Value
+                try value := MainGui[sect].Value
+            if ( not value) {
+                MsgBox("配置项不能为空")
+                return
+            }
+            config.data[sect][key] := value
+        }
     }
     config.Save()
 }
@@ -501,41 +549,49 @@ SelectGame(GuiCtrlObj, Info) {
     SelectAction(MainGui["SelectAction"])
 }
 SelectAction(GuiCtrlObj, Info := unset) {
-    Game.Lists[MainGui["SelectGame"].Text].action := GuiCtrlObj.Text
-    MainGui["AutoRestart"].Enabled := true
-    MainGui["Account"].Value := Game.Lists[MainGui["SelectGame"].Text].setting["Account"]
-    MainGui["Password"].Value := Game.Lists[MainGui["SelectGame"].Text].setting["Password"]
-    MainGui["Account"].Enabled := MainGui["Password"].Enabled := !Game.Lists[MainGui["SelectGame"].Text].setting["AutoRestart"]
-    MainGui["AutoRestart"].Value := Game.Lists[MainGui["SelectGame"].Text].setting["AutoRestart"]
+    theGame := Game.Lists[MainGui["SelectGame"].Text]
+    theGame.action := GuiCtrlObj.Text
+    for key in ["FollowPlayer", "SpeedUp", "AutoAim", "AutoRestart"] {
+        MainGui[key].Enabled := true
+        for item in theGame.setting[key] {
+            if (item == "On")
+                MainGui[key].Value := theGame.setting[key][item]
+            else {
+                MainGui[key "_" item].Value := theGame.setting[key][item]
+                MainGui[key "_" item].Enabled := !theGame.setting[key]["On"]
+            }
+        }
+    }
     for key in ["Animation", "Attack", "Breakblocks", "ByPass", "ClipCam", "Dismount"
         , "Health", "LockCam", "Map", "Mining", "MiningGeode", "NoClip", "UseLog", "Zoom"] {
         MainGui[key].Enabled := true
-        MainGui[key].Value := Game.Lists[MainGui["SelectGame"].Text].setting["Features"][key]
+        MainGui[key].Value := theGame.setting["Features"][key]
     }
     for key in ["HotKeyBox", "AutoBtn_Key_Click_LEFT", "AutoBtn_Key_Click_RIGHT", "AutoBtn_NoTop"]
         MainGui[key].Enabled := false
     MainGui["HotKeyBox"].Delete()
-    for key in Game.Lists[MainGui["SelectGame"].Text].setting["AutoBtn"]["keys"]
+    for key in theGame.setting["AutoBtn"]["keys"]
         MainGui["HotKeyBox"].Add(key.enabled ? "+Check" : "-Check", key.key, key.holdtime, key.interval, key.count)
     for key in ["Key_Click_LEFT", "Key_Click_RIGHT", "NoTop"]
-        MainGui["AutoBtn_" key].Value := Game.Lists[MainGui["SelectGame"].Text].setting["AutoBtn"][key]
+        MainGui["AutoBtn_" key].Value := theGame.setting["AutoBtn"][key]
     switch GuiCtrlObj.Text {
         case "自动按键":
-            MainGui["Interval"].Value := Game.Lists[MainGui["SelectGame"].Text].setting["AutoBtn"]["interval"]
-            if (!Game.Lists[MainGui["SelectGame"].Text].running)
+            MainGui["Interval"].Value := theGame.setting["AutoBtn"]["interval"]
+            if (!theGame.running)
                 for key in ["HotKeyBox", "AutoBtn_Key_Click_LEFT", "AutoBtn_Key_Click_RIGHT", "AutoBtn_NoTop"]
                     MainGui[key].Enabled := true
         case "钓鱼":
-            MainGui["Interval"].Value := Game.Lists[MainGui["SelectGame"].Text].setting["Fish"]["interval"]
+            MainGui["Interval"].Value := theGame.setting["Fish"]["interval"]
     }
 }
 Features(GuiCtrlObj, Info) {
+    theGame := Game.Lists[MainGui["SelectGame"].Text]
     if (GuiCtrlObj.Name == "NoClip" and GuiCtrlObj.Value) {
         MainGui["ByPass"].Value := true
-        Game.Lists[MainGui["SelectGame"].Text].Features("ByPass", true)
+        theGame.Features("ByPass", true)
     }
-    Game.Lists[MainGui["SelectGame"].Text].setting["Features"][GuiCtrlObj.Name] := GuiCtrlObj.Value
-    Game.Lists[MainGui["SelectGame"].Text].Features(GuiCtrlObj.Name, GuiCtrlObj.Value)
+    theGame.setting["Features"][GuiCtrlObj.Name] := GuiCtrlObj.Value
+    theGame.Features(GuiCtrlObj.Name, GuiCtrlObj.Value)
 }
 TP(GuiCtrlObj, Info) {
     if (GuiCtrlObj.Value)
@@ -577,11 +633,12 @@ TPtoXYZ(GuiCtrlObj, Info) {
     theGame.MovePlayerCoordinates(MainGui["TPtoX"].Value, MainGui["TPtoY"].Value, MainGui["TPtoZ"].Value, MainGui["StepTP"].Value, MainGui["DelayTP"].Value)
 }
 Interval(GuiCtrlObj, Info) {
+    theGame := Game.Lists[MainGui["SelectGame"].Text]
     switch MainGui["SelectAction"].Text {
         case "自动按键":
-            Game.Lists[MainGui["SelectGame"].Text].setting["AutoBtn"]["interval"] := GuiCtrlObj.value
+            theGame.setting["AutoBtn"]["interval"] := GuiCtrlObj.value
         case "钓鱼":
-            Game.Lists[MainGui["SelectGame"].Text].setting["Fish"]["interval"] := GuiCtrlObj.value
+            theGame.setting["Fish"]["interval"] := GuiCtrlObj.value
     }
 }
 AutoBtn_Key_Click_LEFT(GuiCtrlObj, Info) {
@@ -623,14 +680,15 @@ HotKeyEdit(GuiCtrlObj, Item, isAdd := false) {
     HotKeyBoxEdit.Add("Button", "ys vHotKeyBox_Cancel", "取消")
     HotKeyBoxEdit["HotKeyBox_Save"].OnEvent("Click",
         (*) {
+        theGame := Game.Lists[MainGui["SelectGame"].Text]
         if not isAdd and Item
-            key := Game.Lists[MainGui["SelectGame"].Text].setting["AutoBtn"]["keys"][Item]
+            key := theGame.setting["AutoBtn"]["keys"][Item]
         else {
             if (Item)
                 Item := GuiCtrlObj.Insert(Item, "+Check")
             else Item := GuiCtrlObj.Add("+Check")
             key := Game.Key(true)
-            Game.Lists[MainGui["SelectGame"].Text].setting["AutoBtn"]["keys"].InsertAt(Item, key)
+            theGame.setting["AutoBtn"]["keys"].InsertAt(Item, key)
         }
         GuiCtrlObj.Modify(Item, ,
             HotKeyBoxEdit["HotKeyBox_Hotkey"].value,
@@ -651,20 +709,56 @@ HotKeyEdit(GuiCtrlObj, Item, isAdd := false) {
 HotKeyCheck(GuiCtrlObj, Item, Checked) {
     Game.Lists[MainGui["SelectGame"].Text].setting["AutoBtn"]["keys"][Item].enabled := Checked
 }
+FollowPlayer(GuiCtrlObj, Info) {
+    if GuiCtrlObj.Value and not MainGui["FollowPlayer_Name"].Value {
+        MsgBox("玩家名不能为空")
+        GuiCtrlObj.Value := false
+        return
+    }
+    MainGui["FollowPlayer_Name"].Enabled := !GuiCtrlObj.Value
+    theGame := Game.Lists[MainGui["SelectGame"].Text]
+    theGame.setting["FollowPlayer"]["On"] := GuiCtrlObj.Value
+    theGame.FollowPlayer()
+}
+AutoAim(GuiCtrlObj, Info) {
+    if GuiCtrlObj.Value and not MainGui["AutoAim_AimRange"].Value or not MainGui["AutoAim_ShowRange"].Value
+        or ( not MainGui["AutoAim_TargetBoss"].Value and not MainGui["AutoAim_TargetNomal"].Value and not MainGui["AutoAim_TargetPlant"].Value) {
+        MsgBox("配置或选项不能为空")
+        GuiCtrlObj.Value := false
+        return
+    }
+    for key in ["AimRange", "ShowRange", "TargetBoss", "TargetNomal", "TargetPlant"]
+        MainGui["AutoAim_" key].Enabled := !GuiCtrlObj.Value
+    theGame := Game.Lists[MainGui["SelectGame"].Text]
+    theGame.setting["AutoAim"]["On"] := GuiCtrlObj.Value
+    theGame.AutoAim()
+}
+SpeedUp(GuiCtrlObj, Info) {
+    if GuiCtrlObj.Value and not MainGui["SpeedUp_SpeedUpRate"].Value or not MainGui["SpeedUp_GravityRate"].Value {
+        MsgBox("配置不能为空")
+        GuiCtrlObj.Value := false
+        return
+    }
+    for key in ["SpeedUpRate", "GravityRate"]
+        MainGui["SpeedUp_" key].Enabled := !GuiCtrlObj.Value
+    theGame := Game.Lists[MainGui["SelectGame"].Text]
+    theGame.setting["SpeedUp"]["On"] := GuiCtrlObj.Value
+    theGame.setting["Features"]["ByPass"] := MainGui["ByPass"].Value := true
+    theGame.Features("ByPass", true)
+    theGame.SpeedUp()
+}
 AutoRestart(GuiCtrlObj, Info) {
-    if GuiCtrlObj.Value and not MainGui["Account"].Value or not MainGui["Password"] {
+    if GuiCtrlObj.Value and not MainGui["AutoRestart_Account"].Value or not MainGui["AutoRestart_Password"] {
         MsgBox("账号密码不能为空")
         GuiCtrlObj.Value := false
         return
     }
-    MainGui["Account"].Enabled := MainGui["Password"].Enabled := !GuiCtrlObj.Value
-    Game.Lists[MainGui["SelectGame"].Text].setting["AutoRestart"] := GuiCtrlObj.Value
+    MainGui["AutoRestart_Account"].Enabled := MainGui["AutoRestart_Password"].Enabled := !GuiCtrlObj.Value
+    Game.Lists[MainGui["SelectGame"].Text].setting["AutoRestart"]["On"] := GuiCtrlObj.Value
 }
-Account(GuiCtrlObj, Info) {
-    Game.Lists[MainGui["SelectGame"].Text].setting["Account"] := GuiCtrlObj.Value
-}
-Password(GuiCtrlObj, Info) {
-    Game.Lists[MainGui["SelectGame"].Text].setting["Password"] := GuiCtrlObj.Value
+SomeUiSetChangeEvent(GuiCtrlObj, Info) {
+    kv := StrSplit(GuiCtrlObj.Name, "_")
+    Game.Lists[MainGui["SelectGame"].Text].setting[kv[1]][kv[2]] := GuiCtrlObj.Value
 }
 
 ; DLL封装
@@ -743,10 +837,50 @@ class Game {
         InstallKeybdHook
         STOP := false
         ReadProcessMemory := DynaCall("ReadProcessMemory", ["c=uiuituit"])
-        ReadMemory(Maddress, ProcessHandle, Readtype := "Int", Len := 4) {
+        WriteProcessMemory := DynaCall("WriteProcessMemory", ["c=uiuituit"])
+        ReadMemory(ProcessHandle, Maddress, Readtype := "Int", Len := 4) {
             Mvalue := Buffer(Len, 0)
             ReadProcessMemory(ProcessHandle, Maddress, Mvalue, Mvalue.Size)
             return NumGet(Mvalue, Readtype)
+        }
+        WriteMemory(ProcessHandle, Maddress, Value, IsBinary := True, Writetype := "Int", Len := 4, IsNumber := True) {
+            if (IsBinary) {
+                Mvalue := Buffer((StrLen(Value) - 2) // 2)
+                loop Mvalue.Size
+                    NumPut("UChar", "0x" SubStr(Value, 1 + A_Index * 2, 2), Mvalue, A_Index - 1)
+                WriteProcessMemory(ProcessHandle, Maddress, Mvalue, Mvalue.Size)
+                return
+            }
+            Mvalue := Buffer(Len, 0)
+            IsNumber ? NumPut(Writetype, Value, Mvalue) : StrPut(Value, Mvalue, Mvalue.Size, Writetype)
+            WriteProcessMemory(ProcessHandle, Maddress, Mvalue, Mvalue.Size)
+        }
+        GetPlayerCoordinates(AddressCoordXYZ, AddressCamXYZPer, ProcessHandle) {
+            x := ReadMemory(ProcessHandle, AddressCoordXYZ[1], "Float")
+            y := ReadMemory(ProcessHandle, AddressCoordXYZ[2], "Float")
+            z := ReadMemory(ProcessHandle, AddressCoordXYZ[3], "Float")
+            xper := ReadMemory(ProcessHandle, AddressCamXYZPer[1], "Float")
+            yper := ReadMemory(ProcessHandle, AddressCamXYZPer[2], "Float")
+            zper := ReadMemory(ProcessHandle, AddressCamXYZPer[3], "Float")
+            return [x, y, z, xper, yper, zper]
+        }
+        SetPlayerCoordinates(X, Y, Z, AddressCoordXYZ, ProcessHandle) {
+            WriteMemory(ProcessHandle, AddressCoordXYZ[1], X, false, "Float")
+            WriteMemory(ProcessHandle, AddressCoordXYZ[2], Y, false, "Float")
+            WriteMemory(ProcessHandle, AddressCoordXYZ[3], Z, false, "Float")
+        }
+        MovePlayerCoordinates(Xtarget, Ytarget, Ztarget, SkipDist, SkipDelay, AddressCoordXYZ, AddressCamXYZPer, ProcessHandle) {
+            coord := GetPlayerCoordinates(AddressCoordXYZ, AddressCamXYZPer, ProcessHandle)
+            dist := sqrt((Xtarget - coord[1]) ** 2 + (Ytarget - coord[2]) ** 2 + (Ztarget - coord[3]) ** 2)
+            loop {
+                if (dist <= SkipDist)
+                    SetPlayerCoordinates(Xtarget, Ytarget, Ztarget, AddressCoordXYZ, ProcessHandle)
+                else
+                    SetPlayerCoordinates(coord[1] + SkipDist * (Xtarget - coord[1]) / dist, coord[2] + SkipDist * (Ytarget - coord[2]) / dist, coord[3] + SkipDist * (Ztarget - coord[3]) / dist, AddressCoordXYZ, ProcessHandle)
+                Sleep(SkipDelay)
+                coord := GetPlayerCoordinates(AddressCoordXYZ, AddressCamXYZPer, ProcessHandle)
+                dist := sqrt((Xtarget - coord[1]) ** 2 + (Ytarget - coord[2]) ** 2 + (Ztarget - coord[3]) ** 2)
+            } until (dist <= SkipDist)
         }
         NatualPress(npbtn, pid, holdtime := 0) {
             ; SetKeyDelay(,Random(66, 122) + holdtime)
@@ -792,13 +926,13 @@ class Game {
                 Sleep(Interval)
                 StateFlag := false
                 for key in State_Address
-                    StateFlag |= ReadMemory(key, ProcessHandle)
+                    StateFlag |= ReadMemory(ProcessHandle, key)
                 if (!StateFlag) {
                     if (RePush < 10)
                         RePush := RePush + 1
                     Sleep((Random(66, 122) + Interval) * RePush)
                     for key in State_Address
-                        StateFlag |= ReadMemory(key, ProcessHandle)
+                        StateFlag |= ReadMemory(ProcessHandle, key)
                     if (!StateFlag)
                         NatualPress(FishKey, Pid)
                     Sleep(3000)
@@ -806,7 +940,7 @@ class Game {
                 }
                 TakeFlag := false
                 for key in Take_Address
-                    TakeFlag |= ReadMemory(key, ProcessHandle)
+                    TakeFlag |= ReadMemory(ProcessHandle, key)
                 if (TakeFlag) {
                     if (Flag) {
                         Sleep(1000)
@@ -824,21 +958,22 @@ class Game {
             Global STOP
             DirCreate("UseLog")
             AobScan := DynaCall("AobScan\FindSig", ["ui=tuiuiaui6ui6i"])
-            FileObj := FileOpen("UseLog\" Name " " FormatTime(,"yyyy-MM-dd") ".txt", "a")
+            FileObj := FileOpen("UseLog\" Name " " FormatTime(, "yyyy-MM-dd") ".txt", "a")
             Result := Buffer(1024, 0)
             signature_r := StrSplit(RegExReplace(StrReplace(Use_R, " "), "X|x", "?"), ',')
             signature_t := StrSplit(RegExReplace(StrReplace(Use_T, " "), "X|x", "?"), ',')
-            value_r_old := 0
-            value_t_old := 0
+            value_r_old := value_t_old := 0
             Loop {
                 size := AobScan(Result, Result.Size, Pid, signature_r[2], BaseAddress, 0x7FFFFFFF, 1)
                 address_r := size ? Format("0x{{}1:X{}}", NumGet(Result, "UInt") + signature_r[1]) : "0xFFFFFFFF"
                 size := AobScan(Result, Result.Size, Pid, signature_t[2], BaseAddress, 0x7FFFFFFF, 1)
                 address_t := size ? Format("0x{{}1:X{}}", NumGet(Result, "UInt") + signature_t[1]) : "0xFFFFFFFF"
-                value_r := Integer(ReadMemory(address_r, ProcessHandle, "Double", 8))
-                value_t := Integer(ReadMemory(address_t, ProcessHandle, "Double", 8))
-                if(value_r_old != value_r || value_t_old != value_t) {
-                    FileObj.WriteLine(FormatTime(,"yyyy-MM-dd hh:mm:ss") " R:" value_r " | T:" value_t)
+                value_r := Integer(ReadMemory(ProcessHandle, address_r, "Double", 8))
+                value_t := Integer(ReadMemory(ProcessHandle, address_t, "Double", 8))
+                if (value_r < 0 or value_r > 9999 or value_t < 0 or value_t > 9999)
+                    continue
+                if (value_r_old != value_r || value_t_old != value_t) {
+                    FileObj.WriteLine(FormatTime(, "yyyy-MM-dd hh:mm:ss") " R:" value_r " | T:" value_t)
                     FileObj.Read(0)
                     value_r_old := value_r
                     value_t_old := value_t
@@ -847,20 +982,92 @@ class Game {
             } until (STOP)
             FileObj.Close()
         }
+        FollowPlayer(ProcessHandle) {
+
+        }
+        AutoAim(ProcessHandle) {
+
+        }
+        SpeedUp(Pid, ProcessHandle, AddressCoordXYZ, AddressCoordXYZVel, AddressCamXYZPer, SpeedUpRate, GravityRate, SpeedUpDelay) {
+            global STOP
+            loop {
+                Sleep(SpeedUpDelay)
+                try {
+                    if (WinGetPID("A") != Pid)
+                        continue
+                }
+                catch
+                    continue
+                xyz_xyzper := GetPlayerCoordinates(AddressCoordXYZ, AddressCamXYZPer, ProcessHandle)
+                xper := xyz_xyzper[4]
+                zper := xyz_xyzper[6]
+                new_xvel := new_zvel := 0
+                new_yvel := 0.39
+                hrzMagnitude := sqrt(xper ** 2 + zper ** 2)
+                xMagnitude := xper / hrzMagnitude
+                zMagnitude := zper / hrzMagnitude
+                if (GetKeyState("W")) {
+                    new_xvel := new_xvel + xMagnitude * SpeedUpRate
+                    new_zvel := new_zvel + zMagnitude * SpeedUpRate
+                }
+                if (GetKeyState("A")) {
+                    new_xvel := new_xvel + zMagnitude * SpeedUpRate
+                    new_zvel := new_zvel - xMagnitude * SpeedUpRate
+                }
+                if (GetKeyState("S")) {
+                    new_xvel := new_xvel - xMagnitude * SpeedUpRate
+                    new_zvel := new_zvel - zMagnitude * SpeedUpRate
+                }
+                if (GetKeyState("D")) {
+                    new_xvel := new_xvel - zMagnitude * SpeedUpRate
+                    new_zvel := new_zvel + xMagnitude * SpeedUpRate
+                }
+                if (GetKeyState("Space")) {
+                    new_yvel := new_yvel + GravityRate
+                }
+                if (GetKeyState("Shift")) {
+                    new_yvel := new_yvel - GravityRate
+                }
+                WriteMemory(ProcessHandle, AddressCoordXYZVel[1], new_xvel, false, "Float")
+                WriteMemory(ProcessHandle, AddressCoordXYZVel[2], new_yvel, false, "Float")
+                WriteMemory(ProcessHandle, AddressCoordXYZVel[3], new_zvel, false, "Float")
+            } until (STOP)
+        }
         {1}
     )"
     action := "自动按键"
     running := false
+    threads := Map()
     setting := Map(
-        "Account", "",
-        "Password", "",
-        "AutoRestart", false,
+        "AutoRestart", Map(
+            "On", false,
+            "Account", "",
+            "Password", "",
+        ),
+        "FollowPlayer", Map(
+            "On", false,
+            "Name", "",
+        ),
+        "SpeedUp", Map(
+            "On", false,
+            "SpeedUpRate", 50,
+            "GravityRate", 50,
+        ),
+        "AutoAim", Map(
+            "On", false,
+            "AimRange", "45",
+            "ShowRange", "200",
+            "TargetBoss", true,
+            "TargetNomal", false,
+            "TargetPlant", false,
+        ),
         "Features", Map(),
         "Fish", Map(
             "interval", "700",
             "take_address", Map(),
             "state_address", Map(),
         ),
+        "Address", Map(),
         "AutoBtn", Map(
             "NoTop", false,
             "interval", "1000",
@@ -938,7 +1145,7 @@ class Game {
             ControlClick(ControlOrPos, WinTitle, , , , "NA")
         }
         for Key, theGame in Game.Lists {
-            if ( not theGame.setting["AutoRestart"])
+            if ( not theGame.setting["AutoRestart"]["On"])
                 Continue
             if not WinExist("ahk_id " theGame.id) {
                 if Game.Refresh()
@@ -976,7 +1183,7 @@ class Game {
                         if (ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/login1.png")
                             or ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/login2.png")) {
                             SetKeyDelay(10, 20)
-                            ControlSend(theGame.setting["Account"] "{Tab}" theGame.setting["Password"], , "登录 Glyph")
+                            ControlSend(theGame.setting["AutoRestart"]["Account"] "{Tab}" theGame.setting["AutoRestart"]["Password"], , "登录 Glyph")
                             NatureClick("x" OutputVarX " y" OutputVarY, "登录 Glyph")
                             Sleep(30000)
                         }
@@ -998,14 +1205,21 @@ class Game {
                 config.data["Address"]["Fish"], StrSplit(config.data["Address_Offset"]["Fish_" "State_" key], ",")
             )
         }
+        for key in ["Player_Health", "Player_Coord_X", "Player_Coord_Y", "Player_Coord_Z"
+            , "Player_Coord_XVel", "Player_Coord_YVel", "Player_Coord_ZVel"
+            , "Player_Cam_XPer", "Player_Cam_YPer", "Player_Cam_ZPer"] {
+            this.setting["Address"][key] := this.GetAddressOffset(
+                config.data["Address"]["Player"], StrSplit(config.data["Address_Offset"][key], ",")
+            )
+        }
     }
     AutoBtn() {
-        try this.thread["STOP"] := true
+        try this.threads["MainAuto"]["STOP"] := true
         if (this.running)
         {
-            this.thread := Worker(Format(Game.ScriptAHK, Format('{1}({2},{3},{4})'
+            this.threads["MainAuto"] := Worker(Format(Game.ScriptAHK, Format('{1}({2},{3},{4})'
                 , "AutoBtn", this.pid, this.setting["AutoBtn"]["interval"], this.setting["AutoBtn"]["NoTop"])))
-            this.thread["keys"] := Map(
+            this.threads["MainAuto"]["keys"] := Map(
                 "btn", this.setting["AutoBtn"]["keys"],
                 "Click_LEFT", this.setting["AutoBtn"]["Key_Click_LEFT"],
                 "Click_RIGHT", this.setting["AutoBtn"]["Key_Click_RIGHT"],
@@ -1017,33 +1231,53 @@ class Game {
             Take_Address .= value ","
         for key, value in this.setting["Fish"]["state_address"]
             State_Address .= value ","
-        try this.thread["STOP"] := true
+        try this.threads["MainAuto"]["STOP"] := true
         if (this.running)
-            this.thread := Worker(Format(Game.ScriptAHK, Format('{1}({2},"{3}",{4},[{5}],[{6}],{7})'
+            this.threads["MainAuto"] := Worker(Format(Game.ScriptAHK, Format('{1}({2},"{3}",{4},[{5}],[{6}],{7})'
                 , "AutoFish", this.pid, config.data["Key"]["Fish"], this.setting["Fish"]["interval"], Take_Address, State_Address, this.ProcessHandle)))
+    }
+    FollowPlayer() {
+        try this.threads["FollowPlayer"]["STOP"] := true
+        if (this.setting["FollowPlayer"]["On"])
+            this.threads["FollowPlayer"] := Worker(Format(Game.ScriptAHK, Format('{1}()', "FollowPlayer")))
+    }
+    AutoAim() {
+        try this.threads["AutoAim"]["STOP"] := true
+        if (this.setting["AutoAim"]["On"])
+            this.threads["AutoAim"] := Worker(Format(Game.ScriptAHK, Format('{1}()', "AutoAim")))
+    }
+    SpeedUp() {
+        AddressCoordXYZ := this.setting["Address"]["Player_Coord_X"] "," this.setting["Address"]["Player_Coord_Y"] "," this.setting["Address"]["Player_Coord_Z"]
+        AddressCoordXYZVel := this.setting["Address"]["Player_Coord_XVel"] "," this.setting["Address"]["Player_Coord_YVel"] "," this.setting["Address"]["Player_Coord_ZVel"]
+        AddressCamXYZPer := this.setting["Address"]["Player_Cam_XPer"] "," this.setting["Address"]["Player_Cam_YPer"] "," this.setting["Address"]["Player_Cam_ZPer"]
+        try this.threads["SpeedUp"]["STOP"] := true
+        if (this.setting["SpeedUp"]["On"])
+            this.threads["SpeedUp"] := Worker(Format(Game.ScriptAHK, Format('{1}({2},{3},[{4}],[{5}],[{6}],{7},{8},{9})'
+                , "SpeedUp", this.pid, this.ProcessHandle, AddressCoordXYZ, AddressCoordXYZVel, AddressCamXYZPer, this.setting["SpeedUp"]["SpeedUpRate"], this.setting["SpeedUp"]["GravityRate"], config.data["SpeedUp"]["Delay"])))
+
     }
     StopAll(keepStatus := false) {
         running := this.running
         this.running := false
-        try this.thread["STOP"] := true
-        try this.logThread["STOP"] := true
+        for key in this.threads
+            try this.threads[key]["STOP"] := true
         CloseHandle(this.ProcessHandle)
         if keepStatus
             this.running := running
     }
     Features_Attack() {
         this.WriteMemory(
-            config.data["Address"]["Attack"],
+            this.BaseAddress + config.data["Address"]["Attack"],
             StrSplit(config.data["Features_Change"]["Attack"], ",")[1]
         )
         Sleep(300)
         this.WriteMemory(
-            config.data["Address"]["Attack"],
+            this.BaseAddress + config.data["Address"]["Attack"],
             StrSplit(config.data["Features_Change"]["Attack"], ",")[2]
         )
     }
     Features_Health() {
-        if ( not this.GetHealth(config.data["Address"]["Player"])) {
+        if ( not this.ReadMemory(this.setting["Address"]["Player_Health"], "Double", 8)) {
             this.NatualPress("E")
             Sleep(5000)
         }
@@ -1056,16 +1290,16 @@ class Game {
                 SetTimer(this.FeaturesHealthFunc, Value ? config.data["HealthTime"]["Value"] : 0)
                 return
             case "UseLog":
-                try this.logThread["STOP"] := true
+                try this.threads["Log"]["STOP"] := true
                 if (Value) {
-                    this.logThread := Worker(Format(Game.ScriptAHK, Format('{1}({2},"{3}",{4},{5},{6},"{7}","{8}")'
+                    this.threads["Log"] := Worker(Format(Game.ScriptAHK, Format('{1}({2},"{3}",{4},{5},{6},"{7}","{8}")'
                         , "UseLog", this.pid, this.name, this.BaseAddress, this.ProcessHandle, config.data["UseLogTime"]["Value"], config.data["Address_Offset_Signature"]["Use_R"], config.data["Address_Offset_Signature"]["Use_T"])))
                 }
                 return
         }
 
         this.WriteMemory(
-            config.data["Address"][Name],
+            this.BaseAddress + config.data["Address"][Name],
             StrSplit(config.data["Features_Change"][Name], ",")[Value ? 1 : 2]
         )
     }
@@ -1073,26 +1307,19 @@ class Game {
         Address := this.GetAddressOffset(Address, StrSplit(config.data["Address_Offset"]["Name"], ","))
         return this.ReadMemory(Address, "utf-8", 16, false)
     }
-    GetHealth(Address) {
-        Address := this.GetAddressOffset(Address, StrSplit(config.data["Address_Offset"]["Health"], ","))
-        return this.ReadMemory(Address, "Double", 8)
-    }
     GetPlayerCoordinates() {
-        CoordBaseAddress := this.GetAddressOffset(config.data["Address"]["Player"], StrSplit(config.data["Address_Offset"]["PlayerCoord_Base"], ",")) - this.BaseAddress
-        CamBaseAddress := this.GetAddressOffset(config.data["Address"]["Player"], StrSplit(config.data["Address_Offset"]["PlayerCam_Base"], ",")) - this.BaseAddress
-        x := this.ReadMemory(this.GetAddressOffset(CoordBaseAddress, StrSplit(config.data["Address_Offset"]["PlayerCoord_X"], ",")), "Float")
-        y := this.ReadMemory(this.GetAddressOffset(CoordBaseAddress, StrSplit(config.data["Address_Offset"]["PlayerCoord_Y"], ",")), "Float")
-        z := this.ReadMemory(this.GetAddressOffset(CoordBaseAddress, StrSplit(config.data["Address_Offset"]["PlayerCoord_Z"], ",")), "Float")
-        xper := this.ReadMemory(this.GetAddressOffset(CamBaseAddress, StrSplit(config.data["Address_Offset"]["PlayerCam_XPer"], ",")), "Float")
-        yper := this.ReadMemory(this.GetAddressOffset(CamBaseAddress, StrSplit(config.data["Address_Offset"]["PlayerCam_YPer"], ",")), "Float")
-        zper := this.ReadMemory(this.GetAddressOffset(CamBaseAddress, StrSplit(config.data["Address_Offset"]["PlayerCam_ZPer"], ",")), "Float")
+        x := this.ReadMemory(this.setting["Address"]["Player_Coord_X"], "Float")
+        y := this.ReadMemory(this.setting["Address"]["Player_Coord_Y"], "Float")
+        z := this.ReadMemory(this.setting["Address"]["Player_Coord_Z"], "Float")
+        xper := this.ReadMemory(this.setting["Address"]["Player_Cam_XPer"], "Float")
+        yper := this.ReadMemory(this.setting["Address"]["Player_Cam_YPer"], "Float")
+        zper := this.ReadMemory(this.setting["Address"]["Player_Cam_ZPer"], "Float")
         return [x, y, z, xper, yper, zper]
     }
     SetPlayerCoordinates(X, Y, Z) {
-        CoordBaseAddress := this.GetAddressOffset(config.data["Address"]["Player"], StrSplit(config.data["Address_Offset"]["PlayerCoord_Base"], ",")) - this.BaseAddress
-        this.WriteMemory(this.GetAddressOffset(CoordBaseAddress, StrSplit(config.data["Address_Offset"]["PlayerCoord_X"], ",")) - this.BaseAddress, X, false, "Float")
-        this.WriteMemory(this.GetAddressOffset(CoordBaseAddress, StrSplit(config.data["Address_Offset"]["PlayerCoord_Y"], ",")) - this.BaseAddress, Y, false, "Float")
-        this.WriteMemory(this.GetAddressOffset(CoordBaseAddress, StrSplit(config.data["Address_Offset"]["PlayerCoord_Z"], ",")) - this.BaseAddress, Z, false, "Float")
+        this.WriteMemory(this.setting["Address"]["Player_Coord_X"], X, false, "Float")
+        this.WriteMemory(this.setting["Address"]["Player_Coord_Y"], Y, false, "Float")
+        this.WriteMemory(this.setting["Address"]["Player_Coord_Z"], Z, false, "Float")
     }
     MovePlayerCoordinates(Xtarget, Ytarget, Ztarget, SkipDist, SkipDelay) {
         if ( not this.setting["Features"]["ByPass"])
@@ -1126,17 +1353,17 @@ class Game {
         ReadProcessMemory(this.ProcessHandle, Maddress, Mvalue, Mvalue.Size)
         return isNumber ? NumGet(Mvalue, Readtype) : StrGet(Mvalue, Readtype)
     }
-    WriteMemory(Address, Value, IsBinary := True, Writetype := "Int", Len := 4, IsNumber := True) {
+    WriteMemory(Maddress, Value, IsBinary := True, Writetype := "Int", Len := 4, IsNumber := True) {
         if (IsBinary) {
             Mvalue := Buffer((StrLen(Value) - 2) // 2)
             loop Mvalue.Size
                 NumPut("UChar", "0x" SubStr(Value, 1 + A_Index * 2, 2), Mvalue, A_Index - 1)
-            WriteProcessMemory(this.ProcessHandle, this.BaseAddress + Address, Mvalue, Mvalue.Size)
+            WriteProcessMemory(this.ProcessHandle, Maddress, Mvalue, Mvalue.Size)
             return
         }
         Mvalue := Buffer(Len, 0)
         IsNumber ? NumPut(Writetype, Value, Mvalue) : StrPut(Value, Mvalue, Mvalue.Size, Writetype)
-        WriteProcessMemory(this.ProcessHandle, this.BaseAddress + Address, Mvalue, Mvalue.Size)
+        WriteProcessMemory(this.ProcessHandle, Maddress, Mvalue, Mvalue.Size)
     }
     NatualPress(npbtn, holdtime := 0) {
         try {
