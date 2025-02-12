@@ -67,6 +67,8 @@ config := _Config(
             "Player_Coord_XVel", "0xC,0x28,0x54,0x88,0xAC,0x4,0xB0",
             "Player_Coord_YVel", "0xC,0x28,0x54,0x88,0xAC,0x4,0xB4",
             "Player_Coord_ZVel", "0xC,0x28,0x54,0x88,0xAC,0x4,0xB8",
+            "Player_Coord_V", "0x4,0x2C",
+            "Player_Coord_H", "0x4,0x28",
             "Player_Cam_XPer", "0x4,0x24,0x84,0x0,0x100",
             "Player_Cam_YPer", "0x4,0x24,0x84,0x0,0x104",
             "Player_Cam_ZPer", "0x4,0x24,0x84,0x0,0x108",
@@ -619,7 +621,7 @@ TP(GuiCtrlObj, Info) {
                 zdest := coord[3] + zadd
                 theGame.MovePlayerCoordinates(xdest, ydest, zdest, MainGui["StepTP"].Value, MainGui["DelayTP"].Value)
             }
-        })
+        }, "On")
     else
         Hotkey(MainGui["HotKeyTP"].Value, , "Off")
     for key in ["StepTP", "DelayTP", "DistanceTP", "HotKeyTP"]
@@ -770,8 +772,8 @@ SomeUiSetChangeEvent(GuiCtrlObj, Info) {
 }
 
 ; DLL封装
-#DllLoad AobScan
-AobScan := DynaCall("AobScan\FindSig", ["ui=tuiuiaui6ui6i"])
+#DllLoad Memory
+AobScan := DynaCall("Memory\FindSig", ["ui=tuiuiaui6ui6i"])
 CloseHandle := DynaCall("CloseHandle", ["c=ui"])
 OpenProcess := DynaCall("OpenProcess", ["ui=uicui", 3], 0x38, 0)
 GetProcessBaseAddress := DynaCall("GetWindowLongPtr", ["ui=tiui"])
@@ -972,16 +974,21 @@ class Game {
         UseLog(Pid, Name, BaseAddress, ProcessHandle, Interval, Use_R, Use_T) {
             Global STOP
             DirCreate("UseLog")
-            AobScan := DynaCall("AobScan\FindSig", ["ui=tuiuiaui6ui6i"])
+            AobScan := DynaCall("Memory\FindSig", ["ui=tuiuiaui6ui6i"])
             FileObj := FileOpen("UseLog\" Name " " FormatTime(, "yyyy-MM-dd") ".txt", "a")
             Result := Buffer(1024, 0)
             signature_r := StrSplit(RegExReplace(StrReplace(Use_R, " "), "X|x", "?"), ',')
             signature_t := StrSplit(RegExReplace(StrReplace(Use_T, " "), "X|x", "?"), ',')
             value_r_old := value_t_old := 0
             Loop {
-                size := AobScan(Result, Result.Size, Pid, signature_r[2], BaseAddress, 0x7FFFFFFF, 1)
+                Sleep(Interval)
+                try size := AobScan(Result, Result.Size, Pid, signature_r[2], BaseAddress, 0x7FFFFFFF, 1)
+                catch
+                    continue
                 address_r := size ? Format("0x{{}1:X{}}", NumGet(Result, "UInt") + signature_r[1]) : "0xFFFFFFFF"
-                size := AobScan(Result, Result.Size, Pid, signature_t[2], BaseAddress, 0x7FFFFFFF, 1)
+                try size := AobScan(Result, Result.Size, Pid, signature_t[2], BaseAddress, 0x7FFFFFFF, 1)
+                catch
+                    continue
                 address_t := size ? Format("0x{{}1:X{}}", NumGet(Result, "UInt") + signature_t[1]) : "0xFFFFFFFF"
                 value_r := Integer(ReadMemory(ProcessHandle, address_r, "Double", 8))
                 value_t := Integer(ReadMemory(ProcessHandle, address_t, "Double", 8))
@@ -993,7 +1000,6 @@ class Game {
                     value_r_old := value_r
                     value_t_old := value_t
                 }
-                Sleep(Interval)
             } until (STOP)
             FileObj.Close()
         }
