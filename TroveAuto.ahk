@@ -67,8 +67,8 @@ config := _Config(
             "Player_Coord_XVel", "0xC,0x28,0x54,0x88,0xAC,0x4,0xB0",
             "Player_Coord_YVel", "0xC,0x28,0x54,0x88,0xAC,0x4,0xB4",
             "Player_Coord_ZVel", "0xC,0x28,0x54,0x88,0xAC,0x4,0xB8",
-            "Player_Coord_V", "0x4,0x2C",
-            "Player_Coord_H", "0x4,0x28",
+            "Player_Cam_V", "0x4,0x2C",
+            "Player_Cam_H", "0x4,0x28",
             "Player_Cam_XPer", "0x4,0x24,0x84,0x0,0x100",
             "Player_Cam_YPer", "0x4,0x24,0x84,0x0,0x104",
             "Player_Cam_ZPer", "0x4,0x24,0x84,0x0,0x108",
@@ -530,7 +530,7 @@ UpdateFromLocal(GuiCtrlObj, Info) {
             MainGui[key "Address"].Text := Format("0x{1:X}", value - BaseAddress)
         }
         else
-            MainGui[key "Address"].Text := "0xFFFFFFFF"
+            MainGui[key "Address"].Text := "0x7FFFFFFF"
     }
     Msgbox("检测完毕, 确认无误后请手动保存")
 }
@@ -772,8 +772,8 @@ SomeUiSetChangeEvent(GuiCtrlObj, Info) {
 }
 
 ; DLL封装
-#DllLoad Memory
-AobScan := DynaCall("Memory\FindSig", ["ui=tuiuiaui6ui6i"])
+#DllLoad Module
+AobScan := DynaCall("Module\AobScanFindSig", ["ui=tuiuiaui6ui6i"])
 CloseHandle := DynaCall("CloseHandle", ["c=ui"])
 OpenProcess := DynaCall("OpenProcess", ["ui=uicui", 3], 0x38, 0)
 GetProcessBaseAddress := DynaCall("GetWindowLongPtr", ["ui=tiui"])
@@ -974,7 +974,7 @@ class Game {
         UseLog(Pid, Name, BaseAddress, ProcessHandle, Interval, Use_R, Use_T) {
             Global STOP
             DirCreate("UseLog")
-            AobScan := DynaCall("Memory\FindSig", ["ui=tuiuiaui6ui6i"])
+            AobScan := DynaCall("Module\AobScanFindSig", ["ui=tuiuiaui6ui6i"])
             FileObj := FileOpen("UseLog\" Name " " FormatTime(, "yyyy-MM-dd") ".txt", "a")
             Result := Buffer(1024, 0)
             signature_r := StrSplit(RegExReplace(StrReplace(Use_R, " "), "X|x", "?"), ',')
@@ -985,11 +985,11 @@ class Game {
                 try size := AobScan(Result, Result.Size, Pid, signature_r[2], BaseAddress, 0x7FFFFFFF, 1)
                 catch
                     continue
-                address_r := size ? Format("0x{{}1:X{}}", NumGet(Result, "UInt") + signature_r[1]) : "0xFFFFFFFF"
+                address_r := size ? Format("0x{{}1:X{}}", NumGet(Result, "UInt") + signature_r[1]) : "0x7FFFFFFF"
                 try size := AobScan(Result, Result.Size, Pid, signature_t[2], BaseAddress, 0x7FFFFFFF, 1)
                 catch
                     continue
-                address_t := size ? Format("0x{{}1:X{}}", NumGet(Result, "UInt") + signature_t[1]) : "0xFFFFFFFF"
+                address_t := size ? Format("0x{{}1:X{}}", NumGet(Result, "UInt") + signature_t[1]) : "0x7FFFFFFF"
                 value_r := Integer(ReadMemory(ProcessHandle, address_r, "Double", 8))
                 value_t := Integer(ReadMemory(ProcessHandle, address_t, "Double", 8))
                 if (value_r < 0 or value_r > 9999 or value_t < 0 or value_t > 9999)
@@ -1032,6 +1032,13 @@ class Game {
         }
         AutoAim() {
             global STOP
+            result := Buffer(4096, 0)
+            game := GameCreate(this.pid, "Trove.exe")
+            loop {
+                
+            } until (STOP)
+            
+            ToolTip(gamePtr " " gameEntityNum " " StrGet(result,"utf-8"))
             MsgBox("功能完善中...")
         }
         SpeedUp(Pid, ProcessHandle, AddressCoordXYZ, AddressCoordXYZVel, AddressCamXYZPer, SpeedUpRate, GravityRate, SpeedUpDelay) {
