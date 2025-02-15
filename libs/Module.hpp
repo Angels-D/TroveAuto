@@ -38,16 +38,269 @@
 #ifndef _MODULE_HPP_
 #define _MODULE_HPP_
 
-#include "AFK.hpp"
+#define DLL_EXPORT __declspec(dllexport)
+
+#include <thread>
+#include <map>
+#include "WindowInput.hpp"
 #include "Game.hpp"
 
 // Mdoule.h
 
-class Module : public Game
+namespace Module
 {
+    static std::pair<float, float> aimOffset = {1.25, 0.25};
+    static std::map<std::string, void *> configMap =
+        {
+            {"Module::aimOffset", &Module::aimOffset},
+            {"Game::moduleName", &Game::moduleName},
+            {"Game::World::signature", &Game::World::signature},
+            {"Game::World::offsets", &Game::World::offsets},
+            {"Game::World::Data::playerCountOffsets", &Game::World::Data::playerCountOffsets},
+            {"Game::World::NodeInfo::offsets", &Game::World::NodeInfo::offsets},
+            {"Game::World::NodeInfo::Data::baseAddressOffsets", &Game::World::NodeInfo::Data::baseAddressOffsets},
+            {"Game::World::NodeInfo::Data::stepOffsets", &Game::World::NodeInfo::Data::stepOffsets},
+            {"Game::World::NodeInfo::Data::sizeOffsets", &Game::World::NodeInfo::Data::sizeOffsets},
+            {"Game::World::Entity::key", &Game::World::Entity::key},
+            {"Game::World::Entity::offsets", &Game::World::Entity::offsets},
+            {"Game::World::Entity::Data::levelOffsets", &Game::World::Entity::Data::levelOffsets},
+            {"Game::World::Entity::Data::nameOffsets", &Game::World::Entity::Data::nameOffsets},
+            {"Game::World::Entity::Data::isDeathOffsets", &Game::World::Entity::Data::isDeathOffsets},
+            {"Game::World::Entity::Data::xOffsets", &Game::World::Entity::Data::xOffsets},
+            {"Game::World::Entity::Data::yOffsets", &Game::World::Entity::Data::yOffsets},
+            {"Game::World::Entity::Data::zOffsets", &Game::World::Entity::Data::zOffsets},
+            {"Game::World::Player::offsets", &Game::World::Player::offsets},
+            {"Game::World::Player::Data::nameOffsets", &Game::World::Player::Data::nameOffsets},
+            {"Game::World::Player::Data::xOffsets", &Game::World::Player::Data::xOffsets},
+            {"Game::World::Player::Data::yOffsets", &Game::World::Player::Data::yOffsets},
+            {"Game::World::Player::Data::zOffsets", &Game::World::Player::Data::zOffsets},
+            {"Game::Player::signature", &Game::Player::signature},
+            {"Game::Player::offsets", &Game::Player::offsets},
+            {"Game::Player::Data::nameSignature", &Game::Player::Data::nameSignature},
+            {"Game::Player::Data::itemRSignature", &Game::Player::Data::itemRSignature},
+            {"Game::Player::Data::itemTSignature", &Game::Player::Data::itemTSignature},
+            {"Game::Player::Data::nameOffsets", &Game::Player::Data::nameOffsets},
+            {"Game::Player::Data::healthOffsets", &Game::Player::Data::healthOffsets},
+            {"Game::Player::Data::itemROffsets", &Game::Player::Data::itemROffsets},
+            {"Game::Player::Data::itemTOffsets", &Game::Player::Data::itemTOffsets},
+            {"Game::Player::Camera::offsets", &Game::Player::Camera::offsets},
+            {"Game::Player::Camera::Data::xPerOffsets", &Game::Player::Camera::Data::xPerOffsets},
+            {"Game::Player::Camera::Data::yPerOffsets", &Game::Player::Camera::Data::yPerOffsets},
+            {"Game::Player::Camera::Data::zPerOffsets", &Game::Player::Camera::Data::zPerOffsets},
+            {"Game::Player::Camera::Data::vOffsets", &Game::Player::Camera::Data::vOffsets},
+            {"Game::Player::Camera::Data::hOffsets", &Game::Player::Camera::Data::hOffsets},
+            {"Game::Player::Coord::offsets", &Game::Player::Coord::offsets},
+            {"Game::Player::Coord::Data::xOffsets", &Game::Player::Coord::Data::xOffsets},
+            {"Game::Player::Coord::Data::yOffsets", &Game::Player::Coord::Data::yOffsets},
+            {"Game::Player::Coord::Data::zOffsets", &Game::Player::Coord::Data::zOffsets},
+            {"Game::Player::Coord::Data::xVelOffsets", &Game::Player::Coord::Data::xVelOffsets},
+            {"Game::Player::Coord::Data::yVelOffsets", &Game::Player::Coord::Data::yVelOffsets},
+            {"Game::Player::Coord::Data::zVelOffsets", &Game::Player::Coord::Data::zVelOffsets},
+            {"Game::Player::Fish::offsets", &Game::Player::Fish::offsets},
+            {"Game::Player::Fish::Data::waterTakeOffsets", &Game::Player::Fish::Data::waterTakeOffsets},
+            {"Game::Player::Fish::Data::lavaTakeOffsets", &Game::Player::Fish::Data::lavaTakeOffsets},
+            {"Game::Player::Fish::Data::chocoTakeOffsets", &Game::Player::Fish::Data::chocoTakeOffsets},
+            {"Game::Player::Fish::Data::plasmaTakeOffsets", &Game::Player::Fish::Data::plasmaTakeOffsets},
+            {"Game::Player::Fish::Data::waterStatusOffsets", &Game::Player::Fish::Data::waterStatusOffsets},
+            {"Game::Player::Fish::Data::lavaStatusOffsets", &Game::Player::Fish::Data::lavaStatusOffsets},
+            {"Game::Player::Fish::Data::chocoStatusOffsets", &Game::Player::Fish::Data::chocoStatusOffsets},
+            {"Game::Player::Fish::Data::plasmaStatusOffsets", &Game::Player::Fish::Data::plasmaStatusOffsets},
+            {"Game::Player::Bag::offset", &Game::Player::Bag::offsets}};
 
+    static std::map<std::pair<int, std::string>, std::atomic<bool>> funtionRunMap;
+
+    void AutoAim(const Memory::DWORD &pid, const std::vector<std::string> &targets, const std::vector<std::string> &noTargets = {}, const uint32_t &aimRange = 45, const uint32_t &showRange = 0, const uint32_t &delay = 50);
+    Game::World::Entity *FindTarget(Game &game, const std::vector<std::string> &targets, const std::vector<std::string> &noTargets = {}, const uint32_t &aimRange = 45, const uint32_t &showRange = 0);
 };
 
+extern "C"
+{
+    DLL_EXPORT void UpdateConfig(const std::string &key, const std::string &value);
+    DLL_EXPORT void FunctionOn(const Memory::DWORD &pid, const std::string &funtion, const std::string &argv = "", const bool &waiting = false);
+    DLL_EXPORT void FunctionOff(const Memory::DWORD &pid, const std::string &funtion);
+}
+
 // Module.cpp
+
+#include <chrono>
+
+float CalculateDistance(const float &ax, const float &ay, const float &az, const float &bx, const float &by, const float &bz)
+{
+    float dx = ax - bx;
+    float dy = ay - by;
+    float dz = az - bz;
+    return std::sqrt(dx * dx + dy * dy + dz * dz);
+}
+
+std::vector<std::string> split(const std::string &str, char delimiter)
+{
+    std::vector<std::string> tokens;
+    std::string token;
+    for (char ch : str)
+        if (ch == delimiter)
+        {
+            if (!token.empty())
+            {
+                tokens.emplace_back(token);
+                token.clear();
+            }
+        }
+        else
+            token += ch;
+    if (!token.empty())
+        tokens.emplace_back(token);
+    return tokens;
+}
+
+std::pair<float, float> CalculateAngles(const float &ax, const float &ay, const float &az, const float &bx, const float &by, const float &bz)
+{
+    float dx = bx - ax;
+    float dy = ay - by;
+    float dz = bz - az;
+
+    // 计算水平角h
+    float ah = std::atan2(dx, dz); // 参数顺序为Δx（东向分量）, Δz（南向分量）
+
+    // 计算俯仰角v
+    float horizontal_dist = std::sqrt(dx * dx + dz * dz);
+    float av = std::atan2(dy, horizontal_dist);
+    return {ah, av};
+}
+
+namespace Module
+{
+    void AutoAim(const Memory::DWORD &pid, const std::vector<std::string> &targets, const std::vector<std::string> &noTargets, const uint32_t &aimRange, const uint32_t &showRange, const uint32_t &delay)
+    {
+        Game game(pid);
+        game.UpdateAddress();
+        Game::World::Entity *target = nullptr;
+        game.data.player.UpdateAddress();
+        auto UpdateAddress = [&game]()
+        {
+            game.data.player.data.coord.UpdateAddress();
+            game.data.player.data.camera.UpdateAddress();
+            game.data.player.data.coord.data.x.UpdateAddress();
+            game.data.player.data.coord.data.y.UpdateAddress();
+            game.data.player.data.coord.data.z.UpdateAddress();
+            game.data.player.data.camera.data.v.UpdateAddress();
+            game.data.player.data.camera.data.h.UpdateAddress();
+        };
+        while (funtionRunMap[{pid, "AutoAim"}].load())
+        {
+            UpdateAddress();
+            std::this_thread::sleep_for(std::chrono::milliseconds(delay));
+            target = FindTarget(game, targets, noTargets, aimRange, showRange);
+            if (!target)
+                continue;
+            while (funtionRunMap[{pid, "AutoAim"}].load() &&
+                   CalculateDistance(
+                       game.data.player.data.coord.data.x.UpdateData().data,
+                       game.data.player.data.coord.data.y.UpdateData().data + aimOffset.first,
+                       game.data.player.data.coord.data.z.UpdateData().data,
+                       target->data.x.UpdateData().data,
+                       target->data.y.UpdateData().data + aimOffset.second,
+                       target->data.z.UpdateData().data) <= aimRange &&
+                   target->data.isDeath.UpdateData().data)
+            {
+                UpdateAddress();
+                auto vh = CalculateAngles(
+                    game.data.player.data.coord.data.x.data,
+                    game.data.player.data.coord.data.y.data,
+                    game.data.player.data.coord.data.z.data,
+                    target->data.x.data,
+                    target->data.y.data,
+                    target->data.z.data);
+                game.data.player.data.camera.data.v = vh.first;
+                game.data.player.data.camera.data.h = vh.second;
+                std::this_thread::sleep_for(std::chrono::milliseconds(delay));
+            }
+        }
+    }
+
+    Game::World::Entity *FindTarget(Game &game, const std::vector<std::string> &targets, const std::vector<std::string> &noTargets, const uint32_t &aimRange, const uint32_t &showRange)
+    {
+        auto &entitys = game.data.world.UpdateAddress().UpdateData().data.entitys;
+        std::vector<std::regex> targetRegexs, noTargetRegexs;
+        for (auto target : targets)
+            targetRegexs.emplace_back(target);
+        for (auto noTarget : noTargets)
+            noTargetRegexs.emplace_back(noTarget);
+        for (auto &entity : entitys)
+        {
+            entity.UpdateAddress().UpdateData();
+            if (entity.data.isDeath.UpdateData().data == 0)
+                continue;
+            if (CalculateDistance(
+                    game.data.player.data.coord.data.x.UpdateData().data,
+                    game.data.player.data.coord.data.y.UpdateData().data,
+                    game.data.player.data.coord.data.z.UpdateData().data,
+                    entity.data.x.UpdateData().data,
+                    entity.data.y.UpdateData().data,
+                    entity.data.z.UpdateData().data) > aimRange)
+                continue;
+            auto name = entity.data.name.UpdateData(64).data;
+            for (auto noTargetRegex : noTargetRegexs)
+                if (std::regex_match(name, noTargetRegex))
+                    return &entity;
+            for (auto targetRegex : targetRegexs)
+                if (std::regex_match(name, targetRegex))
+                    return &entity;
+        }
+        return nullptr;
+    }
+}
+
+void UpdateConfig(const std::string &key, const std::string &value)
+{
+    if (Module::configMap.find(key) == Module::configMap.end())
+        return;
+    size_t index = 0;
+    if (key == "Module::aimOffset")
+        Module::aimOffset = {std::stof(value, &index), std::stof(value.substr(index + 1), &index)};
+    else if (key.find("Offsets") != std::string::npos)
+    {
+        Memory::Offsets *offsets = (Memory::Offsets *)Module::configMap[key];
+        offsets->clear();
+        size_t pos = 0;
+        do
+        {
+            offsets->push_back(std::stol(value.substr(pos), &index, 16));
+            pos += index + 1;
+        } while (pos < value.length());
+    }
+    else
+    {
+        Object<>::Signature *signature = (Object<>::Signature *)Module::configMap[key];
+        signature->first = std::stol(value, &index, 16);
+        signature->second = value.substr(index + 1);
+    }
+}
+
+void FunctionOn(const Memory::DWORD &pid, const std::string &funtion, const std::string &argv, const bool &waiting)
+{
+    std::thread *thread = nullptr;
+    std::vector<std::string> _argv = split(argv, '|');
+    // string,string,...|string,string,...|number|number|number
+    Module::funtionRunMap[{pid, funtion}].store(true);
+    if (funtion == "AutoAim")
+        thread = new std::thread(
+            Module::AutoAim, pid,
+            split(_argv[0], ','),
+            split(_argv[1], ','),
+            std::stoul(_argv[2]),
+            std::stoul(_argv[3]),
+            std::stoul(_argv[4]));
+
+    if (thread && waiting)
+    {
+        thread->join();
+        Module::funtionRunMap[{pid, funtion}].store(false);
+    }
+}
+
+void FunctionOff(const Memory::DWORD &pid, const std::string &funtion)
+{
+    Module::funtionRunMap[{pid, funtion}].store(false);
+}
 
 #endif

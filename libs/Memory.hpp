@@ -69,7 +69,9 @@ public:
     DWORD pid;
 
     // 构造函数：通过PID打开进程句柄
-    Memory(const DWORD &pid, bool isRoot = true);
+    
+    Memory(const DWORD &pid);
+    Memory(const Memory &memory);
 
     ~Memory();
 
@@ -148,11 +150,11 @@ private:
 extern "C"
 {
     DLL_EXPORT AobScan::DWORD AobScanFindSig(
-        AobScan::DWORD *Result,
-        const AobScan::DWORD Size,
+        AobScan::DWORD *result,
+        const AobScan::DWORD size,
         const AobScan::DWORD dwPid,
-        const char *Value, const ULONG64 Start = 0x0,
-        const ULONG64 End = SYSTEM_MEMORY_ADDRESS_X32_MAX,
+        const char *value, const ULONG64 start = 0x0,
+        const ULONG64 end = SYSTEM_MEMORY_ADDRESS_X32_MAX,
         const bool once = true);
 
     DLL_EXPORT Memory *MemoryCreate(AobScan::DWORD dwPid);
@@ -190,18 +192,18 @@ extern "C"
 #include <codecvt>
 
 AobScan::DWORD AobScanFindSig(
-    AobScan::DWORD *Result,
-    const AobScan::DWORD Size,
+    AobScan::DWORD *result,
+    const AobScan::DWORD size,
     const AobScan::DWORD dwPid,
-    const char *Value,
-    const ULONG64 Start,
-    const ULONG64 End,
+    const char *value,
+    const ULONG64 start,
+    const ULONG64 end,
     const bool once)
 {
-    std::vector<AobScan::DWORD> v = AobScan::FindSig(dwPid, Value, Start, End, once);
-    AobScan::DWORD size = (std::min)(v.size(), Size / sizeof(AobScan::DWORD));
-    for (size_t i = 0; i < size; i++)
-        Result[i] = v[i];
+    std::vector<AobScan::DWORD> v = AobScan::FindSig(dwPid, value, start, end, once);
+    AobScan::DWORD _size = (std::min)(v.size(), size / sizeof(AobScan::DWORD));
+    for (size_t i = 0; i < _size; i++)
+        result[i] = v[i];
     return size;
 }
 
@@ -504,15 +506,22 @@ namespace AobScan
     }
 }
 
-Memory::Memory(const DWORD &pid, bool isRoot) : hProcess(nullptr), pid(pid), isRoot(isRoot)
+Memory::Memory(const DWORD &pid) : hProcess(nullptr), pid(pid), isRoot(true)
 {
     hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, pid);
     if (!hProcess)
         throw std::runtime_error("Failed to open process");
 }
 
-Memory::~Memory()
+Memory::Memory(const Memory &memory)
+    : hProcess(memory.hProcess), pid(memory.pid), isRoot(false)
 {
+    if (!hProcess && !(hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, pid)))
+        throw std::runtime_error("Failed to open process");
+}
+
+Memory::~Memory()
+{    
     if (hProcess && isRoot)
         CloseHandle(hProcess);
 }
@@ -841,10 +850,10 @@ std::string Memory::ReadMemory(const Address &address, const Offsets &offsets, c
 template <typename T>
 bool Memory::WriteMemory(const T &data, const Address &address, const Offsets &offsets) const
 {
-    Address finalAddr = GetAddress(address, offsets);
-    if (!finalAddr)
+    const Address& finalAddress = GetAddress(address, offsets);
+    if (!finalAddress)
         return false;
-    return Write<T>(finalAddr, data);
+    return Write(finalAddress, data);
 }
 
 void Memory::Update(const DWORD &pid)
