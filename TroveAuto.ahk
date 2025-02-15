@@ -780,6 +780,9 @@ GetProcessBaseAddress := DynaCall("GetWindowLongPtr", ["ui=tiui"])
 ReadProcessMemory := DynaCall("ReadProcessMemory", ["c=uiuituit"])
 WriteProcessMemory := DynaCall("WriteProcessMemory", ["c=uiuituit"])
 
+FunctionOn := DynaCall("Module\FunctionOn", ["uiaai"])
+FunctionOff := DynaCall("Module\FunctionOff", ["uia"])
+
 ; 核心类
 
 ; Config Class
@@ -1029,17 +1032,6 @@ class Game {
                 ZTarget := ReadMemory(ProcessHandle, WorldPlayerZAddress, "Float")
                 MovePlayerCoordinates(XTarget, YTarget, ZTarget, SkipDist, SkipDelay, AddressCoordXYZ, AddressCamXYZPer, ProcessHandle)
             } until (STOP)
-        }
-        AutoAim() {
-            global STOP
-            result := Buffer(4096, 0)
-            game := GameCreate(this.pid, "Trove.exe")
-            loop {
-                
-            } until (STOP)
-            
-            ToolTip(gamePtr " " gameEntityNum " " StrGet(result,"utf-8"))
-            MsgBox("功能完善中...")
         }
         SpeedUp(Pid, ProcessHandle, AddressCoordXYZ, AddressCoordXYZVel, AddressCamXYZPer, SpeedUpRate, GravityRate, SpeedUpDelay) {
             global STOP
@@ -1303,9 +1295,13 @@ class Game {
                 , config.data["TP"]["Step"], config.data["TP"]["Delay"])))
     }
     AutoAim() {
-        try this.threads["AutoAim"]["STOP"] := true
         if (this.setting["AutoAim"]["On"])
-            this.threads["AutoAim"] := Worker(Format(Game.ScriptAHK, Format('{1}()', "AutoAim")))
+            FunctionOn(this.pid, "AutoAim", Format("{1}|{2}|45|0|50",
+                (this.setting["AutoAim"]["TargetBoss"] ? ".*boss.*," : "")
+                (this.setting["AutoAim"]["TargetPlant"] ? ".*plant.*" : ""),
+                ".*pet.*,.*placeable.*,.*services.*,.*client.*"))
+        else
+            FunctionOff(this.pid, "AutoAim")
     }
     SpeedUp() {
         AddressCoordXYZ := this.setting["Address"]["Player_Coord_X"] "," this.setting["Address"]["Player_Coord_Y"] "," this.setting["Address"]["Player_Coord_Z"]

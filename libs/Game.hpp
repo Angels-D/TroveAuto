@@ -38,7 +38,7 @@ public:
     Object &UpdateOffsets();
     Object &UpdateAddress();
     Object &UpdateData();
-    Object &UpdateData(const uint32_t &maxLen);
+    Object<std::string> &UpdateData(const uint32_t &maxLen);
 
     T data;
     Address address;
@@ -51,20 +51,18 @@ protected:
 
 class Game : public Object<>
 {
-    static std::string moduleName;
-
 public:
+    static std::string moduleName;
     class World : public Object
     {
-        static Offsets offsets;
-        static Signature signature;
 
     public:
+        static Offsets offsets;
+        static Signature signature;
         class NodeInfo : public Object
         {
-            static Offsets offsets;
-
         public:
+            static Offsets offsets;
             struct Data
             {
                 static Offsets baseAddressOffsets;
@@ -84,9 +82,8 @@ public:
 
         class Player : public Object
         {
-            static Offsets offsets;
-
         public:
+            static Offsets offsets;
             struct Data
             {
                 static Offsets nameOffsets;
@@ -105,10 +102,9 @@ public:
 
         class Entity : public Object
         {
+        public:
             static Address key;
             static Offsets offsets;
-
-        public:
             struct Data
             {
                 static Offsets levelOffsets;
@@ -119,7 +115,7 @@ public:
                 static Offsets zOffsets;
                 Object level;
                 Object<std::string> name;
-                Object<bool> isDeath;
+                Object isDeath;
                 Object<float> x, y, z;
             } data;
 
@@ -147,15 +143,13 @@ public:
 
     class Player : public Object
     {
+    public:
         static Offsets offsets;
         static Signature signature;
-
-    public:
         class Camera : public Object
         {
-            static Offsets offsets;
-
         public:
+            static Offsets offsets;
             struct Data
             {
                 static Offsets xPerOffsets;
@@ -174,9 +168,8 @@ public:
         };
         class Coord : public Object
         {
-            static Offsets offsets;
-
         public:
+            static Offsets offsets;
             struct Data
             {
                 static Offsets xOffsets;
@@ -196,9 +189,8 @@ public:
         };
         class Fish : public Object
         {
-            static Offsets offsets;
-
         public:
+            static Offsets offsets;
             struct Data
             {
                 static Offsets waterTakeOffsets;
@@ -220,9 +212,9 @@ public:
         };
         class Bag : public Object
         {
-            static Offsets offset;
-
         public:
+            static Offsets offsets;
+
             Bag(const Object &obj);
             Bag &UpdateAddress();
             Bag &UpdateData();
@@ -268,9 +260,9 @@ public:
 
 std::string Game::moduleName = "Trove.exe";
 Game::Signature Game::World::signature = {10, "55 8B EC 83 7D 08 04 75 10 A1 XX XX XX XX 85 C0 74 07 C6 80 59 01 00 00 01 5D C2 04 00"};
-Memory::Offsets Game::World::offsets = {0x108BDE0};
+Memory::Offsets Game::World::offsets = {0x108BDE0, 0x0};
 Memory::Offsets Game::World::Data::playerCountOffsets = {0xFC, 0x2C};
-Memory::Offsets Game::World::NodeInfo::offsets = {0x0, 0x7C};
+Memory::Offsets Game::World::NodeInfo::offsets = {0x7C};
 Memory::Offsets Game::World::NodeInfo::Data::baseAddressOffsets = {0x0};
 Memory::Offsets Game::World::NodeInfo::Data::stepOffsets = {0x4};
 Memory::Offsets Game::World::NodeInfo::Data::sizeOffsets = {0x8};
@@ -288,28 +280,28 @@ Memory::Offsets Game::World::Player::Data::xOffsets = {0xC4, 0x04, 0x80};
 Memory::Offsets Game::World::Player::Data::yOffsets = {0xC4, 0x04, 0x84};
 Memory::Offsets Game::World::Player::Data::zOffsets = {0xC4, 0x04, 0x88};
 Game::Signature Game::Player::signature = {0x14, "55 8B EC 83 E4 F8 83 EC 08 F3 0F 2A 45 10 56 8B F1 57 8B 3D"};
-Memory::Offsets Game::Player::offsets = {0x108BD70};
-Game::Signature Game::Player::Data::nameSignature = {-0x9,"FF 70 1C FF 70 18 8D 45 B0"};
-Game::Signature Game::Player::Data::itemRSignature = {-0x180,"FE FF FF FF 00 00 00 00 65 CF XX XX 0C 00 00 00 55 CF"};
-Game::Signature Game::Player::Data::itemTSignature = {-0x180,"FE FF FF FF 00 00 00 00 65 CF XX XX 0C 00 00 00 55 CF"};
+Memory::Offsets Game::Player::offsets = {0x108BD70, 0x0};
+Game::Signature Game::Player::Data::nameSignature = {-0x9, "FF 70 1C FF 70 18 8D 45 B0"};
+Game::Signature Game::Player::Data::itemRSignature = {-0x180, "FE FF FF FF 00 00 00 00 65 CF XX XX 0C 00 00 00 55 CF"};
+Game::Signature Game::Player::Data::itemTSignature = {-0x180, "FE FF FF FF 00 00 00 00 65 CF XX XX 0C 00 00 00 55 CF"};
 Memory::Offsets Game::Player::Data::nameOffsets = {0xB0A918, 0x0, 0x10, 0x0};
 Memory::Offsets Game::Player::Data::healthOffsets = {0x0, 0x28, 0x1A4, 0x80};
 Memory::Offsets Game::Player::Data::itemROffsets = {};
 Memory::Offsets Game::Player::Data::itemTOffsets = {};
-Memory::Offsets Game::Player::Camera::offsets = {0x4};
+Memory::Offsets Game::Player::Camera::offsets = {0x4, 0x0};
 Memory::Offsets Game::Player::Camera::Data::xPerOffsets = {0x24, 0x84, 0x0, 0x100};
 Memory::Offsets Game::Player::Camera::Data::yPerOffsets = {0x24, 0x84, 0x0, 0x104};
 Memory::Offsets Game::Player::Camera::Data::zPerOffsets = {0x24, 0x84, 0x0, 0x108};
 Memory::Offsets Game::Player::Camera::Data::vOffsets = {0x2C};
 Memory::Offsets Game::Player::Camera::Data::hOffsets = {0x28};
-Memory::Offsets Game::Player::Coord::offsets = {0xC, 0x28, 0x54, 0x88, 0xAC, 0x4};
+Memory::Offsets Game::Player::Coord::offsets = {0xC, 0x28, 0x54, 0x88, 0xAC, 0x4, 0x0};
 Memory::Offsets Game::Player::Coord::Data::xOffsets = {0x80};
 Memory::Offsets Game::Player::Coord::Data::yOffsets = {0x84};
 Memory::Offsets Game::Player::Coord::Data::zOffsets = {0x88};
 Memory::Offsets Game::Player::Coord::Data::xVelOffsets = {0xB0};
 Memory::Offsets Game::Player::Coord::Data::yVelOffsets = {0xB4};
 Memory::Offsets Game::Player::Coord::Data::zVelOffsets = {0xB8};
-Memory::Offsets Game::Player::Fish::offsets = {0x68};
+Memory::Offsets Game::Player::Fish::offsets = {0x68, 0x0};
 Memory::Offsets Game::Player::Fish::Data::waterTakeOffsets = {0xE4, 0x3C4};
 Memory::Offsets Game::Player::Fish::Data::lavaTakeOffsets = {0xE4, 0x898};
 Memory::Offsets Game::Player::Fish::Data::chocoTakeOffsets = {0xE4, 0x62C};
@@ -318,7 +310,7 @@ Memory::Offsets Game::Player::Fish::Data::waterStatusOffsets = {0xF4, 0xBA0};
 Memory::Offsets Game::Player::Fish::Data::lavaStatusOffsets = {0xF4, 0x938};
 Memory::Offsets Game::Player::Fish::Data::chocoStatusOffsets = {0xF4, 0xE08};
 Memory::Offsets Game::Player::Fish::Data::plasmaStatusOffsets = {0xF4, 0x6CC};
-Memory::Offsets Game::Player::Bag::offset = {};
+Memory::Offsets Game::Player::Bag::offsets = {};
 
 Game *GameCreate(AobScan::DWORD dwPid, const char *gameTitle)
 {
@@ -345,7 +337,7 @@ Object<T>::Object(const DWORD &pid, const Memory::Offsets &offsets, const Signat
 
 template <typename T>
 Object<T>::Object(const Object<> &obj, const Memory::Offsets &offsets, const Signature &signature)
-    : Memory(obj.pid, false),
+    : Memory(obj),
       baseAddress(obj.baseAddress),
       offsets(offsets),
       signature(signature)
@@ -361,7 +353,7 @@ Object<T>::operator T() const
 template <typename T>
 T Object<T>::operator=(const T &data)
 {
-    WriteMemory(data);
+    WriteMemory(data, address);
     return Object::data = data;
 }
 
@@ -410,7 +402,7 @@ Object<T> &Object<T>::UpdateData()
 }
 
 template <typename T>
-Object<T> &Object<T>::UpdateData(const uint32_t &maxLen)
+Object<std::string> &Object<T>::UpdateData(const uint32_t &maxLen)
 {
     data = Read(address, maxLen);
     return *this;
@@ -475,7 +467,7 @@ Game::World::Entity &Game::World::Entity::UpdateAddress()
     Object::UpdateAddress();
     address ^= key;
     data.level.UpdateBaseAddress(address);
-    data.name.UpdateBaseAddress(baseAddress);
+    data.name.UpdateBaseAddress(address);
     data.isDeath.UpdateBaseAddress(address);
     data.x.UpdateBaseAddress(address);
     data.y.UpdateBaseAddress(address);
@@ -552,9 +544,9 @@ Game::World &Game::World::UpdateData()
         if (entity.CheckData())
             data.entitys.emplace_back(entity.UpdateAddress());
     }
-    Object playerCount(address, Data::playerCountOffsets);
+    Object playerCount(*this, Data::playerCountOffsets);
     playerCount.UpdateBaseAddress(address).UpdateData();
-    for (uint32_t i = 0; i < playerCount; i++)
+    for (uint32_t i = 0; i < playerCount.data; i++)
         data.players.emplace_back(Player(*this).UpdateBaseAddress(address).UpdateAddress());
     return *this;
 }
@@ -571,11 +563,22 @@ Game::Player::Camera::Camera(const Object &obj)
 
 Game::Player::Camera &Game::Player::Camera::UpdateAddress()
 {
+    Object::UpdateAddress();
+    data.xPer.UpdateBaseAddress(address);
+    data.yPer.UpdateBaseAddress(address);
+    data.zPer.UpdateBaseAddress(address);
+    data.v.UpdateBaseAddress(address);
+    data.h.UpdateBaseAddress(address);
     return *this;
 }
 
 Game::Player::Camera &Game::Player::Camera::UpdateData()
 {
+    data.xPer.UpdateAddress();
+    data.yPer.UpdateAddress();
+    data.zPer.UpdateAddress();
+    data.v.UpdateAddress();
+    data.h.UpdateAddress();
     return *this;
 }
 
@@ -592,11 +595,24 @@ Game::Player::Coord::Coord(const Object &obj)
 
 Game::Player::Coord &Game::Player::Coord::UpdateAddress()
 {
+    Object::UpdateAddress();
+    data.x.UpdateBaseAddress(address);
+    data.y.UpdateBaseAddress(address);
+    data.z.UpdateBaseAddress(address);
+    data.xVel.UpdateBaseAddress(address);
+    data.yVel.UpdateBaseAddress(address);
+    data.zVel.UpdateBaseAddress(address);
     return *this;
 }
 
 Game::Player::Coord &Game::Player::Coord::UpdateData()
 {
+    data.x.UpdateAddress();
+    data.y.UpdateAddress();
+    data.z.UpdateAddress();
+    data.xVel.UpdateAddress();
+    data.yVel.UpdateAddress();
+    data.zVel.UpdateAddress();
     return *this;
 }
 
@@ -667,10 +683,11 @@ Game::Player::Player(const Object &obj)
             {*this}})
 {
 }
+
 Game::Player &Game::Player::UpdateAddress()
 {
     Object::UpdateAddress();
-    data.name.UpdateBaseAddress(address);
+    data.name.UpdateBaseAddress(baseAddress);
     data.health.UpdateBaseAddress(address);
     data.itemR.UpdateBaseAddress(address);
     data.itemT.UpdateBaseAddress(address);
