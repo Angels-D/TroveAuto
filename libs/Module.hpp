@@ -2,7 +2,7 @@
  *    -> Auther: Angels-D
  *
  * LastChange
- *    -> 2025/02/12 18:56
+ *    -> 2025/02/15 22:40
  *    -> 1.0.0
  *
  * Build
@@ -50,74 +50,75 @@
 namespace Module
 {
     static std::pair<float, float> aimOffset = {1.25, 0.25};
+    static uint32_t bossLevel = 4;
     static std::map<std::string, void *> configMap =
-        {
-            {"Module::aimOffset", &Module::aimOffset},
-            {"Game::moduleName", &Game::moduleName},
-            {"Game::World::signature", &Game::World::signature},
-            {"Game::World::offsets", &Game::World::offsets},
-            {"Game::World::Data::playerCountOffsets", &Game::World::Data::playerCountOffsets},
-            {"Game::World::NodeInfo::offsets", &Game::World::NodeInfo::offsets},
-            {"Game::World::NodeInfo::Data::baseAddressOffsets", &Game::World::NodeInfo::Data::baseAddressOffsets},
-            {"Game::World::NodeInfo::Data::stepOffsets", &Game::World::NodeInfo::Data::stepOffsets},
-            {"Game::World::NodeInfo::Data::sizeOffsets", &Game::World::NodeInfo::Data::sizeOffsets},
-            {"Game::World::Entity::key", &Game::World::Entity::key},
-            {"Game::World::Entity::offsets", &Game::World::Entity::offsets},
-            {"Game::World::Entity::Data::levelOffsets", &Game::World::Entity::Data::levelOffsets},
-            {"Game::World::Entity::Data::nameOffsets", &Game::World::Entity::Data::nameOffsets},
-            {"Game::World::Entity::Data::isDeathOffsets", &Game::World::Entity::Data::isDeathOffsets},
-            {"Game::World::Entity::Data::xOffsets", &Game::World::Entity::Data::xOffsets},
-            {"Game::World::Entity::Data::yOffsets", &Game::World::Entity::Data::yOffsets},
-            {"Game::World::Entity::Data::zOffsets", &Game::World::Entity::Data::zOffsets},
-            {"Game::World::Player::offsets", &Game::World::Player::offsets},
-            {"Game::World::Player::Data::nameOffsets", &Game::World::Player::Data::nameOffsets},
-            {"Game::World::Player::Data::xOffsets", &Game::World::Player::Data::xOffsets},
-            {"Game::World::Player::Data::yOffsets", &Game::World::Player::Data::yOffsets},
-            {"Game::World::Player::Data::zOffsets", &Game::World::Player::Data::zOffsets},
-            {"Game::Player::signature", &Game::Player::signature},
-            {"Game::Player::offsets", &Game::Player::offsets},
-            {"Game::Player::Data::nameSignature", &Game::Player::Data::nameSignature},
-            {"Game::Player::Data::itemRSignature", &Game::Player::Data::itemRSignature},
-            {"Game::Player::Data::itemTSignature", &Game::Player::Data::itemTSignature},
-            {"Game::Player::Data::nameOffsets", &Game::Player::Data::nameOffsets},
-            {"Game::Player::Data::healthOffsets", &Game::Player::Data::healthOffsets},
-            {"Game::Player::Data::itemROffsets", &Game::Player::Data::itemROffsets},
-            {"Game::Player::Data::itemTOffsets", &Game::Player::Data::itemTOffsets},
-            {"Game::Player::Camera::offsets", &Game::Player::Camera::offsets},
-            {"Game::Player::Camera::Data::xPerOffsets", &Game::Player::Camera::Data::xPerOffsets},
-            {"Game::Player::Camera::Data::yPerOffsets", &Game::Player::Camera::Data::yPerOffsets},
-            {"Game::Player::Camera::Data::zPerOffsets", &Game::Player::Camera::Data::zPerOffsets},
-            {"Game::Player::Camera::Data::vOffsets", &Game::Player::Camera::Data::vOffsets},
-            {"Game::Player::Camera::Data::hOffsets", &Game::Player::Camera::Data::hOffsets},
-            {"Game::Player::Coord::offsets", &Game::Player::Coord::offsets},
-            {"Game::Player::Coord::Data::xOffsets", &Game::Player::Coord::Data::xOffsets},
-            {"Game::Player::Coord::Data::yOffsets", &Game::Player::Coord::Data::yOffsets},
-            {"Game::Player::Coord::Data::zOffsets", &Game::Player::Coord::Data::zOffsets},
-            {"Game::Player::Coord::Data::xVelOffsets", &Game::Player::Coord::Data::xVelOffsets},
-            {"Game::Player::Coord::Data::yVelOffsets", &Game::Player::Coord::Data::yVelOffsets},
-            {"Game::Player::Coord::Data::zVelOffsets", &Game::Player::Coord::Data::zVelOffsets},
-            {"Game::Player::Fish::offsets", &Game::Player::Fish::offsets},
-            {"Game::Player::Fish::Data::waterTakeOffsets", &Game::Player::Fish::Data::waterTakeOffsets},
-            {"Game::Player::Fish::Data::lavaTakeOffsets", &Game::Player::Fish::Data::lavaTakeOffsets},
-            {"Game::Player::Fish::Data::chocoTakeOffsets", &Game::Player::Fish::Data::chocoTakeOffsets},
-            {"Game::Player::Fish::Data::plasmaTakeOffsets", &Game::Player::Fish::Data::plasmaTakeOffsets},
-            {"Game::Player::Fish::Data::waterStatusOffsets", &Game::Player::Fish::Data::waterStatusOffsets},
-            {"Game::Player::Fish::Data::lavaStatusOffsets", &Game::Player::Fish::Data::lavaStatusOffsets},
-            {"Game::Player::Fish::Data::chocoStatusOffsets", &Game::Player::Fish::Data::chocoStatusOffsets},
-            {"Game::Player::Fish::Data::plasmaStatusOffsets", &Game::Player::Fish::Data::plasmaStatusOffsets},
-            {"Game::Player::Bag::offset", &Game::Player::Bag::offsets}};
+        {{"Module::bossLevel", &Module::bossLevel},
+         {"Module::aimOffset", &Module::aimOffset},
+         {"Game::moduleName", &Game::moduleName},
+         {"Game::World::signature", &Game::World::signature},
+         {"Game::World::offsets", &Game::World::offsets},
+         {"Game::World::Data::playerCountOffsets", &Game::World::Data::playerCountOffsets},
+         {"Game::World::NodeInfo::offsets", &Game::World::NodeInfo::offsets},
+         {"Game::World::NodeInfo::Data::baseAddressOffsets", &Game::World::NodeInfo::Data::baseAddressOffsets},
+         {"Game::World::NodeInfo::Data::stepOffsets", &Game::World::NodeInfo::Data::stepOffsets},
+         {"Game::World::NodeInfo::Data::sizeOffsets", &Game::World::NodeInfo::Data::sizeOffsets},
+         {"Game::World::Entity::key", &Game::World::Entity::key},
+         {"Game::World::Entity::offsets", &Game::World::Entity::offsets},
+         {"Game::World::Entity::Data::levelOffsets", &Game::World::Entity::Data::levelOffsets},
+         {"Game::World::Entity::Data::nameOffsets", &Game::World::Entity::Data::nameOffsets},
+         {"Game::World::Entity::Data::isDeathOffsets", &Game::World::Entity::Data::isDeathOffsets},
+         {"Game::World::Entity::Data::xOffsets", &Game::World::Entity::Data::xOffsets},
+         {"Game::World::Entity::Data::yOffsets", &Game::World::Entity::Data::yOffsets},
+         {"Game::World::Entity::Data::zOffsets", &Game::World::Entity::Data::zOffsets},
+         {"Game::World::Player::offsets", &Game::World::Player::offsets},
+         {"Game::World::Player::Data::nameOffsets", &Game::World::Player::Data::nameOffsets},
+         {"Game::World::Player::Data::xOffsets", &Game::World::Player::Data::xOffsets},
+         {"Game::World::Player::Data::yOffsets", &Game::World::Player::Data::yOffsets},
+         {"Game::World::Player::Data::zOffsets", &Game::World::Player::Data::zOffsets},
+         {"Game::Player::signature", &Game::Player::signature},
+         {"Game::Player::offsets", &Game::Player::offsets},
+         {"Game::Player::Data::nameSignature", &Game::Player::Data::nameSignature},
+         {"Game::Player::Data::itemRSignature", &Game::Player::Data::itemRSignature},
+         {"Game::Player::Data::itemTSignature", &Game::Player::Data::itemTSignature},
+         {"Game::Player::Data::nameOffsets", &Game::Player::Data::nameOffsets},
+         {"Game::Player::Data::healthOffsets", &Game::Player::Data::healthOffsets},
+         {"Game::Player::Data::itemROffsets", &Game::Player::Data::itemROffsets},
+         {"Game::Player::Data::itemTOffsets", &Game::Player::Data::itemTOffsets},
+         {"Game::Player::Camera::offsets", &Game::Player::Camera::offsets},
+         {"Game::Player::Camera::Data::xPerOffsets", &Game::Player::Camera::Data::xPerOffsets},
+         {"Game::Player::Camera::Data::yPerOffsets", &Game::Player::Camera::Data::yPerOffsets},
+         {"Game::Player::Camera::Data::zPerOffsets", &Game::Player::Camera::Data::zPerOffsets},
+         {"Game::Player::Camera::Data::vOffsets", &Game::Player::Camera::Data::vOffsets},
+         {"Game::Player::Camera::Data::hOffsets", &Game::Player::Camera::Data::hOffsets},
+         {"Game::Player::Coord::offsets", &Game::Player::Coord::offsets},
+         {"Game::Player::Coord::Data::xOffsets", &Game::Player::Coord::Data::xOffsets},
+         {"Game::Player::Coord::Data::yOffsets", &Game::Player::Coord::Data::yOffsets},
+         {"Game::Player::Coord::Data::zOffsets", &Game::Player::Coord::Data::zOffsets},
+         {"Game::Player::Coord::Data::xVelOffsets", &Game::Player::Coord::Data::xVelOffsets},
+         {"Game::Player::Coord::Data::yVelOffsets", &Game::Player::Coord::Data::yVelOffsets},
+         {"Game::Player::Coord::Data::zVelOffsets", &Game::Player::Coord::Data::zVelOffsets},
+         {"Game::Player::Fish::offsets", &Game::Player::Fish::offsets},
+         {"Game::Player::Fish::Data::waterTakeOffsets", &Game::Player::Fish::Data::waterTakeOffsets},
+         {"Game::Player::Fish::Data::lavaTakeOffsets", &Game::Player::Fish::Data::lavaTakeOffsets},
+         {"Game::Player::Fish::Data::chocoTakeOffsets", &Game::Player::Fish::Data::chocoTakeOffsets},
+         {"Game::Player::Fish::Data::plasmaTakeOffsets", &Game::Player::Fish::Data::plasmaTakeOffsets},
+         {"Game::Player::Fish::Data::waterStatusOffsets", &Game::Player::Fish::Data::waterStatusOffsets},
+         {"Game::Player::Fish::Data::lavaStatusOffsets", &Game::Player::Fish::Data::lavaStatusOffsets},
+         {"Game::Player::Fish::Data::chocoStatusOffsets", &Game::Player::Fish::Data::chocoStatusOffsets},
+         {"Game::Player::Fish::Data::plasmaStatusOffsets", &Game::Player::Fish::Data::plasmaStatusOffsets},
+         {"Game::Player::Bag::offset", &Game::Player::Bag::offsets}};
 
     static std::map<std::pair<int, std::string>, std::atomic<bool>> funtionRunMap;
 
-    void AutoAim(const Memory::DWORD &pid, const std::vector<std::string> &targets, const std::vector<std::string> &noTargets = {}, const uint32_t &aimRange = 45, const uint32_t &showRange = 0, const uint32_t &delay = 50);
-    Game::World::Entity *FindTarget(Game &game, const std::vector<std::string> &targets, const std::vector<std::string> &noTargets = {}, const uint32_t &aimRange = 45, const uint32_t &showRange = 0);
+    void AutoAim(const Memory::DWORD &pid, const bool &targetBoss = true, const bool &targetPlant = false, const std::vector<std::string> &targets = {}, const std::vector<std::string> &noTargets = {}, const uint32_t &aimRange = 45, const uint32_t &showRange = 0, const uint32_t &delay = 50);
+    Game::World::Entity *FindTarget(Game &game, const bool &targetBoss = true, const bool &targetPlant = false, const std::vector<std::string> &targets = {}, const std::vector<std::string> &noTargets = {}, const uint32_t &aimRange = 45, const uint32_t &showRange = 0);
 };
 
 extern "C"
 {
-    DLL_EXPORT void UpdateConfig(const std::string &key, const std::string &value);
-    DLL_EXPORT void FunctionOn(const Memory::DWORD &pid, const std::string &funtion, const std::string &argv = "", const bool &waiting = false);
-    DLL_EXPORT void FunctionOff(const Memory::DWORD &pid, const std::string &funtion);
+    DLL_EXPORT void UpdateConfig(const char *key, const char *value);
+    DLL_EXPORT void FunctionOn(const Memory::DWORD pid, const char *funtion, const char *argv = "", const bool waiting = false);
+    DLL_EXPORT void FunctionOff(const Memory::DWORD pid, const char *funtion);
 }
 
 // Module.cpp
@@ -169,7 +170,7 @@ std::pair<float, float> CalculateAngles(const float &ax, const float &ay, const 
 
 namespace Module
 {
-    void AutoAim(const Memory::DWORD &pid, const std::vector<std::string> &targets, const std::vector<std::string> &noTargets, const uint32_t &aimRange, const uint32_t &showRange, const uint32_t &delay)
+    void AutoAim(const Memory::DWORD &pid, const bool &targetBoss, const bool &targetPlant, const std::vector<std::string> &targets, const std::vector<std::string> &noTargets, const uint32_t &aimRange, const uint32_t &showRange, const uint32_t &delay)
     {
         Game game(pid);
         game.UpdateAddress();
@@ -189,7 +190,7 @@ namespace Module
         {
             UpdateAddress();
             std::this_thread::sleep_for(std::chrono::milliseconds(delay));
-            target = FindTarget(game, targets, noTargets, aimRange, showRange);
+            target = FindTarget(game, targetBoss, targetPlant, targets, noTargets, aimRange, showRange);
             if (!target)
                 continue;
             while (funtionRunMap[{pid, "AutoAim"}].load() &&
@@ -217,7 +218,7 @@ namespace Module
         }
     }
 
-    Game::World::Entity *FindTarget(Game &game, const std::vector<std::string> &targets, const std::vector<std::string> &noTargets, const uint32_t &aimRange, const uint32_t &showRange)
+    Game::World::Entity *FindTarget(Game &game, const bool &targetBoss, const bool &targetPlant, const std::vector<std::string> &targets, const std::vector<std::string> &noTargets, const uint32_t &aimRange, const uint32_t &showRange)
     {
         auto &entitys = game.data.world.UpdateAddress().UpdateData().data.entitys;
         std::vector<std::regex> targetRegexs, noTargetRegexs;
@@ -239,9 +240,24 @@ namespace Module
                     entity.data.z.UpdateData().data) > aimRange)
                 continue;
             auto name = entity.data.name.UpdateData(64).data;
+            auto isNoTarget = false;
             for (auto noTargetRegex : noTargetRegexs)
                 if (std::regex_match(name, noTargetRegex))
-                    return &entity;
+                {
+                    isNoTarget = true;
+                    break;
+                }
+            if (isNoTarget)
+                continue;
+            if (targetBoss &&
+                ((entity.data.level.UpdateData().data >= bossLevel &&
+                  std::regex_match(name, std::regex(".*npc.*"))) ||
+                 std::regex_match(name, std::regex(".*boss.*"))))
+                return &entity;
+            if (targetPlant &&
+                std::regex_match(name, std::regex(".*plant.*")) &&
+                !std::regex_match(name, std::regex(".*npc.*")))
+                return &entity;
             for (auto targetRegex : targetRegexs)
                 if (std::regex_match(name, targetRegex))
                     return &entity;
@@ -250,46 +266,52 @@ namespace Module
     }
 }
 
-void UpdateConfig(const std::string &key, const std::string &value)
+void UpdateConfig(const char *key, const char *value)
 {
-    if (Module::configMap.find(key) == Module::configMap.end())
+    const std::string _key = key;
+    const std::string _value = value;
+    if (Module::configMap.find(_key) == Module::configMap.end())
         return;
     size_t index = 0;
-    if (key == "Module::aimOffset")
-        Module::aimOffset = {std::stof(value, &index), std::stof(value.substr(index + 1), &index)};
-    else if (key.find("Offsets") != std::string::npos)
+    if (_key == "Module::bossLevel")
+        Module::bossLevel = std::stoul(_value);
+    else if (_key == "Module::aimOffset")
+        Module::aimOffset = {std::stof(_value, &index), std::stof(_value.substr(index + 1), &index)};
+    else if (_key.find("Offsets") != std::string::npos)
     {
-        Memory::Offsets *offsets = (Memory::Offsets *)Module::configMap[key];
+        Memory::Offsets *offsets = (Memory::Offsets *)Module::configMap[_key];
         offsets->clear();
         size_t pos = 0;
         do
         {
-            offsets->push_back(std::stol(value.substr(pos), &index, 16));
+            offsets->push_back(std::stol(_value.substr(pos), &index, 16));
             pos += index + 1;
-        } while (pos < value.length());
+        } while (pos < _value.length());
     }
     else
     {
-        Object<>::Signature *signature = (Object<>::Signature *)Module::configMap[key];
-        signature->first = std::stol(value, &index, 16);
-        signature->second = value.substr(index + 1);
+        Object<>::Signature *signature = (Object<>::Signature *)Module::configMap[_key];
+        signature->first = std::stol(_value, &index, 16);
+        signature->second = _value.substr(index + 1);
     }
 }
 
-void FunctionOn(const Memory::DWORD &pid, const std::string &funtion, const std::string &argv, const bool &waiting)
+void FunctionOn(const Memory::DWORD pid, const char *funtion, const char *argv, const bool waiting)
 {
     std::thread *thread = nullptr;
     std::vector<std::string> _argv = split(argv, '|');
     // string,string,...|string,string,...|number|number|number
     Module::funtionRunMap[{pid, funtion}].store(true);
-    if (funtion == "AutoAim")
+    if (std::strcmp(funtion, "AutoAim") == 0)
         thread = new std::thread(
             Module::AutoAim, pid,
-            split(_argv[0], ','),
-            split(_argv[1], ','),
-            std::stoul(_argv[2]),
-            std::stoul(_argv[3]),
-            std::stoul(_argv[4]));
+            std::stoul(_argv[0]),
+            std::stoul(_argv[1]),
+            split(_argv[2], ','),
+            split(_argv[3], ','),
+            std::stoul(_argv[4]),
+            std::stoul(_argv[5]),
+            std::stoul(_argv[6]));
 
     if (thread && waiting)
     {
@@ -298,7 +320,7 @@ void FunctionOn(const Memory::DWORD &pid, const std::string &funtion, const std:
     }
 }
 
-void FunctionOff(const Memory::DWORD &pid, const std::string &funtion)
+void FunctionOff(const Memory::DWORD pid, const char *funtion)
 {
     Module::funtionRunMap[{pid, funtion}].store(false);
 }

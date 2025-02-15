@@ -2,8 +2,8 @@
  *    -> Auther: Angels-D
  *
  * LastChange
- *    -> 2025/02/12 18:56
- *    -> 1.0.0
+ *    -> 2025/02/15 22:40
+ *    -> 0.0.0
  *
  * Build
  *    -> g++ -shared -static -Os -Wall -o WindowInput.dll -x c++ .\libs\WindowInput.hpp

@@ -1,6 +1,6 @@
 ;@Ahk2Exe-UpdateManifest 2
 ;@Ahk2Exe-SetName TroveAuto
-;@Ahk2Exe-SetProductVersion 2.3.5
+;@Ahk2Exe-SetProductVersion 2.4.0
 ;@Ahk2Exe-SetCopyright GPL-3.0 license
 ;@Ahk2Exe-SetLanguage Chinese_PRC
 ;@Ahk2Exe-SetMainIcon TroveAuto.ico
@@ -15,8 +15,8 @@ config := _Config(
         "Global", Map(
             "GameTitle", "Trove.exe",
             "GamePath", "",
-            "ConfigVersion", "20250208152000",
-            "AppVersion", "20250208152000",
+            "ConfigVersion", "20250215224000",
+            "AppVersion", "20250215224000",
             "Source", "https://github.com/Angels-D/TroveAuto/",
             "Mirror", "https://github.moeyy.xyz/",
         ),
@@ -34,7 +34,7 @@ config := _Config(
             "Delay", "100",
         ),
         "AutoAim", Map(
-            "Delay", "500",
+            "Delay", "50",
         ),
         "Key", Map(
             "Press", "e",
@@ -205,7 +205,7 @@ MainGui.Add("Edit", "ys w55 vAutoAim_AimRange")
 MainGui.Add("Text", "ys", "显示范围:")
 MainGui.Add("Edit", "ys w55 vAutoAim_ShowRange")
 MainGui.Add("CheckBox", "xs w90 Section vAutoAim_TargetBoss", "锁定Boss")
-MainGui.Add("CheckBox", "ys w90 vAutoAim_TargetNomal", "锁定小怪")
+MainGui.Add("CheckBox", "ys w90 vAutoAim_TargetNormal", "锁定小怪")
 MainGui.Add("CheckBox", "ys w90 vAutoAim_TargetPlant", "锁定植物")
 MainGui.Add("GroupBox", "xs-10 ys+60 w310 r3 Section", "崩溃自启          实验性功能")
 MainGui.Add("CheckBox", "xp+80 yp vAutoRestart")
@@ -330,7 +330,7 @@ MainGui["AutoAim"].OnEvent("Click", AutoAim)
 MainGui["SpeedUp"].OnEvent("Click", SpeedUp)
 MainGui["AutoRestart"].OnEvent("Click", AutoRestart)
 for key in ["FollowPlayer_Name", "SpeedUp_SpeedUpRate", "SpeedUp_GravityRate", "AutoAim_AimRange"
-    , "AutoAim_ShowRange", "AutoAim_TargetBoss", "AutoAim_TargetNomal", "AutoAim_TargetPlant"
+    , "AutoAim_ShowRange", "AutoAim_TargetBoss", "AutoAim_TargetNormal", "AutoAim_TargetPlant"
     , "AutoRestart_Account", "AutoRestart_Password"] {
     try MainGui[key].OnEvent("Change", SomeUiSetChangeEvent)
     catch
@@ -425,7 +425,7 @@ UIReset() {
         , "AutoBtn_Key_Click_LEFT", "AutoBtn_Key_Click_RIGHT", "AutoBtn_NoTop", "HotKeyBox"
         , "Interval", "SelectAction", "StartBtn", "FollowPlayer", "FollowPlayer_Name"
         , "SpeedUp", "SpeedUp_SpeedUpRate", "SpeedUp_GravityRate", "AutoAim", "AutoAim_AimRange"
-        , "AutoAim_ShowRange", "AutoAim_TargetBoss", "AutoAim_TargetNomal", "AutoAim_TargetPlant"
+        , "AutoAim_ShowRange", "AutoAim_TargetBoss", "AutoAim_TargetNormal", "AutoAim_TargetPlant"
         , "AutoRestart", "AutoRestart_Account", "AutoRestart_Password"]
         MainGui[key].Enabled := false
     for key in ["Animation", "Attack", "Breakblocks", "ByPass", "ClipCam", "Dismount"
@@ -433,7 +433,7 @@ UIReset() {
         , "AutoBtn_Key_Click_LEFT", "AutoBtn_Key_Click_RIGHT", "AutoBtn_NoTop"
         , "Interval", "SelectAction", "FollowPlayer", "FollowPlayer_Name"
         , "SpeedUp", "SpeedUp_SpeedUpRate", "SpeedUp_GravityRate", "AutoAim", "AutoAim_AimRange"
-        , "AutoAim_ShowRange", "AutoAim_TargetBoss", "AutoAim_TargetNomal", "AutoAim_TargetPlant"
+        , "AutoAim_ShowRange", "AutoAim_TargetBoss", "AutoAim_TargetNormal", "AutoAim_TargetPlant"
         , "AutoRestart", "AutoRestart_Account", "AutoRestart_Password"]
         try MainGui[key].Value := ""
         catch
@@ -731,13 +731,12 @@ FollowPlayer(GuiCtrlObj, Info) {
     theGame.FollowPlayer()
 }
 AutoAim(GuiCtrlObj, Info) {
-    if GuiCtrlObj.Value and not MainGui["AutoAim_AimRange"].Value or not MainGui["AutoAim_ShowRange"].Value
-        or ( not MainGui["AutoAim_TargetBoss"].Value and not MainGui["AutoAim_TargetNomal"].Value and not MainGui["AutoAim_TargetPlant"].Value) {
-        MsgBox("配置或选项不能为空")
+    if GuiCtrlObj.Value and not MainGui["AutoAim_AimRange"].Value or not MainGui["AutoAim_ShowRange"].Value {
+        MsgBox("配置不能为空")
         GuiCtrlObj.Value := false
         return
     }
-    for key in ["AimRange", "ShowRange", "TargetBoss", "TargetNomal", "TargetPlant"]
+    for key in ["AimRange", "ShowRange", "TargetBoss", "TargetNormal", "TargetPlant"]
         MainGui["AutoAim_" key].Enabled := !GuiCtrlObj.Value
     theGame := Game.Lists[MainGui["SelectGame"].Text]
     theGame.setting["AutoAim"]["On"] := GuiCtrlObj.Value
@@ -1103,7 +1102,7 @@ class Game {
             "AimRange", "45",
             "ShowRange", "200",
             "TargetBoss", true,
-            "TargetNomal", false,
+            "TargetNormal", false,
             "TargetPlant", false,
         ),
         "Features", Map(),
@@ -1296,10 +1295,15 @@ class Game {
     }
     AutoAim() {
         if (this.setting["AutoAim"]["On"])
-            FunctionOn(this.pid, "AutoAim", Format("{1}|{2}|45|0|50",
-                (this.setting["AutoAim"]["TargetBoss"] ? ".*boss.*," : "")
-                (this.setting["AutoAim"]["TargetPlant"] ? ".*plant.*" : ""),
-                ".*pet.*,.*placeable.*,.*services.*,.*client.*"))
+            FunctionOn(this.pid, "AutoAim", Format("{1}|{2}|{3}|{4}|{5}|{6}|{7}"
+                , this.setting["AutoAim"]["TargetBoss"]
+                , this.setting["AutoAim"]["TargetPlant"]
+                , ".*chest_quest_standard.*," 
+                (this.setting["AutoAim"]["TargetNormal"] ? ".*npc.*," : "")
+                , ".*pet.*,.*placeable.*,.*services.*,.*client.*"
+                , this.setting["AutoAim"]["AimRange"]
+                , this.setting["AutoAim"]["ShowRange"]
+                , config.data["AutoAim"]["Delay"]), false)
         else
             FunctionOff(this.pid, "AutoAim")
     }
