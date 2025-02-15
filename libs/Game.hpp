@@ -5,7 +5,7 @@
  *    -> Author: Angels-D
  *
  * LastChange
- *    -> 2025/02/12 18:56
+ *    -> 2025/02/15 22:40
  *    -> 1.0.0
  *
  * Build
@@ -458,7 +458,13 @@ Game::World::Entity::Entity(const Object &obj)
 }
 
 Game::World::Entity::Entity(const Entity &obj)
-    : Object(obj, obj.offsets), data(obj.data)
+    : Object(obj, offsets),
+      data({{*this, Data::levelOffsets},
+            {*this, Data::nameOffsets},
+            {*this, Data::isDeathOffsets},
+            {*this, Data::xOffsets},
+            {*this, Data::yOffsets},
+            {*this, Data::zOffsets}})
 {
 }
 
