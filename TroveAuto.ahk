@@ -1172,9 +1172,11 @@ class Game {
                                     theGame.AutoBtn()
                             }
                         }
-                        for key in ["Animation", "Attack", "Breakblocks", "ByPass", "ClipCam", "Dismount"
-                            , "Health", "LockCam", "Map", "Mining", "MiningGeode", "NoClip", "UseLog", "Zoom"]
-                            theGame.Features(key, theGame.setting["Features"][key])
+                        for key, value in theGame.setting["Features"]
+                            theGame.Features(key, value)
+                        theGame.AutoAim()
+                        theGame.FollowPlayer()
+                        theGame.SpeedUp()
                     }
                     else Game.Lists[theGame.name] := theGame
                     MainGui["SelectGame"].Add([theGame.name])
@@ -1302,7 +1304,7 @@ class Game {
             FunctionOn(this.pid, "AutoAim", Format("{1}|{2}|{3}|{4}|{5}|{6}|{7}"
                 , this.setting["AutoAim"]["TargetBoss"]
                 , this.setting["AutoAim"]["TargetPlant"]
-                , ".*chest_quest_standard.*,"
+                , ".*chest_quest_standard.*,.*chest_quest_recipe.*"
                 (this.setting["AutoAim"]["TargetNormal"] ? ".*npc.*," : "")
                 , ".*pet.*,.*placeable.*,.*services.*,.*client.*,.*abilities.*"
                 , this.setting["AutoAim"]["AimRange"]
@@ -1324,6 +1326,8 @@ class Game {
     StopAll(keepStatus := false) {
         running := this.running
         this.running := false
+        for key in this.setting["Features"]
+            this.Features(key, false)
         for key in this.threads
             try this.threads[key]["STOP"] := true
         CloseHandle(this.ProcessHandle)
