@@ -213,6 +213,12 @@ namespace Module
                     target->data.z.data);
                 game.data.player.data.camera.data.v = vh.first;
                 game.data.player.data.camera.data.h = vh.second;
+                if (target->data.health.UpdateData().data < 1)
+                {
+                    const auto &entitys = game.data.world.UpdateAddress().UpdateData().data.entitys;
+                    if (std::find(entitys.begin(), entitys.end(), *target) == entitys.end())
+                        break;
+                }
                 std::this_thread::sleep_for(std::chrono::milliseconds(delay));
             }
         }

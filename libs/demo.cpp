@@ -25,7 +25,7 @@ void FindTarget()
         UpdateAddress();
         target = Module::FindTarget(
             game, true, false,
-            {".*chest_quest_standard.*"},
+            {".*chest_quest_standard.*", ".*chest_quest_recipe.*"},
             {".*pet.*",
              ".*placeable.*",
              ".*services.*",
@@ -54,9 +54,17 @@ void FindTarget()
                target->data.isDeath.UpdateData().data)
         {
             UpdateAddress();
-            printf("%.3f\r", target->data.health.UpdateData().data);
+            auto health = target->data.health.UpdateData().data;
+            printf("\r%.3f ", health);
+            if (health < 1)
+            {
+                const auto &entitys = game.data.world.UpdateAddress().UpdateData().data.entitys;
+                if (std::find(entitys.begin(), entitys.end(), *target) == entitys.end())
+                    break;
+            }
             std::this_thread::sleep_for(std::chrono::milliseconds(50));
         }
+        printf("Done\n");
     }
 }
 
