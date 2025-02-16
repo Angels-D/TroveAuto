@@ -25,7 +25,7 @@ void FindTarget()
         UpdateAddress();
         target = Module::FindTarget(
             game, true, false,
-            {".*chest_quest_standard.*", ".*quest_assault_trigger.*"},
+            {".*chest_quest_standard.*"},
             {".*pet.*",
              ".*placeable.*",
              ".*services.*",
@@ -34,7 +34,10 @@ void FindTarget()
              ".*portal.*"},
             45, 0);
         if (!target)
+        {
+            printf("Finding ...\r");
             continue;
+        }
         printf("--> %02d %+07.1f %+07.1f %+07.1f %s\n",
                target->data.level.UpdateData().data % 100,
                target->data.x.UpdateData().data,
@@ -51,10 +54,7 @@ void FindTarget()
                target->data.isDeath.UpdateData().data)
         {
             UpdateAddress();
-            printf("[%08X] ", target->address);
-            for (int i = 0; i < 10; i++)
-                printf("%08X ", game.ReadMemory<uint32_t>(target->address, {0x58, 0xE0, i * 4}));
-            printf("\r");
+            printf("%.3f\r", target->data.health.UpdateData().data);
             std::this_thread::sleep_for(std::chrono::milliseconds(50));
         }
     }

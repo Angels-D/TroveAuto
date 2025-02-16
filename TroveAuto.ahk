@@ -612,6 +612,7 @@ TP(GuiCtrlObj, Info) {
                     }
                 if not IsSet(theGame)
                     theGame := Game(WingetID("A"))
+                theGame.GetPlayerAddress()
                 coord := theGame.GetPlayerCoordinates()
                 xadd := MainGui["DistanceTP"].Value * coord[4]
                 yadd := MainGui["DistanceTP"].Value * coord[5]
@@ -638,6 +639,7 @@ TPtoXYZ(GuiCtrlObj, Info) {
                 break
         }
     }
+    theGame.GetPlayerAddress()
     theGame.MovePlayerCoordinates(MainGui["TPtoX"].Value, MainGui["TPtoY"].Value, MainGui["TPtoZ"].Value, MainGui["StepTP"].Value, MainGui["DelayTP"].Value)
 }
 Interval(GuiCtrlObj, Info) {
@@ -1249,6 +1251,8 @@ class Game {
                 config.data["Address"]["Fish"], StrSplit(config.data["Address_Offset"]["Fish_" "State_" key], ",")
             )
         }
+    }
+    GetPlayerAddress() {
         for key in ["Player_Health", "Player_Coord_X", "Player_Coord_Y", "Player_Coord_Z"
             , "Player_Coord_XVel", "Player_Coord_YVel", "Player_Coord_ZVel"
             , "Player_Cam_XPer", "Player_Cam_YPer", "Player_Cam_ZPer"] {
@@ -1308,6 +1312,7 @@ class Game {
             FunctionOff(this.pid, "AutoAim")
     }
     SpeedUp() {
+        this.GetPlayerAddress()
         AddressCoordXYZ := this.setting["Address"]["Player_Coord_X"] "," this.setting["Address"]["Player_Coord_Y"] "," this.setting["Address"]["Player_Coord_Z"]
         AddressCoordXYZVel := this.setting["Address"]["Player_Coord_XVel"] "," this.setting["Address"]["Player_Coord_YVel"] "," this.setting["Address"]["Player_Coord_ZVel"]
         AddressCamXYZPer := this.setting["Address"]["Player_Cam_XPer"] "," this.setting["Address"]["Player_Cam_YPer"] "," this.setting["Address"]["Player_Cam_ZPer"]
