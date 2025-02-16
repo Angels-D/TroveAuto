@@ -110,12 +110,14 @@ public:
                 static Offsets levelOffsets;
                 static Offsets nameOffsets;
                 static Offsets isDeathOffsets;
+                static Offsets healthOffsets;
                 static Offsets xOffsets;
                 static Offsets yOffsets;
                 static Offsets zOffsets;
                 Object level;
                 Object<std::string> name;
                 Object isDeath;
+                Object<double> health;
                 Object<float> x, y, z;
             } data;
 
@@ -231,7 +233,7 @@ public:
             static Signature itemRSignature;
             static Signature itemTSignature;
             Object<std::string> name;
-            Object<float> health;
+            Object<double> health;
             Object itemR, itemT;
             Bag bag;
             Camera camera;
@@ -271,6 +273,7 @@ Memory::Offsets Game::World::Entity::offsets = {0x10, 0xC4, 0x0, 0x0};
 Memory::Offsets Game::World::Entity::Data::levelOffsets = {0x58, 0xC4, 0x54, 0x120};
 Memory::Offsets Game::World::Entity::Data::nameOffsets = {0x58, 0x64, 0x0};
 Memory::Offsets Game::World::Entity::Data::isDeathOffsets = {0x58, 0x0};
+Memory::Offsets Game::World::Entity::Data::healthOffsets = {0x58, 0xC4, 0x84, 0x80};
 Memory::Offsets Game::World::Entity::Data::xOffsets = {0x58, 0xC4, 0x4, 0x80};
 Memory::Offsets Game::World::Entity::Data::yOffsets = {0x58, 0xC4, 0x4, 0x84};
 Memory::Offsets Game::World::Entity::Data::zOffsets = {0x58, 0xC4, 0x4, 0x88};
@@ -451,6 +454,7 @@ Game::World::Entity::Entity(const Object &obj)
       data({{*this, Data::levelOffsets},
             {*this, Data::nameOffsets},
             {*this, Data::isDeathOffsets},
+            {*this, Data::healthOffsets},
             {*this, Data::xOffsets},
             {*this, Data::yOffsets},
             {*this, Data::zOffsets}})
@@ -462,6 +466,7 @@ Game::World::Entity::Entity(const Entity &obj)
       data({{*this, Data::levelOffsets},
             {*this, Data::nameOffsets},
             {*this, Data::isDeathOffsets},
+            {*this, Data::healthOffsets},
             {*this, Data::xOffsets},
             {*this, Data::yOffsets},
             {*this, Data::zOffsets}})
@@ -475,6 +480,7 @@ Game::World::Entity &Game::World::Entity::UpdateAddress()
     data.level.UpdateBaseAddress(address);
     data.name.UpdateBaseAddress(address);
     data.isDeath.UpdateBaseAddress(address);
+    data.health.UpdateBaseAddress(address);
     data.x.UpdateBaseAddress(address);
     data.y.UpdateBaseAddress(address);
     data.z.UpdateBaseAddress(address);
@@ -486,6 +492,7 @@ Game::World::Entity &Game::World::Entity::UpdateData()
     data.level.UpdateAddress();
     data.name.UpdateAddress();
     data.isDeath.UpdateAddress();
+    data.health.UpdateAddress();
     data.x.UpdateAddress();
     data.y.UpdateAddress();
     data.z.UpdateAddress();

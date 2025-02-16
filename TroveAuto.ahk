@@ -1,6 +1,6 @@
 ;@Ahk2Exe-UpdateManifest 2
 ;@Ahk2Exe-SetName TroveAuto
-;@Ahk2Exe-SetProductVersion 2.4.0
+;@Ahk2Exe-SetProductVersion 2.4.1
 ;@Ahk2Exe-SetCopyright GPL-3.0 license
 ;@Ahk2Exe-SetLanguage Chinese_PRC
 ;@Ahk2Exe-SetMainIcon TroveAuto.ico
@@ -15,8 +15,8 @@ config := _Config(
         "Global", Map(
             "GameTitle", "Trove.exe",
             "GamePath", "",
-            "ConfigVersion", "20250215224000",
-            "AppVersion", "20250215224000",
+            "ConfigVersion", "20250216141500",
+            "AppVersion", "20250216141500",
             "Source", "https://github.com/Angels-D/TroveAuto/",
             "Mirror", "https://github.moeyy.xyz/",
         ),
@@ -606,7 +606,7 @@ TP(GuiCtrlObj, Info) {
         Hotkey(MainGui["HotKeyTP"].Value, (*) {
             if (WinGetProcessName("A") == config.data["Global"]["GameTitle"]) {
                 for key, value in Game.Lists
-                    if (value.pid == WingetID("A")) {
+                    if (value.id == WingetID("A")) {
                         theGame := value
                         break
                     }
@@ -731,7 +731,7 @@ FollowPlayer(GuiCtrlObj, Info) {
     theGame.FollowPlayer()
 }
 AutoAim(GuiCtrlObj, Info) {
-    if GuiCtrlObj.Value and not MainGui["AutoAim_AimRange"].Value or not MainGui["AutoAim_ShowRange"].Value {
+    if GuiCtrlObj.Value and MainGui["AutoAim_AimRange"].Value == "" or MainGui["AutoAim_ShowRange"].Value == "" {
         MsgBox("配置不能为空")
         GuiCtrlObj.Value := false
         return
@@ -743,7 +743,7 @@ AutoAim(GuiCtrlObj, Info) {
     theGame.AutoAim()
 }
 SpeedUp(GuiCtrlObj, Info) {
-    if GuiCtrlObj.Value and not MainGui["SpeedUp_SpeedUpRate"].Value or not MainGui["SpeedUp_GravityRate"].Value {
+    if GuiCtrlObj.Value and MainGui["SpeedUp_SpeedUpRate"].Value == "" or MainGui["SpeedUp_GravityRate"].Value == "" {
         MsgBox("配置不能为空")
         GuiCtrlObj.Value := false
         return
@@ -868,9 +868,9 @@ class Game {
             WriteProcessMemory(ProcessHandle, Maddress, Mvalue, Mvalue.Size)
         }
         GetAddressOffset(Maddress, Offset, ProcessHandle) {
-            Address := ReadMemory(ProcessHandle, Maddress)
+            Address := ReadMemory(ProcessHandle, Maddress, "UInt")
             loop Offset.Length - 1
-                Address := ReadMemory(ProcessHandle, Address + Offset[A_Index])
+                Address := ReadMemory(ProcessHandle, Address + Offset[A_Index], "UInt")
             return Address + Offset[-1]
         }
         GetPlayerCoordinates(AddressCoordXYZ, AddressCamXYZPer, ProcessHandle) {
@@ -1298,9 +1298,9 @@ class Game {
             FunctionOn(this.pid, "AutoAim", Format("{1}|{2}|{3}|{4}|{5}|{6}|{7}"
                 , this.setting["AutoAim"]["TargetBoss"]
                 , this.setting["AutoAim"]["TargetPlant"]
-                , ".*chest_quest_standard.*," 
+                , ".*chest_quest_standard.*,"
                 (this.setting["AutoAim"]["TargetNormal"] ? ".*npc.*," : "")
-                , ".*pet.*,.*placeable.*,.*services.*,.*client.*"
+                , ".*pet.*,.*placeable.*,.*services.*,.*client.*,.*abilities.*"
                 , this.setting["AutoAim"]["AimRange"]
                 , this.setting["AutoAim"]["ShowRange"]
                 , config.data["AutoAim"]["Delay"]), false)
@@ -1402,9 +1402,9 @@ class Game {
             this.Features("NoClip", false)
     }
     GetAddressOffset(Maddress, Offset) {
-        Address := this.ReadMemory(Maddress)
+        Address := this.ReadMemory(Maddress, "UInt")
         loop Offset.Length - 1
-            Address := this.ReadMemory(Address + Offset[A_Index])
+            Address := this.ReadMemory(Address + Offset[A_Index], "UInt")
         return Address + Offset[-1]
     }
     ReadMemory(Maddress, Readtype := "Int", Len := 4, isNumber := True) {
