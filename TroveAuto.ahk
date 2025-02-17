@@ -893,7 +893,9 @@ class Game {
             global STOP
             coord := GetPlayerCoordinates(AddressCoordXYZ, AddressCamXYZPer, ProcessHandle)
             dist := sqrt((Xtarget - coord[1]) ** 2 + (Ytarget - coord[2]) ** 2 + (Ztarget - coord[3]) ** 2)
+            timeout := 0
             loop {
+                timeout := timeout + 1
                 if (dist <= SkipDist)
                     SetPlayerCoordinates(Xtarget, Ytarget, Ztarget, AddressCoordXYZ, ProcessHandle)
                 else
@@ -901,7 +903,7 @@ class Game {
                 Sleep(SkipDelay)
                 coord := GetPlayerCoordinates(AddressCoordXYZ, AddressCamXYZPer, ProcessHandle)
                 dist := sqrt((Xtarget - coord[1]) ** 2 + (Ytarget - coord[2]) ** 2 + (Ztarget - coord[3]) ** 2)
-            } until (dist <= SkipDist or STOP)
+            } until (dist <= SkipDist or timeout > 10000/SkipDelay or STOP)
         }
         NatualPress(npbtn, pid, holdtime := 0) {
             ; SetKeyDelay(,Random(66, 122) + holdtime)
@@ -1287,6 +1289,7 @@ class Game {
                 , "AutoFish", this.pid, config.data["Key"]["Fish"], this.setting["Fish"]["interval"], Take_Address, State_Address, this.ProcessHandle)))
     }
     FollowPlayer() {
+        this.GetPlayerAddress()
         AddressCoordXYZ := this.setting["Address"]["Player_Coord_X"] "," this.setting["Address"]["Player_Coord_Y"] "," this.setting["Address"]["Player_Coord_Z"]
         AddressCamXYZPer := this.setting["Address"]["Player_Cam_XPer"] "," this.setting["Address"]["Player_Cam_YPer"] "," this.setting["Address"]["Player_Cam_ZPer"]
         try this.threads["FollowPlayer"]["STOP"] := true
@@ -1356,6 +1359,7 @@ class Game {
             case "Attack":
                 SetTimer(this.FeaturesAttackFunc, Value ? config.data["AttackTime"]["Value"] : 0)
             case "Health":
+                this.GetPlayerAddress()
                 SetTimer(this.FeaturesHealthFunc, Value ? config.data["HealthTime"]["Value"] : 0)
                 return
             case "UseLog":
