@@ -40,19 +40,35 @@
 
 #define DLL_EXPORT __declspec(dllexport)
 
-#include <thread>
 #include <map>
 #include "WindowInput.hpp"
 #include "Game.hpp"
 
-// Mdoule.h
+// Module.h
 
 namespace Module
 {
     static std::pair<float, float> aimOffset = {1.25, 0.25};
     static uint32_t bossLevel = 4;
+    static uint32_t tpStep = 4;
+
+    static Memory::Offsets hideAnimationOffsets = {0x741A25};
+    static Memory::Offsets autoAttackOffsets = {0x8CDFB8};
+    static Memory::Offsets breakBlocks = {0xAE8F73};
+    static Memory::Offsets byPass = {0x161BC6};
+    static Memory::Offsets clipCam = {0x9C95BA};
+    static Memory::Offsets disMount = {0x3333EE};
+    static Memory::Offsets lockCam = {0x880985};
+    static Memory::Offsets unLockMapLimit = {0xA6536D};
+    static Memory::Offsets quickMining = {0x852B28};
+    static Memory::Offsets quickMiningGeode = {0xAA9F47};
+    static Memory::Offsets noGravity = {};
+    static Memory::Offsets noClip = {0x63B895};
+    static Memory::Offsets unlockZoomLimit = {0x9C7536};
+
     static std::map<std::string, void *> configMap =
         {{"Module::bossLevel", &Module::bossLevel},
+         {"Module::tpStep", &Module::tpStep},
          {"Module::aimOffset", &Module::aimOffset},
          {"Game::moduleName", &Game::moduleName},
          {"Game::World::signature", &Game::World::signature},
@@ -67,6 +83,7 @@ namespace Module
          {"Game::World::Entity::Data::levelOffsets", &Game::World::Entity::Data::levelOffsets},
          {"Game::World::Entity::Data::nameOffsets", &Game::World::Entity::Data::nameOffsets},
          {"Game::World::Entity::Data::isDeathOffsets", &Game::World::Entity::Data::isDeathOffsets},
+         {"Game::World::Entity::Data::healthOffsets", &Game::World::Entity::Data::healthOffsets},
          {"Game::World::Entity::Data::xOffsets", &Game::World::Entity::Data::xOffsets},
          {"Game::World::Entity::Data::yOffsets", &Game::World::Entity::Data::yOffsets},
          {"Game::World::Entity::Data::zOffsets", &Game::World::Entity::Data::zOffsets},
@@ -110,7 +127,27 @@ namespace Module
 
     static std::map<std::pair<int, std::string>, std::atomic<bool>> funtionRunMap;
 
+    void SetHideAnimation(const Memory::DWORD &pid, const bool& on = true);
+    void SetAutoAttack(const Memory::DWORD &pid, const bool& on = true);
+    void SetBreakBlocks(const Memory::DWORD &pid, const bool& on = true);
+    void SetByPass(const Memory::DWORD &pid, const bool& on = true);
+    void SetClipCam(const Memory::DWORD &pid, const bool& on = true);
+    void SetDisMount(const Memory::DWORD &pid, const bool& on = true);
+    void SetAutoRespawn(const Memory::DWORD &pid, const bool& on = true);
+    void SetLockCam(const Memory::DWORD &pid, const bool& on = true);
+    void SetUnLockMapLimit(const Memory::DWORD &pid, const bool& on = true);
+    void SetQuickMining(const Memory::DWORD &pid, const bool& on = true);
+    void SetQuickMiningGeode(const Memory::DWORD &pid, const bool& on = true);
+    void SetNoGravity(const Memory::DWORD &pid, const bool& on = true);
+    void SetNoClip(const Memory::DWORD &pid, const bool& on = true);
+    void SetUnlockZoomLimit(const Memory::DWORD &pid, const bool& on = true);
+
     void AutoAim(const Memory::DWORD &pid, const bool &targetBoss = true, const bool &targetPlant = false, const std::vector<std::string> &targets = {}, const std::vector<std::string> &noTargets = {}, const uint32_t &aimRange = 45, const uint32_t &showRange = 0, const uint32_t &delay = 50);
+    
+    void Tp2Forward(const Memory::DWORD &pid, const float &tpRange = tpStep);
+    void Tp2Target(const Memory::DWORD &pid, const float &targetX, const float &targetY, const float &targetZ);
+    void FollowTarget(const Memory::DWORD &pid, const std::vector<std::string> &targets, const std::vector<std::string> &noTargets = {}, const uint32_t &delay = 50);
+    
     Game::World::Entity *FindTarget(Game &game, const bool &targetBoss = true, const bool &targetPlant = false, const std::vector<std::string> &targets = {}, const std::vector<std::string> &noTargets = {}, const uint32_t &aimRange = 45, const uint32_t &showRange = 0);
 };
 
@@ -124,6 +161,7 @@ extern "C"
 // Module.cpp
 
 #include <chrono>
+#include <thread>
 
 float CalculateDistance(const float &ax, const float &ay, const float &az, const float &bx, const float &by, const float &bz)
 {
