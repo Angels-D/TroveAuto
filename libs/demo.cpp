@@ -68,8 +68,15 @@ void FindTarget()
     }
 }
 
-int main()
+void FindAobScan(const char *signature){
+    Game game(Memory::GetProcessPid("Trove.exe")[0]);
+    for(auto i:game.AobScan(signature,true))
+        printf("%08X\n",i);
+}
+
+int main(int argc, char *argv[])
 {
     FindTarget();
+    // FindAobScan(argv[1]);
     return 0;
 }
