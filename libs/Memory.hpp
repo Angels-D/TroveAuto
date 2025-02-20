@@ -6,7 +6,7 @@
  *    -> Src: https://github.com/wanttobeno/x64_AOB_Search
  *
  * LastChange
- *    -> 2025/02/15 22:40
+ *    -> 2025/02/20 11:50
  *    -> 1.0.0
  *
  * Build
@@ -27,7 +27,7 @@
 
 #define DLL_EXPORT __declspec(dllexport)
 
-#define RESERVED_ADDRESS_X32 0x00327000
+#define RESERVED_ADDRESS_X32 0x00001000
 #define SYSTEM_MEMORY_ADDRESS_X32 0x70000000
 #define SYSTEM_MEMORY_ADDRESS_X32_MAX 0x7FFFFFFF
 
@@ -204,7 +204,7 @@ AobScan::DWORD AobScanFindSig(
     AobScan::DWORD _size = (std::min)(v.size(), size / sizeof(AobScan::DWORD));
     for (size_t i = 0; i < _size; i++)
         result[i] = v[i];
-    return size;
+    return _size;
 }
 
 Memory *MemoryCreate(AobScan::DWORD dwPid)
