@@ -41,35 +41,107 @@
 #define DLL_EXPORT __declspec(dllexport)
 
 #include <map>
-#include "WindowInput.hpp"
+// #include "WindowInput.hpp"
 #include "Game.hpp"
 
 // Module.h
 
 namespace Module
 {
-    static std::pair<float, float> aimOffset = {1.25, 0.25};
+    struct Feature
+    {
+        Memory::Offsets offsets;
+        std::vector<BYTE> dataOn, dataOff;
+        Game::Signature signature;
+    };
+
     static uint32_t bossLevel = 4;
     static uint32_t tpStep = 4;
+    static std::pair<float, float> aimOffset = {1.25, 0.25};
 
-    static Memory::Offsets hideAnimationOffsets = {0x741A25};
-    static Memory::Offsets autoAttackOffsets = {0x8CDFB8};
-    static Memory::Offsets breakBlocks = {0xAE8F73};
-    static Memory::Offsets byPass = {0x161BC6};
-    static Memory::Offsets clipCam = {0x9C95BA};
-    static Memory::Offsets disMount = {0x3333EE};
-    static Memory::Offsets lockCam = {0x880985};
-    static Memory::Offsets unLockMapLimit = {0xA6536D};
-    static Memory::Offsets quickMining = {0x852B28};
-    static Memory::Offsets quickMiningGeode = {0xAA9F47};
-    static Memory::Offsets noGravity = {};
-    static Memory::Offsets noClip = {0x63B895};
-    static Memory::Offsets unlockZoomLimit = {0x9C7536};
+    static Feature hideAnimation = {
+        {0x741BC5},
+        {0x4C},
+        {0x44},
+        {0x3, "F3 0F 11 44 24 24 F3 0F 58 84 24 80 00 00 00 50 F3 0F 11 43 24 E8 XX XX XX XX 8D 44 24 34 50"}};
+    static Feature autoAttack = {
+        {0x9B14A8},
+        {0xF0},
+        {0xF1},
+        {0x1, "DF F1 DD D8 72 1F"}};
+    static Feature breakBlocks = {
+        {0xB237E3},
+        {0x01},
+        {0x00},
+        {0x3, "80 7F XX 00 0F 84 XX XX XX XX 8B 4B 08 E8 XX XX XX XX FF 75 0C 8B 4D 10 8B F0 FF 75 08 8B 45 14 83 EC 0C 8B 3E 8B D4 6A 01 89 0A 8B CE 89 42 04 8B 45 18"}};
+    static Feature byPass = {
+        {0x187A16},
+        {0x47},
+        {0x67},
+        {0x1, "DC 67 68 C6"}};
+    static Feature clipCam = {
+        {0xADA36A},
+        {0x90, 0x90, 0x90},
+        {0x0F, 0x29, 0x01},
+        {0x0, "0F 29 01 C7 41 34 00 00 00 00 0F"}};
+    static Feature disMount = {
+        {0x375E2E},
+        {0xEB},
+        {0x74},
+        {0x0, "74 XX 8B 07 8B CF 6A 00 6A 00 FF 50"}};
+    static Feature lockCam = {
+        {0x80AF25},
+        {0xEB},
+        {0x74},
+        {0x0, "74 05 8B 01 FF 50 0C 8B E5"}};
+    static Feature locakMapLimit = {
+        {0x89E15D},
+        {0xEB},
+        {0x77},
+        {0x0, "77 XX B8 XX XX XX XX F3 0F 10 08 F3 0F 11 89 XX XX XX XX 8B 89"}};
+    static Feature quickMining = {
+        {0xB08D98},
+        {0xF0},
+        {0xF1},
+        {0x1, "DF F1 DD D8 72 61"}};
+    static Feature quickMiningGeode = {
+        {0x90E6F7},
+        {0xF0},
+        {0xF1},
+        {0x1, "DF F1 DD D8 72 35 8D"}};
+    static Feature noGravity = {
+        {0xA03168, 0xC},
+        {0x42, 0xC8},
+        {0x0, 0x0},
+        {-0x4, "F3 0F 11 45 FC D9 45 FC 8B E5 5D C3 D9 05 XX XX XX XX 8B E5 5D C3 D9 05 XX XX XX XX 8B E5 5D C3"}};
+    static Feature noClip = {
+        {0x635A25},
+        {0xEB},
+        {0x74},
+        {0x0, "74 31 FF 73 14 8B 47 04 2B 07"}};
+    static Feature unlockZoomLimit = {
+        {0xAD82E6},
+        {0x57},
+        {0x5F},
+        {0x3, "F3 0F 11 5F 2C"}};
 
     static std::map<std::string, void *> configMap =
         {{"Module::bossLevel", &Module::bossLevel},
          {"Module::tpStep", &Module::tpStep},
          {"Module::aimOffset", &Module::aimOffset},
+         {"Module::hideAnimation", &Module::hideAnimation},
+         {"Module::autoAttack", &Module::autoAttack},
+         {"Module::breakBlocks", &Module::breakBlocks},
+         {"Module::byPass", &Module::byPass},
+         {"Module::clipCam", &Module::clipCam},
+         {"Module::disMount", &Module::disMount},
+         {"Module::lockCam", &Module::lockCam},
+         {"Module::locakMapLimit", &Module::locakMapLimit},
+         {"Module::quickMining", &Module::quickMining},
+         {"Module::quickMiningGeode", &Module::quickMiningGeode},
+         {"Module::noGravity", &Module::noGravity},
+         {"Module::noClip", &Module::noClip},
+         {"Module::unlockZoomLimit", &Module::unlockZoomLimit},
          {"Game::moduleName", &Game::moduleName},
          {"Game::World::signature", &Game::World::signature},
          {"Game::World::offsets", &Game::World::offsets},
@@ -78,7 +150,6 @@ namespace Module
          {"Game::World::NodeInfo::Data::baseAddressOffsets", &Game::World::NodeInfo::Data::baseAddressOffsets},
          {"Game::World::NodeInfo::Data::stepOffsets", &Game::World::NodeInfo::Data::stepOffsets},
          {"Game::World::NodeInfo::Data::sizeOffsets", &Game::World::NodeInfo::Data::sizeOffsets},
-         {"Game::World::Entity::key", &Game::World::Entity::key},
          {"Game::World::Entity::offsets", &Game::World::Entity::offsets},
          {"Game::World::Entity::Data::levelOffsets", &Game::World::Entity::Data::levelOffsets},
          {"Game::World::Entity::Data::nameOffsets", &Game::World::Entity::Data::nameOffsets},
@@ -114,6 +185,7 @@ namespace Module
          {"Game::Player::Coord::Data::xVelOffsets", &Game::Player::Coord::Data::xVelOffsets},
          {"Game::Player::Coord::Data::yVelOffsets", &Game::Player::Coord::Data::yVelOffsets},
          {"Game::Player::Coord::Data::zVelOffsets", &Game::Player::Coord::Data::zVelOffsets},
+         {"Game::Player::Fish::signature", &Game::Player::Fish::signature},
          {"Game::Player::Fish::offsets", &Game::Player::Fish::offsets},
          {"Game::Player::Fish::Data::waterTakeOffsets", &Game::Player::Fish::Data::waterTakeOffsets},
          {"Game::Player::Fish::Data::lavaTakeOffsets", &Game::Player::Fish::Data::lavaTakeOffsets},
@@ -127,28 +199,20 @@ namespace Module
 
     static std::map<std::pair<int, std::string>, std::atomic<bool>> funtionRunMap;
 
-    void SetHideAnimation(const Memory::DWORD &pid, const bool& on = true);
-    void SetAutoAttack(const Memory::DWORD &pid, const bool& on = true);
-    void SetBreakBlocks(const Memory::DWORD &pid, const bool& on = true);
-    void SetByPass(const Memory::DWORD &pid, const bool& on = true);
-    void SetClipCam(const Memory::DWORD &pid, const bool& on = true);
-    void SetDisMount(const Memory::DWORD &pid, const bool& on = true);
-    void SetAutoRespawn(const Memory::DWORD &pid, const bool& on = true);
-    void SetLockCam(const Memory::DWORD &pid, const bool& on = true);
-    void SetUnLockMapLimit(const Memory::DWORD &pid, const bool& on = true);
-    void SetQuickMining(const Memory::DWORD &pid, const bool& on = true);
-    void SetQuickMiningGeode(const Memory::DWORD &pid, const bool& on = true);
-    void SetNoGravity(const Memory::DWORD &pid, const bool& on = true);
-    void SetNoClip(const Memory::DWORD &pid, const bool& on = true);
-    void SetUnlockZoomLimit(const Memory::DWORD &pid, const bool& on = true);
+    void SetFeature(const Feature &feature, const Memory::DWORD &pid, const bool &on = true);
+    void SetAutoAttack(const Memory::DWORD &pid, const uint32_t &keep, const uint32_t &delay = 50);
+    void SetAutoRespawn(const Memory::DWORD &pid, const uint32_t &delay = 50);
 
     void AutoAim(const Memory::DWORD &pid, const bool &targetBoss = true, const bool &targetPlant = false, const std::vector<std::string> &targets = {}, const std::vector<std::string> &noTargets = {}, const uint32_t &aimRange = 45, const uint32_t &showRange = 0, const uint32_t &delay = 50);
-    
-    void Tp2Forward(const Memory::DWORD &pid, const float &tpRange = tpStep);
-    void Tp2Target(const Memory::DWORD &pid, const float &targetX, const float &targetY, const float &targetZ);
+    void SpeedUp(const Memory::DWORD &pid, const float &speed = 50, const uint32_t &delay = 50, const std::vector<std::string> &hotKey = {"W", "A", "S", "D", "Space", "Shift"});
+
+    void Tp2Forward(const Memory::DWORD &pid, const float &tpRange = tpStep, const uint32_t &delay = 50);
+    float Tp2Target(const Memory::DWORD &pid, const float &targetX, const float &targetY, const float &targetZ, const uint32_t &delay = 50, const uint32_t &tryAgainMax = 10);
     void FollowTarget(const Memory::DWORD &pid, const std::vector<std::string> &targets, const std::vector<std::string> &noTargets = {}, const uint32_t &delay = 50);
-    
+
+    Game::World::Player *FindPlayer(Game &game, const std::vector<std::string> &targets);
     Game::World::Entity *FindTarget(Game &game, const bool &targetBoss = true, const bool &targetPlant = false, const std::vector<std::string> &targets = {}, const std::vector<std::string> &noTargets = {}, const uint32_t &aimRange = 45, const uint32_t &showRange = 0);
+
 };
 
 extern "C"
@@ -162,6 +226,7 @@ extern "C"
 
 #include <chrono>
 #include <thread>
+#include <cmath>
 
 float CalculateDistance(const float &ax, const float &ay, const float &az, const float &bx, const float &by, const float &bz)
 {
@@ -208,12 +273,45 @@ std::pair<float, float> CalculateAngles(const float &ax, const float &ay, const 
 
 namespace Module
 {
-    void AutoAim(const Memory::DWORD &pid, const bool &targetBoss, const bool &targetPlant, const std::vector<std::string> &targets, const std::vector<std::string> &noTargets, const uint32_t &aimRange, const uint32_t &showRange, const uint32_t &delay)
+    void SetFeature(const Feature &feature, const Memory::DWORD &pid, const bool &on)
     {
         Game game(pid);
         game.UpdateAddress();
+        const Memory::Address address = game.GetAddress(game.baseAddress, feature.offsets);
+        for (size_t i = 0; i < feature.dataOn.size(); i++)
+            game.WriteMemory<BYTE>(on ? feature.dataOn[i] : feature.dataOff[i],
+                                   address + i * sizeof(BYTE));
+    }
+
+    void SetAutoAttack(const Memory::DWORD &pid, const uint32_t &keep, const uint32_t &delay)
+    {
+        while (funtionRunMap[{pid, "AutoAttack"}].load())
+        {
+            SetFeature(autoAttack, pid, true);
+            std::this_thread::sleep_for(std::chrono::milliseconds(keep));
+            SetFeature(autoAttack, pid, false);
+            std::this_thread::sleep_for(std::chrono::milliseconds(delay));
+        }
+    }
+
+    void SetAutoRespawn(const Memory::DWORD &pid, const uint32_t &delay)
+    {
+        Game game(pid);
+        game.UpdateAddress().data.player.UpdateAddress();
+        while (funtionRunMap[{pid, "AutoAim"}].load() &&
+               game.data.player.data.health.UpdateAddress().UpdateData().data == 0)
+        {
+            // 未完工
+            // 复活: 模拟按键 E
+            std::this_thread::sleep_for(std::chrono::milliseconds(delay));
+        }
+    }
+
+    void AutoAim(const Memory::DWORD &pid, const bool &targetBoss, const bool &targetPlant, const std::vector<std::string> &targets, const std::vector<std::string> &noTargets, const uint32_t &aimRange, const uint32_t &showRange, const uint32_t &delay)
+    {
+        Game game(pid);
+        game.UpdateAddress().data.player.UpdateAddress();
         Game::World::Entity *target = nullptr;
-        game.data.player.UpdateAddress();
         auto UpdateAddress = [&game]()
         {
             game.data.player.data.coord.UpdateAddress();
@@ -260,6 +358,160 @@ namespace Module
                 std::this_thread::sleep_for(std::chrono::milliseconds(delay));
             }
         }
+    }
+
+    void SpeedUp(const Memory::DWORD &pid, const float &speed, const uint32_t &delay, const std::vector<std::string> &hotKey)
+    {
+        Game game(pid);
+        game.UpdateAddress().data.player.UpdateAddress();
+        float xVel = 0, yVel = 0, zVel = 0;
+        float xPer = 0, zPer = 0;
+        float hrzMagnitude = 0, xMagnitude = 0, zMagnitude = 0;
+        while (funtionRunMap[{pid, "SpeedUp"}].load())
+        {
+            game.data.player.data.coord.UpdateAddress();
+            game.data.player.data.camera.UpdateAddress();
+            xVel = yVel = zVel = 0;
+            xPer = game.data.player.data.camera.data.xPer.UpdateAddress().UpdateData().data;
+            zPer = game.data.player.data.camera.data.zPer.UpdateAddress().UpdateData().data;
+            hrzMagnitude = std::sqrt(xPer * xPer + zPer * zPer);
+            xMagnitude = xPer / hrzMagnitude;
+            zMagnitude = zPer / hrzMagnitude;
+            // 未完工, 按键触发
+            // if()
+            // {
+            //     xVel += xMagnitude * speed;
+            //     zVel += zMagnitude * speed;
+            // }
+            // if()
+            // {
+            //     xVel += zMagnitude * speed;
+            //     zVel -= xMagnitude * speed;
+            // }
+            // if()
+            // {
+            //     xVel -= xMagnitude * speed;
+            //     zVel -= zMagnitude * speed;
+            // }
+            // if()
+            // {
+            //     xVel -= zMagnitude * speed;
+            //     zVel += xMagnitude * speed;
+            // }
+            // if()
+            //     yVel += speed;
+            // if()
+            //     yVel -= speed;
+            game.data.player.data.coord.data.xVel.UpdateAddress() = xVel;
+            game.data.player.data.coord.data.yVel.UpdateAddress() = yVel;
+            game.data.player.data.coord.data.zVel.UpdateAddress() = zVel;
+            std::this_thread::sleep_for(std::chrono::milliseconds(delay));
+        }
+    }
+
+    void Tp2Forward(const Memory::DWORD &pid, const float &tpRange, const uint32_t &delay)
+    {
+        Game game(pid);
+        game.UpdateAddress().data.player.UpdateAddress();
+        game.data.player.data.coord.UpdateAddress();
+        game.data.player.data.camera.UpdateAddress();
+        Tp2Target(
+            pid,
+            game.data.player.data.coord.data.x.UpdateAddress().UpdateData().data +
+                game.data.player.data.camera.data.xPer.UpdateAddress().UpdateData().data * tpRange,
+            game.data.player.data.coord.data.y.UpdateAddress().UpdateData().data +
+                game.data.player.data.camera.data.yPer.UpdateAddress().UpdateData().data * tpRange,
+            game.data.player.data.coord.data.z.UpdateAddress().UpdateData().data +
+                game.data.player.data.camera.data.zPer.UpdateAddress().UpdateData().data * tpRange,
+            delay);
+    }
+
+    float Tp2Target(const Memory::DWORD &pid, const float &targetX, const float &targetY, const float &targetZ, const uint32_t &delay, const uint32_t &tryAgainMax)
+    {
+        Game game(pid);
+        game.UpdateAddress().data.player.UpdateAddress();
+        uint32_t tryAgain = 0;
+        float dist = 0, lastDist = 0, x = 0, y = 0, z = 0;
+        if (tryAgainMax)
+            SetFeature(byPass, pid, true);
+        do
+        {
+            game.data.player.data.coord.UpdateAddress();
+            x = game.data.player.data.coord.data.x.UpdateAddress().UpdateData().data;
+            y = game.data.player.data.coord.data.y.UpdateAddress().UpdateData().data;
+            z = game.data.player.data.coord.data.z.UpdateAddress().UpdateData().data;
+            dist = CalculateDistance(x, y, z, targetX, targetY, targetZ);
+            tryAgain += dist >= lastDist || dist <= tpStep;
+            game.data.player.data.coord.data.x = (dist > tpStep ? x + (targetX - x) / dist * tpStep : targetX);
+            game.data.player.data.coord.data.y = (dist > tpStep ? y + (targetY - y) / dist * tpStep : targetY);
+            game.data.player.data.coord.data.z = (dist > tpStep ? z + (targetZ - z) / dist * tpStep : targetZ);
+            lastDist = dist;
+            std::this_thread::sleep_for(std::chrono::milliseconds(delay));
+        } while (tryAgain < tryAgainMax && dist > tpStep);
+        if (tryAgainMax)
+            SetFeature(byPass, pid, false);
+        return dist;
+    }
+
+    void FollowTarget(const Memory::DWORD &pid, const std::vector<std::string> &targets, const std::vector<std::string> &noTargets, const uint32_t &delay)
+    {
+        Game game(pid);
+        Game::World::Player *player = nullptr;
+        Game::World::Entity *target = nullptr;
+        float targetX = 0, targetY = 0, targetZ = 0;
+        game.UpdateAddress().data.player.UpdateAddress();
+        auto UpdateAddress = [&game]()
+        {
+            game.data.player.data.coord.UpdateAddress();
+            game.data.player.data.coord.data.x.UpdateAddress();
+            game.data.player.data.coord.data.y.UpdateAddress();
+            game.data.player.data.coord.data.z.UpdateAddress();
+        };
+        while (funtionRunMap[{pid, "FollowTarget"}].load())
+        {
+            UpdateAddress();
+            player = nullptr;
+            target = nullptr;
+            player = FindPlayer(game, targets);
+            if (!player)
+                target = FindTarget(game, false, false, targets, noTargets, 9999, 0);
+            SetFeature(byPass, pid, true);
+            while ((player || target) && funtionRunMap[{pid, "FollowTarget"}].load())
+            {
+                UpdateAddress();
+                targetX = player ? player->data.x.UpdateData().data : target->data.x.UpdateData().data;
+                targetY = player ? player->data.y.UpdateData().data : target->data.y.UpdateData().data;
+                targetZ = player ? player->data.z.UpdateData().data : target->data.z.UpdateData().data;
+                if (Tp2Target(pid, targetX, targetY, targetZ, delay, 0) < tpStep)
+                    break;
+                if (player && (player = FindPlayer(game, targets)))
+                    continue;
+                if (target && target->data.health.UpdateData().data < 1)
+                {
+                    const auto &entitys = game.data.world.UpdateAddress().UpdateData().data.entitys;
+                    if (std::find(entitys.begin(), entitys.end(), *target) == entitys.end())
+                        break;
+                }
+            }
+            SetFeature(byPass, pid, false);
+            std::this_thread::sleep_for(std::chrono::milliseconds(delay));
+        }
+    }
+
+    Game::World::Player *FindPlayer(Game &game, const std::vector<std::string> &targets)
+    {
+        auto &players = game.data.world.UpdateAddress().UpdateData().data.players;
+        std::vector<std::regex> targetRegexs;
+        for (auto target : targets)
+            targetRegexs.emplace_back(target);
+        for (auto &player : players)
+        {
+            auto name = player.UpdateAddress().data.name.UpdateAddress().UpdateData(64).data;
+            for (auto targetRegex : targetRegexs)
+                if (std::regex_match(name, targetRegex))
+                    return &player;
+        }
+        return nullptr;
     }
 
     Game::World::Entity *FindTarget(Game &game, const bool &targetBoss, const bool &targetPlant, const std::vector<std::string> &targets, const std::vector<std::string> &noTargets, const uint32_t &aimRange, const uint32_t &showRange)
@@ -344,7 +596,6 @@ void FunctionOn(const Memory::DWORD pid, const char *funtion, const char *argv, 
 {
     std::thread *thread = nullptr;
     std::vector<std::string> _argv = split(argv, '|');
-    // string,string,...|string,string,...|number|number|number
     Module::funtionRunMap[{pid, funtion}].store(true);
     if (std::strcmp(funtion, "AutoAim") == 0)
         thread = new std::thread(
@@ -356,7 +607,59 @@ void FunctionOn(const Memory::DWORD pid, const char *funtion, const char *argv, 
             std::stoul(_argv[4]),
             std::stoul(_argv[5]),
             std::stoul(_argv[6]));
-
+    else if (std::strcmp(funtion, "SpeedUp") == 0)
+        thread = new std::thread(
+            Module::SpeedUp, pid,
+            std::stof(_argv[0]),
+            std::stoul(_argv[1]),
+            split(_argv[2], ','));
+    else if (std::strcmp(funtion, "Tp2Forward") == 0)
+        thread = new std::thread(
+            Module::Tp2Forward, pid,
+            std::stof(_argv[0]),
+            std::stoul(_argv[1]));
+    else if (std::strcmp(funtion, "Tp2Target") == 0)
+        thread = new std::thread(
+            Module::Tp2Target, pid,
+            std::stof(_argv[0]),
+            std::stof(_argv[1]),
+            std::stof(_argv[2]),
+            std::stoul(_argv[3]),
+            std::stoul(_argv[4]));
+    else if (std::strcmp(funtion, "FollowTarget") == 0)
+        thread = new std::thread(
+            Module::FollowTarget, pid,
+            split(_argv[0], ','),
+            split(_argv[1], ','),
+            std::stoul(_argv[2]));
+    else if (std::strcmp(funtion, "SetAutoAttack") == 0)
+        thread = new std::thread(Module::SetAutoAttack, pid, std::stoul(_argv[0]), std::stoul(_argv[1]));
+    else if (std::strcmp(funtion, "SetAutoRespawn") == 0)
+        thread = new std::thread(Module::SetAutoRespawn, pid, std::stoul(_argv[0]));
+    else if (std::strcmp(funtion, "SetHideAnimation") == 0)
+        thread = new std::thread(Module::SetFeature, Module::hideAnimation, pid, std::stoul(_argv[0]));
+    else if (std::strcmp(funtion, "SetBreakBlocks") == 0)
+        thread = new std::thread(Module::SetFeature, Module::breakBlocks, pid, std::stoul(_argv[0]));
+    else if (std::strcmp(funtion, "SetByPass") == 0)
+        thread = new std::thread(Module::SetFeature, Module::byPass, pid, std::stoul(_argv[0]));
+    else if (std::strcmp(funtion, "SetClipCam") == 0)
+        thread = new std::thread(Module::SetFeature, Module::clipCam, pid, std::stoul(_argv[0]));
+    else if (std::strcmp(funtion, "SetDisMount") == 0)
+        thread = new std::thread(Module::SetFeature, Module::disMount, pid, std::stoul(_argv[0]));
+    else if (std::strcmp(funtion, "SetLockCam") == 0)
+        thread = new std::thread(Module::SetFeature, Module::lockCam, pid, std::stoul(_argv[0]));
+    else if (std::strcmp(funtion, "SetLocakMapLimit") == 0)
+        thread = new std::thread(Module::SetFeature, Module::locakMapLimit, pid, std::stoul(_argv[0]));
+    else if (std::strcmp(funtion, "SetQuickMining") == 0)
+        thread = new std::thread(Module::SetFeature, Module::quickMining, pid, std::stoul(_argv[0]));
+    else if (std::strcmp(funtion, "SetQuickMiningGeode") == 0)
+        thread = new std::thread(Module::SetFeature, Module::quickMiningGeode, pid, std::stoul(_argv[0]));
+    else if (std::strcmp(funtion, "SetNoGravity") == 0)
+        thread = new std::thread(Module::SetFeature, Module::noGravity, pid, std::stoul(_argv[0]));
+    else if (std::strcmp(funtion, "SetNoClip") == 0)
+        thread = new std::thread(Module::SetFeature, Module::noClip, pid, std::stoul(_argv[0]));
+    else if (std::strcmp(funtion, "SetUnlockZoomLimit") == 0)
+        thread = new std::thread(Module::SetFeature, Module::unlockZoomLimit, pid, std::stoul(_argv[0]));
     if (thread && waiting)
     {
         thread->join();

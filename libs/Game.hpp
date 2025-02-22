@@ -46,7 +46,7 @@ public:
 
 protected:
     Offsets offsets;
-    const Signature signature;
+    Signature signature;
 };
 
 class Game : public Object<>
@@ -95,7 +95,7 @@ public:
             } data;
 
         public:
-            Player(const Object &obj);
+            Player(const Object &obj, const int &index);
             Player &UpdateAddress();
             Player &UpdateData();
         };
@@ -123,7 +123,6 @@ public:
 
         public:
             Entity(const Object &obj);
-            Entity(const Entity &obj);
             Entity &UpdateAddress();
             Entity &UpdateData();
             bool CheckData();
@@ -193,6 +192,7 @@ public:
         {
         public:
             static Offsets offsets;
+            static Signature signature;
             struct Data
             {
                 static Offsets waterTakeOffsets;
@@ -262,14 +262,13 @@ public:
 
 std::string Game::moduleName = "Trove.exe";
 Game::Signature Game::World::signature = {10, "55 8B EC 83 7D 08 04 75 10 A1 XX XX XX XX 85 C0 74 07 C6 80 59 01 00 00 01 5D C2 04 00"};
-Memory::Offsets Game::World::offsets = {0x108BDE0, 0x0};
+Memory::Offsets Game::World::offsets = {0x108BEEC, 0x0};
 Memory::Offsets Game::World::Data::playerCountOffsets = {0xFC, 0x2C};
 Memory::Offsets Game::World::NodeInfo::offsets = {0x7C};
 Memory::Offsets Game::World::NodeInfo::Data::baseAddressOffsets = {0x0};
 Memory::Offsets Game::World::NodeInfo::Data::stepOffsets = {0x4};
 Memory::Offsets Game::World::NodeInfo::Data::sizeOffsets = {0x8};
-Memory::Address Game::World::Entity::key = 0x242733E7;
-Memory::Offsets Game::World::Entity::offsets = {0x10, 0xC4, 0x0, 0x0};
+Memory::Offsets Game::World::Entity::offsets = {0x10, 0xC4, 0x4, 0x0};
 Memory::Offsets Game::World::Entity::Data::levelOffsets = {0x58, 0xC4, 0x54, 0x120};
 Memory::Offsets Game::World::Entity::Data::nameOffsets = {0x58, 0x64, 0x0};
 Memory::Offsets Game::World::Entity::Data::isDeathOffsets = {0x58, 0x0};
@@ -283,7 +282,7 @@ Memory::Offsets Game::World::Player::Data::xOffsets = {0xC4, 0x04, 0x80};
 Memory::Offsets Game::World::Player::Data::yOffsets = {0xC4, 0x04, 0x84};
 Memory::Offsets Game::World::Player::Data::zOffsets = {0xC4, 0x04, 0x88};
 Game::Signature Game::Player::signature = {0x14, "55 8B EC 83 E4 F8 83 EC 08 F3 0F 2A 45 10 56 8B F1 57 8B 3D"};
-Memory::Offsets Game::Player::offsets = {0x108BD70, 0x0};
+Memory::Offsets Game::Player::offsets = {0x108BE40, 0x0};
 Game::Signature Game::Player::Data::nameSignature = {-0x9, "FF 70 1C FF 70 18 8D 45 B0"};
 Game::Signature Game::Player::Data::itemRSignature = {-0x180, "FE FF FF FF 00 00 00 00 65 CF XX XX 0C 00 00 00 55 CF"};
 Game::Signature Game::Player::Data::itemTSignature = {-0x180, "FE FF FF FF 00 00 00 00 65 CF XX XX 0C 00 00 00 55 CF"};
@@ -304,6 +303,7 @@ Memory::Offsets Game::Player::Coord::Data::zOffsets = {0x88};
 Memory::Offsets Game::Player::Coord::Data::xVelOffsets = {0xB0};
 Memory::Offsets Game::Player::Coord::Data::yVelOffsets = {0xB4};
 Memory::Offsets Game::Player::Coord::Data::zVelOffsets = {0xB8};
+Game::Signature Game::Player::Fish::signature = {0x0, "10 14 XX XX 00 00 00 00 FF 00 00 00 00"};
 Memory::Offsets Game::Player::Fish::offsets = {0x68, 0x0};
 Memory::Offsets Game::Player::Fish::Data::waterTakeOffsets = {0xE4, 0x3C4};
 Memory::Offsets Game::Player::Fish::Data::lavaTakeOffsets = {0xE4, 0x898};
@@ -461,22 +461,9 @@ Game::World::Entity::Entity(const Object &obj)
 {
 }
 
-Game::World::Entity::Entity(const Entity &obj)
-    : Object(obj, offsets),
-      data({{*this, Data::levelOffsets},
-            {*this, Data::nameOffsets},
-            {*this, Data::isDeathOffsets},
-            {*this, Data::healthOffsets},
-            {*this, Data::xOffsets},
-            {*this, Data::yOffsets},
-            {*this, Data::zOffsets}})
-{
-}
-
 Game::World::Entity &Game::World::Entity::UpdateAddress()
 {
     Object::UpdateAddress();
-    address ^= key;
     data.level.UpdateBaseAddress(address);
     data.name.UpdateBaseAddress(address);
     data.isDeath.UpdateBaseAddress(address);
@@ -502,18 +489,20 @@ Game::World::Entity &Game::World::Entity::UpdateData()
 bool Game::World::Entity::CheckData()
 {
     Object::UpdateAddress();
-    if (data.name.UpdateBaseAddress(address ^ key).UpdateAddress().address == 0)
+    if (data.name.UpdateBaseAddress(address).UpdateAddress().address == 0)
         return false;
     return data.name.UpdateData(10).data.length() > 0;
 }
 
-Game::World::Player::Player(const Object &obj)
-    : Object(obj, offsets, signature),
+Game::World::Player::Player(const Object &obj, const int &index)
+    : Object(obj, offsets),
       data({{*this, Data::nameOffsets},
             {*this, Data::xOffsets},
             {*this, Data::yOffsets},
             {*this, Data::zOffsets}})
 {
+    Object::offsets.emplace_back(index * 0x4);
+    Object::offsets.emplace_back(0x0);
 }
 
 Game::World::Player &Game::World::Player::UpdateAddress()
@@ -551,16 +540,12 @@ Game::World &Game::World::UpdateData()
     data.entitys.clear();
     data.players.clear();
     for (const Address &nodeAddress : data.nodeInfo.UpdateAddress().UpdateData().data.nodes)
-    {
-        Entity entity(*this);
-        entity.UpdateBaseAddress(nodeAddress);
-        if (entity.CheckData())
-            data.entitys.emplace_back(entity.UpdateAddress());
-    }
+        if (Entity(Entity(*this).UpdateBaseAddress(nodeAddress)).CheckData())
+            data.entitys.emplace_back(*this).UpdateBaseAddress(nodeAddress);
     Object playerCount(*this, Data::playerCountOffsets);
-    playerCount.UpdateBaseAddress(address).UpdateData();
+    playerCount.UpdateBaseAddress(address).UpdateAddress().UpdateData();
     for (uint32_t i = 0; i < playerCount.data; i++)
-        data.players.emplace_back(Player(*this).UpdateBaseAddress(address).UpdateAddress());
+        data.players.emplace_back(*this, i).UpdateBaseAddress(address);
     return *this;
 }
 
@@ -630,7 +615,7 @@ Game::Player::Coord &Game::Player::Coord::UpdateData()
 }
 
 Game::Player::Fish::Fish(const Object &obj)
-    : Object(obj, offsets),
+    : Object(obj, offsets, signature),
       data({{*this, Data::waterTakeOffsets},
             {*this, Data::lavaTakeOffsets},
             {*this, Data::chocoTakeOffsets},
