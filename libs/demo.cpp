@@ -68,15 +68,23 @@ void FindTarget()
     }
 }
 
-void FindAobScan(const char *signature){
+void FindAobScan(const char *signature)
+{
     Game game(Memory::GetProcessPid("Trove.exe")[0]);
-    for(auto i:game.AobScan(signature,true))
-        printf("%08X\n",i);
+    for (auto i : game.AobScan(signature, true))
+        printf("%08X\n", i);
 }
 
 int main(int argc, char *argv[])
 {
-    FindTarget();
+    // FindTarget();
+
     // FindAobScan(argv[1]);
+
+    // Module::Tp2Forward(Memory::GetProcessPid("Trove.exe")[0], 50, 50);
+
+    // auto pid = Memory::GetProcessPid("Trove.exe")[0];
+    // FunctionOn(pid,"FollowTarget","Vlu| |50",false);
+
     return 0;
 }

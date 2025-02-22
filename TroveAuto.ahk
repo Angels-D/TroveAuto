@@ -188,10 +188,10 @@ for key, value in Map(
     "Zoom", "视野放大",
 )
     MainGui.Add("CheckBox", (Mod(A_Index, 2) ? ((A_Index == 1 ? "xp+10 yp+30" : "xs") " Section") : "ys") " w140 v" key, value)
-MainGui.Add("GroupBox", "xs-10 ys+40 w310 r2 Section", "跟踪玩家")
-MainGui.Add("CheckBox", "xp+80 yp vFollowPlayer")
+MainGui.Add("GroupBox", "xs-10 ys+40 w310 r2 Section", "跟踪目标")
+MainGui.Add("CheckBox", "xp+80 yp vFollowTarget")
 MainGui.Add("Text", "xs+10 ys+30 Section", "玩家名:")
-MainGui.Add("Edit", "ys w220 vFollowPlayer_Name")
+MainGui.Add("Edit", "ys w220 vFollowTarget_Name")
 MainGui.Add("GroupBox", "xs-10 ys+50 w310 r2 Section", "加速")
 MainGui.Add("CheckBox", "xp+80 yp vSpeedUp")
 MainGui.Add("Text", "xs+10 ys+30 Section", "加速倍率:")
@@ -325,11 +325,11 @@ MainGui["HotKeyBox"].OnEvent("ItemCheck", HotKeyCheck)
 MainGui["AutoBtn_Key_Click_LEFT"].OnEvent("Click", AutoBtn_Key_Click_LEFT)
 MainGui["AutoBtn_Key_Click_RIGHT"].OnEvent("Click", AutoBtn_Key_Click_RIGHT)
 MainGui["AutoBtn_NoTop"].OnEvent("Click", AutoBtn_NoTop)
-MainGui["FollowPlayer"].OnEvent("Click", FollowPlayer)
+MainGui["FollowTarget"].OnEvent("Click", FollowTarget)
 MainGui["AutoAim"].OnEvent("Click", AutoAim)
 MainGui["SpeedUp"].OnEvent("Click", SpeedUp)
 MainGui["AutoRestart"].OnEvent("Click", AutoRestart)
-for key in ["FollowPlayer_Name", "SpeedUp_SpeedUpRate", "SpeedUp_GravityRate", "AutoAim_AimRange"
+for key in ["FollowTarget_Name", "SpeedUp_SpeedUpRate", "SpeedUp_GravityRate", "AutoAim_AimRange"
     , "AutoAim_ShowRange", "AutoAim_TargetBoss", "AutoAim_TargetNormal", "AutoAim_TargetPlant"
     , "AutoRestart_Account", "AutoRestart_Password"] {
     try MainGui[key].OnEvent("Change", SomeUiSetChangeEvent)
@@ -423,7 +423,7 @@ UIReset() {
     for key in ["Animation", "Attack", "Breakblocks", "ByPass", "ClipCam", "Dismount"
         , "Health", "LockCam", "Map", "Mining", "MiningGeode", "NoClip", "UseLog", "Zoom"
         , "AutoBtn_Key_Click_LEFT", "AutoBtn_Key_Click_RIGHT", "AutoBtn_NoTop", "HotKeyBox"
-        , "Interval", "SelectAction", "StartBtn", "FollowPlayer", "FollowPlayer_Name"
+        , "Interval", "SelectAction", "StartBtn", "FollowTarget", "FollowTarget_Name"
         , "SpeedUp", "SpeedUp_SpeedUpRate", "SpeedUp_GravityRate", "AutoAim", "AutoAim_AimRange"
         , "AutoAim_ShowRange", "AutoAim_TargetBoss", "AutoAim_TargetNormal", "AutoAim_TargetPlant"
         , "AutoRestart", "AutoRestart_Account", "AutoRestart_Password"]
@@ -431,7 +431,7 @@ UIReset() {
     for key in ["Animation", "Attack", "Breakblocks", "ByPass", "ClipCam", "Dismount"
         , "Health", "LockCam", "Map", "Mining", "MiningGeode", "NoClip", "UseLog", "Zoom"
         , "AutoBtn_Key_Click_LEFT", "AutoBtn_Key_Click_RIGHT", "AutoBtn_NoTop"
-        , "Interval", "SelectAction", "FollowPlayer", "FollowPlayer_Name"
+        , "Interval", "SelectAction", "FollowTarget", "FollowTarget_Name"
         , "SpeedUp", "SpeedUp_SpeedUpRate", "SpeedUp_GravityRate", "AutoAim", "AutoAim_AimRange"
         , "AutoAim_ShowRange", "AutoAim_TargetBoss", "AutoAim_TargetNormal", "AutoAim_TargetPlant"
         , "AutoRestart", "AutoRestart_Account", "AutoRestart_Password"]
@@ -559,7 +559,7 @@ SelectGame(GuiCtrlObj, Info) {
 SelectAction(GuiCtrlObj, Info := unset) {
     theGame := Game.Lists[MainGui["SelectGame"].Text]
     theGame.action := GuiCtrlObj.Text
-    for key in ["FollowPlayer", "SpeedUp", "AutoAim", "AutoRestart"] {
+    for key in ["FollowTarget", "SpeedUp", "AutoAim", "AutoRestart"] {
         MainGui[key].Enabled := true
         for item in theGame.setting[key] {
             if (item == "On")
@@ -604,24 +604,8 @@ Features(GuiCtrlObj, Info) {
 TP(GuiCtrlObj, Info) {
     if (GuiCtrlObj.Value)
         Hotkey(MainGui["HotKeyTP"].Value, (*) {
-            if (WinGetProcessName("A") == config.data["Global"]["GameTitle"]) {
-                for key, value in Game.Lists
-                    if (value.id == WingetID("A")) {
-                        theGame := value
-                        break
-                    }
-                if not IsSet(theGame)
-                    theGame := Game(WingetID("A"))
-                theGame.GetPlayerAddress()
-                coord := theGame.GetPlayerCoordinates()
-                xadd := MainGui["DistanceTP"].Value * coord[4]
-                yadd := MainGui["DistanceTP"].Value * coord[5]
-                zadd := MainGui["DistanceTP"].Value * coord[6]
-                xdest := coord[1] + xadd
-                ydest := coord[2] + yadd
-                zdest := coord[3] + zadd
-                theGame.MovePlayerCoordinates(xdest, ydest, zdest, MainGui["StepTP"].Value, MainGui["DelayTP"].Value)
-            }
+            if (WinGetProcessName("A") == config.data["Global"]["GameTitle"])
+                FunctionOn(WingetPID("A"), "Tp2Forward", MainGui["DistanceTP"].Value "|" MainGui["DelayTP"].Value, true)
         }, "On")
     else
         Hotkey(MainGui["HotKeyTP"].Value, , "Off")
@@ -639,8 +623,13 @@ TPtoXYZ(GuiCtrlObj, Info) {
                 break
         }
     }
-    theGame.GetPlayerAddress()
-    theGame.MovePlayerCoordinates(MainGui["TPtoX"].Value, MainGui["TPtoY"].Value, MainGui["TPtoZ"].Value, MainGui["StepTP"].Value, MainGui["DelayTP"].Value)
+    if ( not theGame)
+        return
+    FunctionOn(theGame.pid, "Tp2Target"
+        , MainGui["TPtoX"].Value "|"
+        MainGui["TPtoY"].Value "|"
+        MainGui["TPtoZ"].Value "|"
+        MainGui["DelayTP"].Value "|10", true)
 }
 Interval(GuiCtrlObj, Info) {
     theGame := Game.Lists[MainGui["SelectGame"].Text]
@@ -719,18 +708,16 @@ HotKeyEdit(GuiCtrlObj, Item, isAdd := false) {
 HotKeyCheck(GuiCtrlObj, Item, Checked) {
     Game.Lists[MainGui["SelectGame"].Text].setting["AutoBtn"]["keys"][Item].enabled := Checked
 }
-FollowPlayer(GuiCtrlObj, Info) {
-    if GuiCtrlObj.Value and not MainGui["FollowPlayer_Name"].Value {
-        MsgBox("玩家名不能为空")
+FollowTarget(GuiCtrlObj, Info) {
+    if GuiCtrlObj.Value and not MainGui["FollowTarget_Name"].Value {
+        MsgBox("目标不能为空")
         GuiCtrlObj.Value := false
         return
     }
-    MainGui["FollowPlayer_Name"].Enabled := !GuiCtrlObj.Value
+    MainGui["FollowTarget_Name"].Enabled := !GuiCtrlObj.Value
     theGame := Game.Lists[MainGui["SelectGame"].Text]
-    theGame.setting["FollowPlayer"]["On"] := GuiCtrlObj.Value
-    theGame.setting["Features"]["ByPass"] := MainGui["ByPass"].Value := true
-    theGame.Features("ByPass", true)
-    theGame.FollowPlayer()
+    theGame.setting["FollowTarget"]["On"] := GuiCtrlObj.Value
+    theGame.FollowTarget()
 }
 AutoAim(GuiCtrlObj, Info) {
     if GuiCtrlObj.Value and MainGui["AutoAim_AimRange"].Value == "" or MainGui["AutoAim_ShowRange"].Value == "" {
@@ -884,27 +871,6 @@ class Game {
             zper := ReadMemory(ProcessHandle, AddressCamXYZPer[3], "Float")
             return [x, y, z, xper, yper, zper]
         }
-        SetPlayerCoordinates(X, Y, Z, AddressCoordXYZ, ProcessHandle) {
-            WriteMemory(ProcessHandle, AddressCoordXYZ[1], X, false, "Float")
-            WriteMemory(ProcessHandle, AddressCoordXYZ[2], Y, false, "Float")
-            WriteMemory(ProcessHandle, AddressCoordXYZ[3], Z, false, "Float")
-        }
-        MovePlayerCoordinates(Xtarget, Ytarget, Ztarget, SkipDist, SkipDelay, AddressCoordXYZ, AddressCamXYZPer, ProcessHandle) {
-            global STOP
-            coord := GetPlayerCoordinates(AddressCoordXYZ, AddressCamXYZPer, ProcessHandle)
-            dist := sqrt((Xtarget - coord[1]) ** 2 + (Ytarget - coord[2]) ** 2 + (Ztarget - coord[3]) ** 2)
-            timeout := 0
-            loop {
-                timeout := timeout + 1
-                if (dist <= SkipDist)
-                    SetPlayerCoordinates(Xtarget, Ytarget, Ztarget, AddressCoordXYZ, ProcessHandle)
-                else
-                    SetPlayerCoordinates(coord[1] + SkipDist * (Xtarget - coord[1]) / dist, coord[2] + SkipDist * (Ytarget - coord[2]) / dist, coord[3] + SkipDist * (Ztarget - coord[3]) / dist, AddressCoordXYZ, ProcessHandle)
-                Sleep(SkipDelay)
-                coord := GetPlayerCoordinates(AddressCoordXYZ, AddressCamXYZPer, ProcessHandle)
-                dist := sqrt((Xtarget - coord[1]) ** 2 + (Ytarget - coord[2]) ** 2 + (Ztarget - coord[3]) ** 2)
-            } until (dist <= SkipDist or timeout > 10000/SkipDelay or STOP)
-        }
         NatualPress(npbtn, pid, holdtime := 0) {
             ; SetKeyDelay(,Random(66, 122) + holdtime)
             ; try ControlSend("{Blind}" "{" Format("VK{{}:X{}}", GetKeyVK(npbtn)) "}", , "ahk_pid " pid)
@@ -1009,33 +975,6 @@ class Game {
             } until (STOP)
             FileObj.Close()
         }
-        FollowPlayer(ProcessHandle, WorldAddress
-            , AddressCoordXYZ, AddressCamXYZPer, WorldPlayerCountOffset, WorldPlayerBaseOffset
-            , WorldPlayerNameOffset, WorldPlayerXOffset, WorldPlayerYOffset, WorldPlayerZOffset
-            , TargetPlayerName, SkipDist, SkipDelay) {
-            global STOP
-            WorldPlayerCountAddress := GetAddressOffset(WorldAddress, StrSplit(WorldPlayerCountOffset, ","), ProcessHandle)
-            WorldPlayerBaseAddress := GetAddressOffset(WorldAddress, StrSplit(WorldPlayerBaseOffset, ","), ProcessHandle)
-            loop {
-                PlayerCount := ReadMemory(ProcessHandle, WorldPlayerCountAddress)
-                Index := 0
-                loop PlayerCount {
-                    WorldPlayerNameAddress := GetAddressOffset(WorldPlayerBaseAddress, StrSplit((A_Index - 1) * 4 "," WorldPlayerNameOffset, ","), ProcessHandle)
-                    WorldPlayerName := ReadMemory(ProcessHandle, WorldPlayerNameAddress, "utf-8", Len := 15, false)
-                    if (WorldPlayerName == TargetPlayerName)
-                        Index := A_Index
-                } until (STOP or Index)
-                if ( not Index)
-                    continue
-                WorldPlayerXAddress := GetAddressOffset(WorldPlayerBaseAddress, StrSplit((Index - 1) * 4 "," WorldPlayerXOffset, ","), ProcessHandle)
-                WorldPlayerYAddress := GetAddressOffset(WorldPlayerBaseAddress, StrSplit((Index - 1) * 4 "," WorldPlayerYOffset, ","), ProcessHandle)
-                WorldPlayerZAddress := GetAddressOffset(WorldPlayerBaseAddress, StrSplit((Index - 1) * 4 "," WorldPlayerZOffset, ","), ProcessHandle)
-                XTarget := ReadMemory(ProcessHandle, WorldPlayerXAddress, "Float")
-                YTarget := ReadMemory(ProcessHandle, WorldPlayerYAddress, "Float")
-                ZTarget := ReadMemory(ProcessHandle, WorldPlayerZAddress, "Float")
-                MovePlayerCoordinates(XTarget, YTarget, ZTarget, SkipDist, SkipDelay, AddressCoordXYZ, AddressCamXYZPer, ProcessHandle)
-            } until (STOP)
-        }
         SpeedUp(Pid, ProcessHandle, AddressCoordXYZ, AddressCoordXYZVel, AddressCamXYZPer, SpeedUpRate, GravityRate, SpeedUpDelay) {
             global STOP
             loop {
@@ -1092,7 +1031,7 @@ class Game {
             "Account", "",
             "Password", "",
         ),
-        "FollowPlayer", Map(
+        "FollowTarget", Map(
             "On", false,
             "Name", "",
         ),
@@ -1177,7 +1116,7 @@ class Game {
                         for key, value in theGame.setting["Features"]
                             theGame.Features(key, value)
                         theGame.AutoAim()
-                        theGame.FollowPlayer()
+                        theGame.FollowTarget()
                         theGame.SpeedUp()
                     }
                     else Game.Lists[theGame.name] := theGame
@@ -1288,19 +1227,11 @@ class Game {
             this.threads["MainAuto"] := Worker(Format(Game.ScriptAHK, Format('{1}({2},"{3}",{4},[{5}],[{6}],{7})'
                 , "AutoFish", this.pid, config.data["Key"]["Fish"], this.setting["Fish"]["interval"], Take_Address, State_Address, this.ProcessHandle)))
     }
-    FollowPlayer() {
-        this.GetPlayerAddress()
-        AddressCoordXYZ := this.setting["Address"]["Player_Coord_X"] "," this.setting["Address"]["Player_Coord_Y"] "," this.setting["Address"]["Player_Coord_Z"]
-        AddressCamXYZPer := this.setting["Address"]["Player_Cam_XPer"] "," this.setting["Address"]["Player_Cam_YPer"] "," this.setting["Address"]["Player_Cam_ZPer"]
-        try this.threads["FollowPlayer"]["STOP"] := true
-        if (this.setting["FollowPlayer"]["On"])
-            this.threads["FollowPlayer"] := Worker(Format(Game.ScriptAHK, Format('{1}({2},{3},[{4}],[{5}],"{6}","{7}","{8}","{9}","{10}","{11}","{12}",{13},{14})'
-                , "FollowPlayer", this.ProcessHandle, this.BaseAddress + config.data["Address"]["World"]
-                , AddressCoordXYZ, AddressCamXYZPer, config.data["Address_Offset"]["World_Player_Count"]
-                , config.data["Address_Offset"]["World_Player_Base"], config.data["Address_Offset"]["World_Player_Name"]
-                , config.data["Address_Offset"]["World_Player_X"], config.data["Address_Offset"]["World_Player_Y"]
-                , config.data["Address_Offset"]["World_Player_Z"], this.setting["FollowPlayer"]["Name"]
-                , config.data["TP"]["Step"], config.data["TP"]["Delay"])))
+    FollowTarget() {
+        if (this.setting["FollowTarget"]["On"])
+            FunctionOn(this.pid, "FollowTarget", this.setting["FollowTarget"]["Name"] "| |50", false)
+        else
+            FunctionOff(this.pid, "FollowTarget")
     }
     AutoAim() {
         if (this.setting["AutoAim"]["On"])
@@ -1378,41 +1309,6 @@ class Game {
     GetName(Address) {
         Address := this.GetAddressOffset(Address, StrSplit(config.data["Address_Offset"]["Name"], ","))
         return this.ReadMemory(Address, "utf-8", 16, false)
-    }
-    GetPlayerCoordinates() {
-        x := this.ReadMemory(this.setting["Address"]["Player_Coord_X"], "Float")
-        y := this.ReadMemory(this.setting["Address"]["Player_Coord_Y"], "Float")
-        z := this.ReadMemory(this.setting["Address"]["Player_Coord_Z"], "Float")
-        xper := this.ReadMemory(this.setting["Address"]["Player_Cam_XPer"], "Float")
-        yper := this.ReadMemory(this.setting["Address"]["Player_Cam_YPer"], "Float")
-        zper := this.ReadMemory(this.setting["Address"]["Player_Cam_ZPer"], "Float")
-        return [x, y, z, xper, yper, zper]
-    }
-    SetPlayerCoordinates(X, Y, Z) {
-        this.WriteMemory(this.setting["Address"]["Player_Coord_X"], X, false, "Float")
-        this.WriteMemory(this.setting["Address"]["Player_Coord_Y"], Y, false, "Float")
-        this.WriteMemory(this.setting["Address"]["Player_Coord_Z"], Z, false, "Float")
-    }
-    MovePlayerCoordinates(Xtarget, Ytarget, Ztarget, SkipDist, SkipDelay) {
-        if ( not this.setting["Features"]["ByPass"])
-            this.Features("ByPass", true)
-        if ( not this.setting["Features"]["NoClip"])
-            this.Features("NoClip", true)
-        coord := this.GetPlayerCoordinates()
-        dist := sqrt((Xtarget - coord[1]) ** 2 + (Ytarget - coord[2]) ** 2 + (Ztarget - coord[3]) ** 2)
-        loop {
-            if (dist <= SkipDist)
-                this.SetPlayerCoordinates(Xtarget, Ytarget, Ztarget)
-            else
-                this.SetPlayerCoordinates(coord[1] + SkipDist * (Xtarget - coord[1]) / dist, coord[2] + SkipDist * (Ytarget - coord[2]) / dist, coord[3] + SkipDist * (Ztarget - coord[3]) / dist)
-            Sleep(SkipDelay)
-            coord := this.GetPlayerCoordinates()
-            dist := sqrt((Xtarget - coord[1]) ** 2 + (Ytarget - coord[2]) ** 2 + (Ztarget - coord[3]) ** 2)
-        } until (dist <= SkipDist)
-        if ( not this.setting["Features"]["ByPass"])
-            this.Features("ByPass", false)
-        if ( not this.setting["Features"]["NoClip"])
-            this.Features("NoClip", false)
     }
     GetAddressOffset(Maddress, Offset) {
         Address := this.ReadMemory(Maddress, "UInt")
