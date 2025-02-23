@@ -2,7 +2,7 @@
  *    -> Auther: Angels-D
  *
  * LastChange
- *    -> 2025/02/15 22:40
+ *    -> 2025/02/23 16:45
  *    -> 1.0.0
  *
  * Build
@@ -208,7 +208,7 @@ namespace Module
 
     void Tp2Forward(const Memory::DWORD &pid, const float &tpRange = tpStep, const uint32_t &delay = 50);
     float Tp2Target(const Memory::DWORD &pid, const float &targetX, const float &targetY, const float &targetZ, const uint32_t &delay = 50, const uint32_t &tryAgainMax = 10);
-    void FollowTarget(const Memory::DWORD &pid, const std::vector<std::string> &targets, const std::vector<std::string> &noTargets = {}, const uint32_t &delay = 50);
+    void FollowTarget(const Memory::DWORD &pid, const std::vector<std::string> &targets, const std::vector<std::string> &noTargets = {}, const float &speed = 50, const uint32_t &delay = 50);
 
     Game::World::Player *FindPlayer(Game &game, const std::vector<std::string> &targets);
     Game::World::Entity *FindTarget(Game &game, const bool &targetBoss = true, const bool &targetPlant = false, const std::vector<std::string> &targets = {}, const std::vector<std::string> &noTargets = {}, const uint32_t &aimRange = 45, const uint32_t &showRange = 0);
@@ -362,51 +362,51 @@ namespace Module
 
     void SpeedUp(const Memory::DWORD &pid, const float &speed, const uint32_t &delay, const std::vector<std::string> &hotKey)
     {
-        Game game(pid);
-        game.UpdateAddress().data.player.UpdateAddress();
-        float xVel = 0, yVel = 0, zVel = 0;
-        float xPer = 0, zPer = 0;
-        float hrzMagnitude = 0, xMagnitude = 0, zMagnitude = 0;
-        while (funtionRunMap[{pid, "SpeedUp"}].load())
-        {
-            game.data.player.data.coord.UpdateAddress();
-            game.data.player.data.camera.UpdateAddress();
-            xVel = yVel = zVel = 0;
-            xPer = game.data.player.data.camera.data.xPer.UpdateAddress().UpdateData().data;
-            zPer = game.data.player.data.camera.data.zPer.UpdateAddress().UpdateData().data;
-            hrzMagnitude = std::sqrt(xPer * xPer + zPer * zPer);
-            xMagnitude = xPer / hrzMagnitude;
-            zMagnitude = zPer / hrzMagnitude;
-            // 未完工, 按键触发
-            // if()
-            // {
-            //     xVel += xMagnitude * speed;
-            //     zVel += zMagnitude * speed;
-            // }
-            // if()
-            // {
-            //     xVel += zMagnitude * speed;
-            //     zVel -= xMagnitude * speed;
-            // }
-            // if()
-            // {
-            //     xVel -= xMagnitude * speed;
-            //     zVel -= zMagnitude * speed;
-            // }
-            // if()
-            // {
-            //     xVel -= zMagnitude * speed;
-            //     zVel += xMagnitude * speed;
-            // }
-            // if()
-            //     yVel += speed;
-            // if()
-            //     yVel -= speed;
-            game.data.player.data.coord.data.xVel.UpdateAddress() = xVel;
-            game.data.player.data.coord.data.yVel.UpdateAddress() = yVel;
-            game.data.player.data.coord.data.zVel.UpdateAddress() = zVel;
-            std::this_thread::sleep_for(std::chrono::milliseconds(delay));
-        }
+        // Game game(pid);
+        // game.UpdateAddress().data.player.UpdateAddress();
+        // float xVel = 0, yVel = 0, zVel = 0;
+        // float xPer = 0, zPer = 0;
+        // float hrzMagnitude = 0, xMagnitude = 0, zMagnitude = 0;
+        // while (funtionRunMap[{pid, "SpeedUp"}].load())
+        // {
+        //     game.data.player.data.coord.UpdateAddress();
+        //     game.data.player.data.camera.UpdateAddress();
+        //     xVel = yVel = zVel = 0;
+        //     xPer = game.data.player.data.camera.data.xPer.UpdateAddress().UpdateData().data;
+        //     zPer = game.data.player.data.camera.data.zPer.UpdateAddress().UpdateData().data;
+        //     hrzMagnitude = std::sqrt(xPer * xPer + zPer * zPer);
+        //     xMagnitude = xPer / hrzMagnitude;
+        //     zMagnitude = zPer / hrzMagnitude;
+        //     // 未完工, 按键触发
+        //     // if()
+        //     // {
+        //     //     xVel += xMagnitude * speed;
+        //     //     zVel += zMagnitude * speed;
+        //     // }
+        //     // if()
+        //     // {
+        //     //     xVel += zMagnitude * speed;
+        //     //     zVel -= xMagnitude * speed;
+        //     // }
+        //     // if()
+        //     // {
+        //     //     xVel -= xMagnitude * speed;
+        //     //     zVel -= zMagnitude * speed;
+        //     // }
+        //     // if()
+        //     // {
+        //     //     xVel -= zMagnitude * speed;
+        //     //     zVel += xMagnitude * speed;
+        //     // }
+        //     // if()
+        //     //     yVel += speed;
+        //     // if()
+        //     //     yVel -= speed;
+        //     game.data.player.data.coord.data.xVel.UpdateAddress() = xVel;
+        //     game.data.player.data.coord.data.yVel.UpdateAddress() = yVel;
+        //     game.data.player.data.coord.data.zVel.UpdateAddress() = zVel;
+        //     std::this_thread::sleep_for(std::chrono::milliseconds(delay));
+        // }
     }
 
     void Tp2Forward(const Memory::DWORD &pid, const float &tpRange, const uint32_t &delay)
@@ -453,12 +453,9 @@ namespace Module
         return dist;
     }
 
-    void FollowTarget(const Memory::DWORD &pid, const std::vector<std::string> &targets, const std::vector<std::string> &noTargets, const uint32_t &delay)
+    void FollowTarget(const Memory::DWORD &pid, const std::vector<std::string> &targets, const std::vector<std::string> &noTargets, const float &speed, const uint32_t &delay)
     {
         Game game(pid);
-        Game::World::Player *player = nullptr;
-        Game::World::Entity *target = nullptr;
-        float targetX = 0, targetY = 0, targetZ = 0;
         game.UpdateAddress().data.player.UpdateAddress();
         auto UpdateAddress = [&game]()
         {
@@ -470,20 +467,45 @@ namespace Module
         while (funtionRunMap[{pid, "FollowTarget"}].load())
         {
             UpdateAddress();
-            player = nullptr;
-            target = nullptr;
+            Game::World::Player *player = nullptr;
+            Game::World::Entity *target = nullptr;
+            float x = 0, y = 0, z = 0, targetX = 0;
+            float targetY = 0, targetZ = 0, dist = 0, lastDist = 9999;
+            uint32_t step = 0;
             player = FindPlayer(game, targets);
             if (!player)
                 target = FindTarget(game, false, false, targets, noTargets, 9999, 0);
             SetFeature(byPass, pid, true);
             while ((player || target) && funtionRunMap[{pid, "FollowTarget"}].load())
             {
+                std::this_thread::sleep_for(std::chrono::milliseconds(delay));
                 UpdateAddress();
-                targetX = player ? player->data.x.UpdateData().data : target->data.x.UpdateData().data;
-                targetY = player ? player->data.y.UpdateData().data : target->data.y.UpdateData().data;
-                targetZ = player ? player->data.z.UpdateData().data : target->data.z.UpdateData().data;
-                if (Tp2Target(pid, targetX, targetY, targetZ, delay, 0) < tpStep)
+                x = game.data.player.data.coord.data.x.UpdateData().data;
+                y = game.data.player.data.coord.data.y.UpdateData().data;
+                z = game.data.player.data.coord.data.z.UpdateData().data;
+                targetX = player ? player->data.x.UpdateAddress().UpdateData().data : target->data.x.UpdateData().data;
+                targetY = player ? player->data.y.UpdateAddress().UpdateData().data : target->data.y.UpdateData().data;
+                targetZ = player ? player->data.z.UpdateAddress().UpdateData().data : target->data.z.UpdateData().data;
+                game.data.player.data.coord.data.xVel.UpdateAddress() = 0;
+                game.data.player.data.coord.data.yVel.UpdateAddress() = 0;
+                game.data.player.data.coord.data.zVel.UpdateAddress() = 0;
+                if ((dist = CalculateDistance(x, y, z, targetX, targetY, targetZ)) <= 1)
                     break;
+                if (step % (1000 / delay) == 0 && tpStep && lastDist - dist < tpStep)
+                {
+                    printf("%f %f\n", dist, lastDist);
+                    if (Tp2Target(pid, targetX, targetY, targetZ, delay, 0) < tpStep)
+                        break;
+                }
+                else
+                {
+                    game.data.player.data.coord.data.xVel.UpdateAddress() = (targetX - x) / dist * speed;
+                    game.data.player.data.coord.data.yVel.UpdateAddress() = (targetY - y) / dist * speed;
+                    game.data.player.data.coord.data.zVel.UpdateAddress() = (targetZ - z) / dist * speed;
+                }
+                if (step % (500 / delay) == 0)
+                    lastDist = dist;
+                step = (step + 1) % (2000 / delay);
                 if (player && (player = FindPlayer(game, targets)))
                     continue;
                 if (target && target->data.health.UpdateData().data < 1)
@@ -494,7 +516,6 @@ namespace Module
                 }
             }
             SetFeature(byPass, pid, false);
-            std::this_thread::sleep_for(std::chrono::milliseconds(delay));
         }
     }
 
@@ -631,7 +652,8 @@ void FunctionOn(const Memory::DWORD pid, const char *funtion, const char *argv, 
             Module::FollowTarget, pid,
             split(_argv[0], ','),
             split(_argv[1], ','),
-            std::stoul(_argv[2]));
+            std::stof(_argv[2]),
+            std::stoul(_argv[3]));
     else if (std::strcmp(funtion, "SetAutoAttack") == 0)
         thread = new std::thread(Module::SetAutoAttack, pid, std::stoul(_argv[0]), std::stoul(_argv[1]));
     else if (std::strcmp(funtion, "SetAutoRespawn") == 0)

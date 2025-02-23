@@ -83,8 +83,7 @@ int main(int argc, char *argv[])
 
     // Module::Tp2Forward(Memory::GetProcessPid("Trove.exe")[0], 50, 50);
 
-    // auto pid = Memory::GetProcessPid("Trove.exe")[0];
-    // FunctionOn(pid,"FollowTarget","Vlu| |50",false);
+    // FunctionOn(Memory::GetProcessPid("Trove.exe")[0],"FollowTarget","Artloot| |50|50",true);
 
     return 0;
 }
