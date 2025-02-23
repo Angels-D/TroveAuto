@@ -1280,6 +1280,9 @@ class Game {
         )
     }
     Features_Health() {
+        this.setting["Address"]["Player_Health"] := this.GetAddressOffset(
+            this.BaseAddress + config.data["Address"]["Player"], StrSplit(config.data["Address_Offset"]["Player_Health"], ",")
+        )
         if ( not this.ReadMemory(this.setting["Address"]["Player_Health"], "Double", 8)) {
             this.NatualPress("E")
             Sleep(5000)
@@ -1290,7 +1293,6 @@ class Game {
             case "Attack":
                 SetTimer(this.FeaturesAttackFunc, Value ? config.data["AttackTime"]["Value"] : 0)
             case "Health":
-                this.GetPlayerAddress()
                 SetTimer(this.FeaturesHealthFunc, Value ? config.data["HealthTime"]["Value"] : 0)
                 return
             case "UseLog":
