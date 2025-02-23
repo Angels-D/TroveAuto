@@ -1,6 +1,6 @@
 ;@Ahk2Exe-UpdateManifest 2
 ;@Ahk2Exe-SetName TroveAuto
-;@Ahk2Exe-SetProductVersion 2.4.3
+;@Ahk2Exe-SetProductVersion 2.4.4
 ;@Ahk2Exe-SetCopyright GPL-3.0 license
 ;@Ahk2Exe-SetLanguage Chinese_PRC
 ;@Ahk2Exe-SetMainIcon TroveAuto.ico
@@ -15,8 +15,8 @@ config := _Config(
         "Global", Map(
             "GameTitle", "Trove.exe",
             "GamePath", "",
-            "ConfigVersion", "20250220115000",
-            "AppVersion", "20250220115000",
+            "ConfigVersion", "20250223164500",
+            "AppVersion", "20250223164500",
             "Source", "https://github.com/Angels-D/TroveAuto/",
             "Mirror", "https://github.moeyy.xyz/",
         ),
@@ -188,10 +188,10 @@ for key, value in Map(
     "Zoom", "视野放大",
 )
     MainGui.Add("CheckBox", (Mod(A_Index, 2) ? ((A_Index == 1 ? "xp+10 yp+30" : "xs") " Section") : "ys") " w140 v" key, value)
-MainGui.Add("GroupBox", "xs-10 ys+40 w310 r2 Section", "跟踪目标")
+MainGui.Add("GroupBox", "xs-10 ys+40 w310 r2 Section", "跟踪目标       正则表达式 逗号分割")
 MainGui.Add("CheckBox", "xp+80 yp vFollowTarget")
-MainGui.Add("Text", "xs+10 ys+30 Section", "玩家名:")
-MainGui.Add("Edit", "ys w220 vFollowTarget_Name")
+MainGui.Add("Text", "xs+10 ys+30 Section", "目标列表:")
+MainGui.Add("Edit", "ys w205 vFollowTarget_Name")
 MainGui.Add("GroupBox", "xs-10 ys+50 w310 r2 Section", "加速")
 MainGui.Add("CheckBox", "xp+80 yp vSpeedUp")
 MainGui.Add("Text", "xs+10 ys+30 Section", "加速倍率:")
@@ -1229,7 +1229,7 @@ class Game {
     }
     FollowTarget() {
         if (this.setting["FollowTarget"]["On"])
-            FunctionOn(this.pid, "FollowTarget", this.setting["FollowTarget"]["Name"] "| |50", false)
+            FunctionOn(this.pid, "FollowTarget", this.setting["FollowTarget"]["Name"] "| |50|50", false)
         else
             FunctionOff(this.pid, "FollowTarget")
     }
