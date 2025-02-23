@@ -489,11 +489,10 @@ namespace Module
                 game.data.player.data.coord.data.xVel.UpdateAddress() = 0;
                 game.data.player.data.coord.data.yVel.UpdateAddress() = 0;
                 game.data.player.data.coord.data.zVel.UpdateAddress() = 0;
-                if ((dist = CalculateDistance(x, y, z, targetX, targetY, targetZ)) <= 1)
+                if ((dist = CalculateDistance(x, y, z, targetX, targetY, targetZ)) <= 1 || std::isnan(dist))
                     break;
                 if (step % (1000 / delay) == 0 && tpStep && lastDist - dist < tpStep)
                 {
-                    printf("%f %f\n", dist, lastDist);
                     if (Tp2Target(pid, targetX, targetY, targetZ, delay, 0) < tpStep)
                         break;
                 }
