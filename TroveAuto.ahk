@@ -1,6 +1,6 @@
 ;@Ahk2Exe-UpdateManifest 2
 ;@Ahk2Exe-SetName TroveAuto
-;@Ahk2Exe-SetProductVersion 2.4.4
+;@Ahk2Exe-SetProductVersion 2.4.5
 ;@Ahk2Exe-SetCopyright GPL-3.0 license
 ;@Ahk2Exe-SetLanguage Chinese_PRC
 ;@Ahk2Exe-SetMainIcon TroveAuto.ico
@@ -15,8 +15,8 @@ config := _Config(
         "Global", Map(
             "GameTitle", "Trove.exe",
             "GamePath", "",
-            "ConfigVersion", "20250223164500",
-            "AppVersion", "20250223164500",
+            "ConfigVersion", "20250224170000",
+            "AppVersion", "20250224170000",
             "Source", "https://github.com/Angels-D/TroveAuto/",
             "Mirror", "https://github.moeyy.xyz/",
         ),
@@ -35,6 +35,8 @@ config := _Config(
         ),
         "AutoAim", Map(
             "Delay", "50",
+            "TargetList", ".*chest_quest_standard.*,.*chest_quest_recipe.*",
+            "NoTargetList", ".*pet.*,.*placeable.*,.*services.*,.*client.*,.*abilities.*",
         ),
         "Key", Map(
             "Press", "e",
@@ -192,12 +194,10 @@ MainGui.Add("GroupBox", "xs-10 ys+40 w310 r2 Section", "跟踪目标       正�
 MainGui.Add("CheckBox", "xp+80 yp vFollowTarget")
 MainGui.Add("Text", "xs+10 ys+30 Section", "目标列表:")
 MainGui.Add("Edit", "ys w205 vFollowTarget_Name")
-MainGui.Add("GroupBox", "xs-10 ys+50 w310 r2 Section", "加速")
+MainGui.Add("GroupBox", "xs-10 ys+50 w310 r2 Section", "矢量移动       WASD/Shift/Space移动")
 MainGui.Add("CheckBox", "xp+80 yp vSpeedUp")
 MainGui.Add("Text", "xs+10 ys+30 Section", "加速倍率:")
-MainGui.Add("Edit", "ys w55 vSpeedUp_SpeedUpRate")
-MainGui.Add("Text", "ys", "重力倍率:")
-MainGui.Add("Edit", "ys w55 vSpeedUp_GravityRate")
+MainGui.Add("Edit", "ys w205 vSpeedUp_SpeedUpRate")
 MainGui.Add("GroupBox", "xs-10 ys+50 w310 r3 Section", "自瞄")
 MainGui.Add("CheckBox", "xp+80 yp vAutoAim")
 MainGui.Add("Text", "xs+10 ys+30 Section", "瞄准范围:")
@@ -234,6 +234,12 @@ MainGui.Add("Edit", "ys w210 vTPtoY", 0)
 MainGui.Add("Text", "xs w30 Section", "Z:")
 MainGui.Add("Edit", "ys w210 vTPtoZ", 0)
 MainGui.Add("Button", "xs w250 vTPtoXYZBtn", "传送")
+MainGui.Add("GroupBox", "xs-20 y+50 w310 r21 Section", "自瞄相关   正则表达式 逗号隔开")
+MainGui.Add("GroupBox", "xs+10 ys+40 w290 r9 Section", "目标名单")
+MainGui.Add("Edit", "xs+10 ys+30 w260 h210 vTargetListAutoAim", config.data["AutoAim"]["TargetList"])
+MainGui.Add("GroupBox", "xs w290 r9 Section", "非目标名单")
+MainGui.Add("Edit", "xs+10 ys+30 w260 h210 vNoTargetListAutoAim", config.data["AutoAim"]["NoTargetList"])
+MainGui.Add("Text", "xs+60 y+20", "部分内容保存后生效")
 
 ; 设置内容
 MainGui["Tab"].UseTab("设置")
@@ -329,7 +335,7 @@ MainGui["FollowTarget"].OnEvent("Click", FollowTarget)
 MainGui["AutoAim"].OnEvent("Click", AutoAim)
 MainGui["SpeedUp"].OnEvent("Click", SpeedUp)
 MainGui["AutoRestart"].OnEvent("Click", AutoRestart)
-for key in ["FollowTarget_Name", "SpeedUp_SpeedUpRate", "SpeedUp_GravityRate", "AutoAim_AimRange"
+for key in ["FollowTarget_Name", "SpeedUp_SpeedUpRate", "AutoAim_AimRange"
     , "AutoAim_ShowRange", "AutoAim_TargetBoss", "AutoAim_TargetNormal", "AutoAim_TargetPlant"
     , "AutoRestart_Account", "AutoRestart_Password"] {
     try MainGui[key].OnEvent("Change", SomeUiSetChangeEvent)
@@ -424,7 +430,7 @@ UIReset() {
         , "Health", "LockCam", "Map", "Mining", "MiningGeode", "NoClip", "UseLog", "Zoom"
         , "AutoBtn_Key_Click_LEFT", "AutoBtn_Key_Click_RIGHT", "AutoBtn_NoTop", "HotKeyBox"
         , "Interval", "SelectAction", "StartBtn", "FollowTarget", "FollowTarget_Name"
-        , "SpeedUp", "SpeedUp_SpeedUpRate", "SpeedUp_GravityRate", "AutoAim", "AutoAim_AimRange"
+        , "SpeedUp", "SpeedUp_SpeedUpRate", "AutoAim", "AutoAim_AimRange"
         , "AutoAim_ShowRange", "AutoAim_TargetBoss", "AutoAim_TargetNormal", "AutoAim_TargetPlant"
         , "AutoRestart", "AutoRestart_Account", "AutoRestart_Password"]
         MainGui[key].Enabled := false
@@ -432,7 +438,7 @@ UIReset() {
         , "Health", "LockCam", "Map", "Mining", "MiningGeode", "NoClip", "UseLog", "Zoom"
         , "AutoBtn_Key_Click_LEFT", "AutoBtn_Key_Click_RIGHT", "AutoBtn_NoTop"
         , "Interval", "SelectAction", "FollowTarget", "FollowTarget_Name"
-        , "SpeedUp", "SpeedUp_SpeedUpRate", "SpeedUp_GravityRate", "AutoAim", "AutoAim_AimRange"
+        , "SpeedUp", "SpeedUp_SpeedUpRate", "AutoAim", "AutoAim_AimRange"
         , "AutoAim_ShowRange", "AutoAim_TargetBoss", "AutoAim_TargetNormal", "AutoAim_TargetPlant"
         , "AutoRestart", "AutoRestart_Account", "AutoRestart_Password"]
         try MainGui[key].Value := ""
@@ -732,13 +738,12 @@ AutoAim(GuiCtrlObj, Info) {
     theGame.AutoAim()
 }
 SpeedUp(GuiCtrlObj, Info) {
-    if GuiCtrlObj.Value and MainGui["SpeedUp_SpeedUpRate"].Value == "" or MainGui["SpeedUp_GravityRate"].Value == "" {
+    if GuiCtrlObj.Value and MainGui["SpeedUp_SpeedUpRate"].Value == "" {
         MsgBox("配置不能为空")
         GuiCtrlObj.Value := false
         return
     }
-    for key in ["SpeedUpRate", "GravityRate"]
-        MainGui["SpeedUp_" key].Enabled := !GuiCtrlObj.Value
+    MainGui["SpeedUp_SpeedUpRate"].Enabled := !GuiCtrlObj.Value
     theGame := Game.Lists[MainGui["SelectGame"].Text]
     theGame.setting["SpeedUp"]["On"] := GuiCtrlObj.Value
     theGame.setting["Features"]["ByPass"] := MainGui["ByPass"].Value := true
@@ -975,46 +980,60 @@ class Game {
             } until (STOP)
             FileObj.Close()
         }
-        SpeedUp(Pid, ProcessHandle, AddressCoordXYZ, AddressCoordXYZVel, AddressCamXYZPer, SpeedUpRate, GravityRate, SpeedUpDelay) {
+        SpeedUp(Pid, ProcessHandle, AddressPlayer, OffsetsCoordXYZ, OffsetsCoordXYZVel, OffsetsCamXYZPer, SpeedUpRate, SpeedUpDelay) {
             global STOP
             loop {
                 Sleep(SpeedUpDelay)
-                try {
-                    if (WinGetPID("A") != Pid)
-                        continue
-                }
+                AddressCoordXYZ := [
+                    GetAddressOffset(AddressPlayer, OffsetsCoordXYZ[1], ProcessHandle),
+                    GetAddressOffset(AddressPlayer, OffsetsCoordXYZ[2], ProcessHandle),
+                    GetAddressOffset(AddressPlayer, OffsetsCoordXYZ[3], ProcessHandle)
+                ]
+                AddressCamXYZPer := [
+                    GetAddressOffset(AddressPlayer, OffsetsCamXYZPer[1], ProcessHandle),
+                    GetAddressOffset(AddressPlayer, OffsetsCamXYZPer[2], ProcessHandle),
+                    GetAddressOffset(AddressPlayer, OffsetsCamXYZPer[3], ProcessHandle)
+                ]
+                AddressCoordXYZVel := [
+                    GetAddressOffset(AddressPlayer, OffsetsCoordXYZVel[1], ProcessHandle),
+                    GetAddressOffset(AddressPlayer, OffsetsCoordXYZVel[2], ProcessHandle),
+                    GetAddressOffset(AddressPlayer, OffsetsCoordXYZVel[3], ProcessHandle)
+                ]
+                new_xvel := new_zvel := 0
+                new_yvel := 1
+                try
+                    if (WinGetPID("A") == Pid) {
+                        xyz_xyzper := GetPlayerCoordinates(AddressCoordXYZ, AddressCamXYZPer, ProcessHandle)
+                        xper := xyz_xyzper[4]
+                        zper := xyz_xyzper[6]
+                        hrzMagnitude := sqrt(xper ** 2 + zper ** 2)
+                        xMagnitude := xper / hrzMagnitude
+                        zMagnitude := zper / hrzMagnitude
+                        if (GetKeyState("W")) {
+                            new_xvel := new_xvel + xMagnitude * SpeedUpRate
+                            new_zvel := new_zvel + zMagnitude * SpeedUpRate
+                        }
+                        if (GetKeyState("A")) {
+                            new_xvel := new_xvel + zMagnitude * SpeedUpRate
+                            new_zvel := new_zvel - xMagnitude * SpeedUpRate
+                        }
+                        if (GetKeyState("S")) {
+                            new_xvel := new_xvel - xMagnitude * SpeedUpRate
+                            new_zvel := new_zvel - zMagnitude * SpeedUpRate
+                        }
+                        if (GetKeyState("D")) {
+                            new_xvel := new_xvel - zMagnitude * SpeedUpRate
+                            new_zvel := new_zvel + xMagnitude * SpeedUpRate
+                        }
+                        if (GetKeyState("Space")) {
+                            new_yvel := new_yvel + SpeedUpRate
+                        }
+                        if (GetKeyState("Shift")) {
+                            new_yvel := new_yvel - SpeedUpRate
+                        }
+                    }
                 catch
                     continue
-                xyz_xyzper := GetPlayerCoordinates(AddressCoordXYZ, AddressCamXYZPer, ProcessHandle)
-                xper := xyz_xyzper[4]
-                zper := xyz_xyzper[6]
-                new_xvel := new_zvel := 0
-                new_yvel := 0.39
-                hrzMagnitude := sqrt(xper ** 2 + zper ** 2)
-                xMagnitude := xper / hrzMagnitude
-                zMagnitude := zper / hrzMagnitude
-                if (GetKeyState("W")) {
-                    new_xvel := new_xvel + xMagnitude * SpeedUpRate
-                    new_zvel := new_zvel + zMagnitude * SpeedUpRate
-                }
-                if (GetKeyState("A")) {
-                    new_xvel := new_xvel + zMagnitude * SpeedUpRate
-                    new_zvel := new_zvel - xMagnitude * SpeedUpRate
-                }
-                if (GetKeyState("S")) {
-                    new_xvel := new_xvel - xMagnitude * SpeedUpRate
-                    new_zvel := new_zvel - zMagnitude * SpeedUpRate
-                }
-                if (GetKeyState("D")) {
-                    new_xvel := new_xvel - zMagnitude * SpeedUpRate
-                    new_zvel := new_zvel + xMagnitude * SpeedUpRate
-                }
-                if (GetKeyState("Space")) {
-                    new_yvel := new_yvel + GravityRate
-                }
-                if (GetKeyState("Shift")) {
-                    new_yvel := new_yvel - GravityRate
-                }
                 WriteMemory(ProcessHandle, AddressCoordXYZVel[1], new_xvel, false, "Float")
                 WriteMemory(ProcessHandle, AddressCoordXYZVel[2], new_yvel, false, "Float")
                 WriteMemory(ProcessHandle, AddressCoordXYZVel[3], new_zvel, false, "Float")
@@ -1038,7 +1057,6 @@ class Game {
         "SpeedUp", Map(
             "On", false,
             "SpeedUpRate", 50,
-            "GravityRate", 50,
         ),
         "AutoAim", Map(
             "On", false,
@@ -1054,7 +1072,6 @@ class Game {
             "take_address", Map(),
             "state_address", Map(),
         ),
-        "Address", Map(),
         "AutoBtn", Map(
             "NoTop", false,
             "interval", "1000",
@@ -1195,15 +1212,6 @@ class Game {
             )
         }
     }
-    GetPlayerAddress() {
-        for key in ["Player_Health", "Player_Coord_X", "Player_Coord_Y", "Player_Coord_Z"
-            , "Player_Coord_XVel", "Player_Coord_YVel", "Player_Coord_ZVel"
-            , "Player_Cam_XPer", "Player_Cam_YPer", "Player_Cam_ZPer"] {
-            this.setting["Address"][key] := this.GetAddressOffset(
-                this.BaseAddress + config.data["Address"]["Player"], StrSplit(config.data["Address_Offset"][key], ",")
-            )
-        }
-    }
     AutoBtn() {
         try this.threads["MainAuto"]["STOP"] := true
         if (this.running)
@@ -1238,9 +1246,9 @@ class Game {
             FunctionOn(this.pid, "AutoAim", Format("{1}|{2}|{3}|{4}|{5}|{6}|{7}"
                 , this.setting["AutoAim"]["TargetBoss"]
                 , this.setting["AutoAim"]["TargetPlant"]
-                , ".*chest_quest_standard.*,.*chest_quest_recipe.*"
+                , config.data["AutoAim"]["TargetList"]
                 (this.setting["AutoAim"]["TargetNormal"] ? ".*npc.*," : "")
-                , ".*pet.*,.*placeable.*,.*services.*,.*client.*,.*abilities.*"
+                , config.data["AutoAim"]["NoTargetList"]
                 , this.setting["AutoAim"]["AimRange"]
                 , this.setting["AutoAim"]["ShowRange"]
                 , config.data["AutoAim"]["Delay"]), false)
@@ -1248,14 +1256,29 @@ class Game {
             FunctionOff(this.pid, "AutoAim")
     }
     SpeedUp() {
-        this.GetPlayerAddress()
-        AddressCoordXYZ := this.setting["Address"]["Player_Coord_X"] "," this.setting["Address"]["Player_Coord_Y"] "," this.setting["Address"]["Player_Coord_Z"]
-        AddressCoordXYZVel := this.setting["Address"]["Player_Coord_XVel"] "," this.setting["Address"]["Player_Coord_YVel"] "," this.setting["Address"]["Player_Coord_ZVel"]
-        AddressCamXYZPer := this.setting["Address"]["Player_Cam_XPer"] "," this.setting["Address"]["Player_Cam_YPer"] "," this.setting["Address"]["Player_Cam_ZPer"]
+        OffsetsCoordXYZ := Format("[{1}],[{2}],[{3}]"
+            , config.data["Address_Offset"]["Player_Coord_X"]
+            , config.data["Address_Offset"]["Player_Coord_Y"]
+            , config.data["Address_Offset"]["Player_Coord_Z"]
+        )
+        OffsetsCoordXYZVel := Format("[{1}],[{2}],[{3}]"
+            , config.data["Address_Offset"]["Player_Coord_XVel"]
+            , config.data["Address_Offset"]["Player_Coord_YVel"]
+            , config.data["Address_Offset"]["Player_Coord_ZVel"]
+        )
+        OffsetsCamXYZPer := Format("[{1}],[{2}],[{3}]"
+            , config.data["Address_Offset"]["Player_Cam_XPer"]
+            , config.data["Address_Offset"]["Player_Cam_YPer"]
+            , config.data["Address_Offset"]["Player_Cam_ZPer"]
+        )
         try this.threads["SpeedUp"]["STOP"] := true
         if (this.setting["SpeedUp"]["On"])
-            this.threads["SpeedUp"] := Worker(Format(Game.ScriptAHK, Format('{1}({2},{3},[{4}],[{5}],[{6}],{7},{8},{9})'
-                , "SpeedUp", this.pid, this.ProcessHandle, AddressCoordXYZ, AddressCoordXYZVel, AddressCamXYZPer, this.setting["SpeedUp"]["SpeedUpRate"], this.setting["SpeedUp"]["GravityRate"], config.data["SpeedUp"]["Delay"])))
+            this.threads["SpeedUp"] := Worker(Format(Game.ScriptAHK
+                , Format('{1}({2},{3},{4},[{5}],[{6}],[{7}],{8},{9})'
+                    , "SpeedUp", this.pid, this.ProcessHandle
+                    , this.BaseAddress + config.data["Address"]["Player"]
+                    , OffsetsCoordXYZ, OffsetsCoordXYZVel, OffsetsCamXYZPer
+                    , this.setting["SpeedUp"]["SpeedUpRate"], config.data["SpeedUp"]["Delay"])))
     }
     StopAll(keepStatus := false) {
         running := this.running
@@ -1280,10 +1303,11 @@ class Game {
         )
     }
     Features_Health() {
-        this.setting["Address"]["Player_Health"] := this.GetAddressOffset(
-            this.BaseAddress + config.data["Address"]["Player"], StrSplit(config.data["Address_Offset"]["Player_Health"], ",")
-        )
-        if ( not this.ReadMemory(this.setting["Address"]["Player_Health"], "Double", 8)) {
+        if ( not this.ReadMemory(
+            this.GetAddressOffset(
+                this.BaseAddress + config.data["Address"]["Player"]
+                , StrSplit(config.data["Address_Offset"]["Player_Health"], ","))
+            , "Double", 8)) {
             this.NatualPress("E")
             Sleep(5000)
         }
