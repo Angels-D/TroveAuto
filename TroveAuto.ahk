@@ -7,6 +7,19 @@
 ;@Ahk2Exe-SetDescription Trove自动脚本`, 解放双手
 #SingleInstance Prompt
 
+; DLL封装
+#DllLoad Module
+AobScan := DynaCall("Module\AobScanFindSig", ["ui=tuiuiaui6ui6i"])
+CloseHandle := DynaCall("CloseHandle", ["c=ui"])
+OpenProcess := DynaCall("OpenProcess", ["ui=uicui", 3], 0x38, 0)
+GetProcessBaseAddress := DynaCall("GetWindowLongPtr", ["ui=tiui"])
+ReadProcessMemory := DynaCall("ReadProcessMemory", ["c=uiuituit"])
+WriteProcessMemory := DynaCall("WriteProcessMemory", ["c=uiuituit"])
+
+UpdateConfig := DynaCall("Module\UpdateConfig", ["aa"])
+FunctionOn := DynaCall("Module\FunctionOn", ["uiaai"])
+FunctionOff := DynaCall("Module\FunctionOff", ["uia"])
+
 SetTitleMatchMode("RegEx")
 
 config := _Config(
@@ -612,7 +625,8 @@ TP(GuiCtrlObj, Info) {
         Hotkey(MainGui["HotKeyTP"].Value, (*) {
             if (WinGetProcessName("A") == config.data["Global"]["GameTitle"])
                 FunctionOn(WingetPID("A"), "Tp2Forward", MainGui["DistanceTP"].Value "|" MainGui["DelayTP"].Value, true)
-        }, "On")
+            Send(MainGui["HotKeyTP"].Value)
+        }, "On I1")
     else
         Hotkey(MainGui["HotKeyTP"].Value, , "Off")
     for key in ["StepTP", "DelayTP", "DistanceTP", "HotKeyTP"]
@@ -764,18 +778,6 @@ SomeUiSetChangeEvent(GuiCtrlObj, Info) {
     Game.Lists[MainGui["SelectGame"].Text].setting[kv[1]][kv[2]] := GuiCtrlObj.Value
 }
 
-; DLL封装
-#DllLoad Module
-AobScan := DynaCall("Module\AobScanFindSig", ["ui=tuiuiaui6ui6i"])
-CloseHandle := DynaCall("CloseHandle", ["c=ui"])
-OpenProcess := DynaCall("OpenProcess", ["ui=uicui", 3], 0x38, 0)
-GetProcessBaseAddress := DynaCall("GetWindowLongPtr", ["ui=tiui"])
-ReadProcessMemory := DynaCall("ReadProcessMemory", ["c=uiuituit"])
-WriteProcessMemory := DynaCall("WriteProcessMemory", ["c=uiuituit"])
-
-FunctionOn := DynaCall("Module\FunctionOn", ["uiaai"])
-FunctionOff := DynaCall("Module\FunctionOff", ["uia"])
-
 ; 核心类
 
 ; Config Class
@@ -794,6 +796,22 @@ class _Config {
             for key, value in data
                 if key != "AppVersion"
                     this.data[sect][key] := IniRead(path, sect, key, this.data[sect][key])
+        UpdateConfig("Module::Feature::hideAnimation", this.data["Address"]["Animation"] "|-|-|-")
+        UpdateConfig("Module::Feature::autoAttack", this.data["Address"]["Attack"] "|-|-|-")
+        UpdateConfig("Module::Feature::breakBlocks", this.data["Address"]["Breakblocks"] "|-|-|-")
+        UpdateConfig("Module::Feature::byPass", this.data["Address"]["ByPass"] "|-|-|-")
+        UpdateConfig("Module::Feature::clipCam", this.data["Address"]["ClipCam"] "|-|-|-")
+        UpdateConfig("Module::Feature::disMount", this.data["Address"]["Dismount"] "|-|-|-")
+        UpdateConfig("Module::Feature::lockCam", this.data["Address"]["LockCam"] "|-|-|-")
+        UpdateConfig("Module::Feature::locakMapLimit", this.data["Address"]["Map"] "|-|-|-")
+        UpdateConfig("Module::Feature::quickMining", this.data["Address"]["Mining"] "|-|-|-")
+        UpdateConfig("Module::Feature::quickMiningGeode", this.data["Address"]["MiningGeode"] "|-|-|-")
+        UpdateConfig("Module::Feature::noClip", this.data["Address"]["NoClip"] "|-|-|-")
+        UpdateConfig("Module::Feature::unlockZoomLimit", this.data["Address"]["Zoom"] "|-|-|-")
+        UpdateConfig("Game::Player::offsets", this.data["Address"]["Player"] "|0x0")
+        UpdateConfig("Game::Player::Data::nameOffsets", this.data["Address"]["Name"] "|" this.data["Address_Offset"]["Name"])
+        UpdateConfig("Game::Player::Fish::offsets", this.data["Address"]["Fish"] "|0x68|0x0")
+        UpdateConfig("Game::World::offsets", this.data["Address"]["World"] "|0x0")
     }
     Save(path := unset) {
         path := IsSet(path) ? path : this.path

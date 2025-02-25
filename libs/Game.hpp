@@ -304,7 +304,7 @@ Memory::Offsets Game::Player::Coord::Data::xVelOffsets = {0xB0};
 Memory::Offsets Game::Player::Coord::Data::yVelOffsets = {0xB4};
 Memory::Offsets Game::Player::Coord::Data::zVelOffsets = {0xB8};
 Game::Signature Game::Player::Fish::signature = {0x0, "10 14 XX XX 00 00 00 00 FF 00 00 00 00"};
-Memory::Offsets Game::Player::Fish::offsets = {0x68, 0x0};
+Memory::Offsets Game::Player::Fish::offsets = {0x10888AC, 0x68, 0x0};
 Memory::Offsets Game::Player::Fish::Data::waterTakeOffsets = {0xE4, 0x3C4};
 Memory::Offsets Game::Player::Fish::Data::lavaTakeOffsets = {0xE4, 0x898};
 Memory::Offsets Game::Player::Fish::Data::chocoTakeOffsets = {0xE4, 0x62C};
@@ -692,7 +692,7 @@ Game::Player &Game::Player::UpdateAddress()
     data.bag.UpdateBaseAddress(address);
     data.camera.UpdateBaseAddress(address);
     data.coord.UpdateBaseAddress(address);
-    data.fish.UpdateBaseAddress(address);
+    data.fish.UpdateBaseAddress(baseAddress);
     return *this;
 }
 Game::Player &Game::Player::UpdateData()
