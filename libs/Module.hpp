@@ -53,95 +53,42 @@ namespace Module
         Memory::Offsets offsets;
         std::vector<BYTE> dataOn, dataOff;
         Game::Signature signature;
+        static Feature hideAnimation;
+        static Feature autoAttack;
+        static Feature breakBlocks;
+        static Feature byPass;
+        static Feature clipCam;
+        static Feature disMount;
+        static Feature lockCam;
+        static Feature locakMapLimit;
+        static Feature quickMining;
+        static Feature quickMiningGeode;
+        static Feature noGravity;
+        static Feature noClip;
+        static Feature unlockZoomLimit;
     };
 
     static uint32_t bossLevel = 4;
     static uint32_t tpStep = 4;
     static std::pair<float, float> aimOffset = {1.25, 0.25};
 
-    static Feature hideAnimation = {
-        {0x741BC5},
-        {0x4C},
-        {0x44},
-        {0x3, "F3 0F 11 44 24 24 F3 0F 58 84 24 80 00 00 00 50 F3 0F 11 43 24 E8 XX XX XX XX 8D 44 24 34 50"}};
-    static Feature autoAttack = {
-        {0x9B14A8},
-        {0xF0},
-        {0xF1},
-        {0x1, "DF F1 DD D8 72 1F"}};
-    static Feature breakBlocks = {
-        {0xB237E3},
-        {0x01},
-        {0x00},
-        {0x3, "80 7F XX 00 0F 84 XX XX XX XX 8B 4B 08 E8 XX XX XX XX FF 75 0C 8B 4D 10 8B F0 FF 75 08 8B 45 14 83 EC 0C 8B 3E 8B D4 6A 01 89 0A 8B CE 89 42 04 8B 45 18"}};
-    static Feature byPass = {
-        {0x187A16},
-        {0x47},
-        {0x67},
-        {0x1, "DC 67 68 C6"}};
-    static Feature clipCam = {
-        {0xADA36A},
-        {0x90, 0x90, 0x90},
-        {0x0F, 0x29, 0x01},
-        {0x0, "0F 29 01 C7 41 34 00 00 00 00 0F"}};
-    static Feature disMount = {
-        {0x375E2E},
-        {0xEB},
-        {0x74},
-        {0x0, "74 XX 8B 07 8B CF 6A 00 6A 00 FF 50"}};
-    static Feature lockCam = {
-        {0x80AF25},
-        {0xEB},
-        {0x74},
-        {0x0, "74 05 8B 01 FF 50 0C 8B E5"}};
-    static Feature locakMapLimit = {
-        {0x89E15D},
-        {0xEB},
-        {0x77},
-        {0x0, "77 XX B8 XX XX XX XX F3 0F 10 08 F3 0F 11 89 XX XX XX XX 8B 89"}};
-    static Feature quickMining = {
-        {0xB08D98},
-        {0xF0},
-        {0xF1},
-        {0x1, "DF F1 DD D8 72 61"}};
-    static Feature quickMiningGeode = {
-        {0x90E6F7},
-        {0xF0},
-        {0xF1},
-        {0x1, "DF F1 DD D8 72 35 8D"}};
-    static Feature noGravity = {
-        {0xA03168, 0xC},
-        {0x42, 0xC8},
-        {0x0, 0x0},
-        {-0x4, "F3 0F 11 45 FC D9 45 FC 8B E5 5D C3 D9 05 XX XX XX XX 8B E5 5D C3 D9 05 XX XX XX XX 8B E5 5D C3"}};
-    static Feature noClip = {
-        {0x635A25},
-        {0xEB},
-        {0x74},
-        {0x0, "74 31 FF 73 14 8B 47 04 2B 07"}};
-    static Feature unlockZoomLimit = {
-        {0xAD82E6},
-        {0x57},
-        {0x5F},
-        {0x3, "F3 0F 11 5F 2C"}};
-
     static std::map<std::string, void *> configMap =
         {{"Module::bossLevel", &Module::bossLevel},
          {"Module::tpStep", &Module::tpStep},
          {"Module::aimOffset", &Module::aimOffset},
-         {"Module::hideAnimation", &Module::hideAnimation},
-         {"Module::autoAttack", &Module::autoAttack},
-         {"Module::breakBlocks", &Module::breakBlocks},
-         {"Module::byPass", &Module::byPass},
-         {"Module::clipCam", &Module::clipCam},
-         {"Module::disMount", &Module::disMount},
-         {"Module::lockCam", &Module::lockCam},
-         {"Module::locakMapLimit", &Module::locakMapLimit},
-         {"Module::quickMining", &Module::quickMining},
-         {"Module::quickMiningGeode", &Module::quickMiningGeode},
-         {"Module::noGravity", &Module::noGravity},
-         {"Module::noClip", &Module::noClip},
-         {"Module::unlockZoomLimit", &Module::unlockZoomLimit},
+         {"Module::Feature::hideAnimation", &Module::Feature::hideAnimation},
+         {"Module::Feature::autoAttack", &Module::Feature::autoAttack},
+         {"Module::Feature::breakBlocks", &Module::Feature::breakBlocks},
+         {"Module::Feature::byPass", &Module::Feature::byPass},
+         {"Module::Feature::clipCam", &Module::Feature::clipCam},
+         {"Module::Feature::disMount", &Module::Feature::disMount},
+         {"Module::Feature::lockCam", &Module::Feature::lockCam},
+         {"Module::Feature::locakMapLimit", &Module::Feature::locakMapLimit},
+         {"Module::Feature::quickMining", &Module::Feature::quickMining},
+         {"Module::Feature::quickMiningGeode", &Module::Feature::quickMiningGeode},
+         {"Module::Feature::noGravity", &Module::Feature::noGravity},
+         {"Module::Feature::noClip", &Module::Feature::noClip},
+         {"Module::Feature::unlockZoomLimit", &Module::Feature::unlockZoomLimit},
          {"Game::moduleName", &Game::moduleName},
          {"Game::World::signature", &Game::World::signature},
          {"Game::World::offsets", &Game::World::offsets},
@@ -273,6 +220,73 @@ std::pair<float, float> CalculateAngles(const float &ax, const float &ay, const 
 
 namespace Module
 {
+
+    Feature Feature::hideAnimation = {
+        {0x741BC5},
+        {0x4C},
+        {0x44},
+        {0x3, "F3 0F 11 44 24 24 F3 0F 58 84 24 80 00 00 00 50 F3 0F 11 43 24 E8 XX XX XX XX 8D 44 24 34 50"}};
+    Feature Feature::autoAttack = {
+        {0x9B14A8},
+        {0xF0},
+        {0xF1},
+        {0x1, "DF F1 DD D8 72 1F"}};
+    Feature Feature::breakBlocks = {
+        {0xB237E3},
+        {0x01},
+        {0x00},
+        {0x3, "80 7F XX 00 0F 84 XX XX XX XX 8B 4B 08 E8 XX XX XX XX FF 75 0C 8B 4D 10 8B F0 FF 75 08 8B 45 14 83 EC 0C 8B 3E 8B D4 6A 01 89 0A 8B CE 89 42 04 8B 45 18"}};
+    Feature Feature::byPass = {
+        {0x187A16},
+        {0x47},
+        {0x67},
+        {0x1, "DC 67 68 C6"}};
+    Feature Feature::clipCam = {
+        {0xADA36A},
+        {0x90, 0x90, 0x90},
+        {0x0F, 0x29, 0x01},
+        {0x0, "0F 29 01 C7 41 34 00 00 00 00 0F"}};
+    Feature Feature::disMount = {
+        {0x375E2E},
+        {0xEB},
+        {0x74},
+        {0x0, "74 XX 8B 07 8B CF 6A 00 6A 00 FF 50"}};
+    Feature Feature::lockCam = {
+        {0x80AF25},
+        {0xEB},
+        {0x74},
+        {0x0, "74 05 8B 01 FF 50 0C 8B E5"}};
+    Feature Feature::locakMapLimit = {
+        {0x89E15D},
+        {0xEB},
+        {0x77},
+        {0x0, "77 XX B8 XX XX XX XX F3 0F 10 08 F3 0F 11 89 XX XX XX XX 8B 89"}};
+    Feature Feature::quickMining = {
+        {0xB08D98},
+        {0xF0},
+        {0xF1},
+        {0x1, "DF F1 DD D8 72 61"}};
+    Feature Feature::quickMiningGeode = {
+        {0x90E6F7},
+        {0xF0},
+        {0xF1},
+        {0x1, "DF F1 DD D8 72 35 8D"}};
+    Feature Feature::noGravity = {
+        {0xA03168, 0xC},
+        {0x42, 0xC8},
+        {0x0, 0x0},
+        {-0x4, "F3 0F 11 45 FC D9 45 FC 8B E5 5D C3 D9 05 XX XX XX XX 8B E5 5D C3 D9 05 XX XX XX XX 8B E5 5D C3"}};
+    Feature Feature::noClip = {
+        {0x635A25},
+        {0xEB},
+        {0x74},
+        {0x0, "74 31 FF 73 14 8B 47 04 2B 07"}};
+    Feature Feature::unlockZoomLimit = {
+        {0xAD82E6},
+        {0x57},
+        {0x5F},
+        {0x3, "F3 0F 11 5F 2C"}};
+
     void SetFeature(const Feature &feature, const Memory::DWORD &pid, const bool &on)
     {
         Game game(pid);
@@ -287,9 +301,9 @@ namespace Module
     {
         while (funtionRunMap[{pid, "AutoAttack"}].load())
         {
-            SetFeature(autoAttack, pid, true);
+            SetFeature(Feature::autoAttack, pid, true);
             std::this_thread::sleep_for(std::chrono::milliseconds(keep));
-            SetFeature(autoAttack, pid, false);
+            SetFeature(Feature::autoAttack, pid, false);
             std::this_thread::sleep_for(std::chrono::milliseconds(delay));
         }
     }
@@ -433,7 +447,7 @@ namespace Module
         uint32_t tryAgain = 0;
         float dist = 0, lastDist = 0, x = 0, y = 0, z = 0;
         if (tryAgainMax)
-            SetFeature(byPass, pid, true);
+            SetFeature(Feature::byPass, pid, true);
         do
         {
             game.data.player.data.coord.UpdateAddress();
@@ -449,7 +463,7 @@ namespace Module
             std::this_thread::sleep_for(std::chrono::milliseconds(delay));
         } while (tryAgain < tryAgainMax && dist > tpStep);
         if (tryAgainMax)
-            SetFeature(byPass, pid, false);
+            SetFeature(Feature::byPass, pid, false);
         return dist;
     }
 
@@ -475,7 +489,7 @@ namespace Module
             player = FindPlayer(game, targets);
             if (!player)
                 target = FindTarget(game, false, false, targets, noTargets, 9999, 0);
-            SetFeature(byPass, pid, true);
+            SetFeature(Feature::byPass, pid, true);
             while ((player || target) && funtionRunMap[{pid, "FollowTarget"}].load())
             {
                 std::this_thread::sleep_for(std::chrono::milliseconds(delay));
@@ -514,7 +528,7 @@ namespace Module
                         break;
                 }
             }
-            SetFeature(byPass, pid, false);
+            SetFeature(Feature::byPass, pid, false);
         }
     }
 
@@ -565,6 +579,9 @@ namespace Module
                 }
             if (isNoTarget)
                 continue;
+            for (auto targetRegex : targetRegexs)
+                if (std::regex_match(name, targetRegex))
+                    return &entity;
             if (targetBoss &&
                 ((entity.data.level.UpdateData().data >= bossLevel &&
                   std::regex_match(name, std::regex(".*npc.*"))) ||
@@ -574,9 +591,6 @@ namespace Module
                 std::regex_match(name, std::regex(".*plant.*")) &&
                 !std::regex_match(name, std::regex(".*npc.*")))
                 return &entity;
-            for (auto targetRegex : targetRegexs)
-                if (std::regex_match(name, targetRegex))
-                    return &entity;
         }
         return nullptr;
     }
@@ -585,37 +599,66 @@ namespace Module
 void UpdateConfig(const char *key, const char *value)
 {
     const std::string _key = key;
-    const std::string _value = value;
-    if (Module::configMap.find(_key) == Module::configMap.end())
+    const std::vector<std::string> _value = split(value, '|');
+    if (_value.empty() ||
+        Module::configMap.find(_key) == Module::configMap.end())
         return;
-    size_t index = 0;
-    if (_key == "Module::bossLevel")
-        Module::bossLevel = std::stoul(_value);
-    else if (_key == "Module::aimOffset")
-        Module::aimOffset = {std::stof(_value, &index), std::stof(_value.substr(index + 1), &index)};
-    else if (_key.find("Offsets") != std::string::npos)
+    if (_value.size() >= 1 &&
+        (_key == "Module::bossLevel" ||
+         _key == "Module::tpStep"))
+        Module::bossLevel = std::stoul(_value[0]);
+    else if (_value.size() >= 2 &&
+             _key == "Module::aimOffset")
+        Module::aimOffset = {std::stof(_value[0]), std::stof(_value[1])};
+    else if (_key.find("ffsets") != std::string::npos)
     {
         Memory::Offsets *offsets = (Memory::Offsets *)Module::configMap[_key];
         offsets->clear();
-        size_t pos = 0;
-        do
-        {
-            offsets->push_back(std::stol(_value.substr(pos), &index, 16));
-            pos += index + 1;
-        } while (pos < _value.length());
+        for (auto offset : _value)
+            offsets->push_back(std::stol(offset, nullptr, 16));
     }
-    else
+    else if (_value.size() >= 2 &&
+             _key.find("ignature") != std::string::npos)
     {
         Object<>::Signature *signature = (Object<>::Signature *)Module::configMap[_key];
-        signature->first = std::stol(_value, &index, 16);
-        signature->second = _value.substr(index + 1);
+        signature->first = std::stol(_value[0], nullptr, 16);
+        signature->second = _value[1];
+    }
+    else if (_value.size() >= 4 &&
+             _key.find("Module::Feature") != std::string::npos)
+    {
+        Module::Feature *feature = (Module::Feature *)Module::configMap[_key];
+        if (_value[0] != "-")
+        {
+            feature->offsets.clear();
+            for (auto offset : split(_value[0], ','))
+                feature->offsets.emplace_back(std::stol(offset, nullptr, 16));
+        }
+        if (_value[1] != "-")
+        {
+            feature->dataOn.clear();
+            for (auto dataOn : split(_value[1], ','))
+                feature->dataOn.emplace_back(std::stoul(dataOn, nullptr, 16));
+        }
+        if (_value[2] != "-")
+        {
+            feature->dataOff.clear();
+            for (auto dataOff : split(_value[2], ','))
+                feature->dataOff.emplace_back(std::stoul(dataOff, nullptr, 16));
+        }
+        if (_value[3] != "-")
+        {
+            const auto signature = split(_value[3], ',');
+            feature->signature.first = std::stol(signature[0], nullptr, 16);
+            feature->signature.second = signature[1];
+        }
     }
 }
 
 void FunctionOn(const Memory::DWORD pid, const char *funtion, const char *argv, const bool waiting)
 {
     std::thread *thread = nullptr;
-    std::vector<std::string> _argv = split(argv, '|');
+    const std::vector<std::string> _argv = split(argv, '|');
     Module::funtionRunMap[{pid, funtion}].store(true);
     if (std::strcmp(funtion, "AutoAim") == 0)
         thread = new std::thread(
@@ -658,29 +701,29 @@ void FunctionOn(const Memory::DWORD pid, const char *funtion, const char *argv, 
     else if (std::strcmp(funtion, "SetAutoRespawn") == 0)
         thread = new std::thread(Module::SetAutoRespawn, pid, std::stoul(_argv[0]));
     else if (std::strcmp(funtion, "SetHideAnimation") == 0)
-        thread = new std::thread(Module::SetFeature, Module::hideAnimation, pid, std::stoul(_argv[0]));
+        thread = new std::thread(Module::SetFeature, Module::Feature::hideAnimation, pid, std::stoul(_argv[0]));
     else if (std::strcmp(funtion, "SetBreakBlocks") == 0)
-        thread = new std::thread(Module::SetFeature, Module::breakBlocks, pid, std::stoul(_argv[0]));
+        thread = new std::thread(Module::SetFeature, Module::Feature::breakBlocks, pid, std::stoul(_argv[0]));
     else if (std::strcmp(funtion, "SetByPass") == 0)
-        thread = new std::thread(Module::SetFeature, Module::byPass, pid, std::stoul(_argv[0]));
+        thread = new std::thread(Module::SetFeature, Module::Feature::byPass, pid, std::stoul(_argv[0]));
     else if (std::strcmp(funtion, "SetClipCam") == 0)
-        thread = new std::thread(Module::SetFeature, Module::clipCam, pid, std::stoul(_argv[0]));
+        thread = new std::thread(Module::SetFeature, Module::Feature::clipCam, pid, std::stoul(_argv[0]));
     else if (std::strcmp(funtion, "SetDisMount") == 0)
-        thread = new std::thread(Module::SetFeature, Module::disMount, pid, std::stoul(_argv[0]));
+        thread = new std::thread(Module::SetFeature, Module::Feature::disMount, pid, std::stoul(_argv[0]));
     else if (std::strcmp(funtion, "SetLockCam") == 0)
-        thread = new std::thread(Module::SetFeature, Module::lockCam, pid, std::stoul(_argv[0]));
+        thread = new std::thread(Module::SetFeature, Module::Feature::lockCam, pid, std::stoul(_argv[0]));
     else if (std::strcmp(funtion, "SetLocakMapLimit") == 0)
-        thread = new std::thread(Module::SetFeature, Module::locakMapLimit, pid, std::stoul(_argv[0]));
+        thread = new std::thread(Module::SetFeature, Module::Feature::locakMapLimit, pid, std::stoul(_argv[0]));
     else if (std::strcmp(funtion, "SetQuickMining") == 0)
-        thread = new std::thread(Module::SetFeature, Module::quickMining, pid, std::stoul(_argv[0]));
+        thread = new std::thread(Module::SetFeature, Module::Feature::quickMining, pid, std::stoul(_argv[0]));
     else if (std::strcmp(funtion, "SetQuickMiningGeode") == 0)
-        thread = new std::thread(Module::SetFeature, Module::quickMiningGeode, pid, std::stoul(_argv[0]));
+        thread = new std::thread(Module::SetFeature, Module::Feature::quickMiningGeode, pid, std::stoul(_argv[0]));
     else if (std::strcmp(funtion, "SetNoGravity") == 0)
-        thread = new std::thread(Module::SetFeature, Module::noGravity, pid, std::stoul(_argv[0]));
+        thread = new std::thread(Module::SetFeature, Module::Feature::noGravity, pid, std::stoul(_argv[0]));
     else if (std::strcmp(funtion, "SetNoClip") == 0)
-        thread = new std::thread(Module::SetFeature, Module::noClip, pid, std::stoul(_argv[0]));
+        thread = new std::thread(Module::SetFeature, Module::Feature::noClip, pid, std::stoul(_argv[0]));
     else if (std::strcmp(funtion, "SetUnlockZoomLimit") == 0)
-        thread = new std::thread(Module::SetFeature, Module::unlockZoomLimit, pid, std::stoul(_argv[0]));
+        thread = new std::thread(Module::SetFeature, Module::Feature::unlockZoomLimit, pid, std::stoul(_argv[0]));
     if (thread && waiting)
     {
         thread->join();
