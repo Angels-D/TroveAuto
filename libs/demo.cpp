@@ -7,7 +7,7 @@ void FindTarget()
     printf("\033c");
     Game game(Memory::GetProcessPid("Trove.exe")[0]);
     game.UpdateAddress();
-    Game::World::Entity *target = nullptr;
+    std::unique_ptr<Game::World::Entity> target = nullptr;
     game.data.player.UpdateAddress();
     auto UpdateAddress = [&game]()
     {
@@ -24,7 +24,7 @@ void FindTarget()
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
         UpdateAddress();
         target = Module::FindTarget(
-            game, true, false,
+            game, true, false, false, 
             {".*chest_quest_standard.*", ".*chest_quest_recipe.*"},
             {".*pet.*",
              ".*placeable.*",
@@ -83,7 +83,7 @@ int main(int argc, char *argv[])
 
     // Module::Tp2Forward(Memory::GetProcessPid("Trove.exe")[0], 50, 50);
 
-    // FunctionOn(Memory::GetProcessPid("Trove.exe")[0],"FollowTarget","Artloot| |50|50",true);
+    // FunctionOn(Memory::GetProcessPid("Trove.exe")[0],"FollowTarget",".*hellbug.*| |50|50",true);
 
     return 0;
 }
