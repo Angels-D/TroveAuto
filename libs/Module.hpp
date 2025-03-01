@@ -150,15 +150,15 @@ namespace Module
     void SetAutoAttack(const Memory::DWORD &pid, const uint32_t &keep, const uint32_t &delay = 50);
     void SetAutoRespawn(const Memory::DWORD &pid, const uint32_t &delay = 50);
 
-    void AutoAim(const Memory::DWORD &pid, const bool &targetBoss = true, const bool &targetPlant = false, const std::vector<std::string> &targets = {}, const std::vector<std::string> &noTargets = {}, const uint32_t &aimRange = 45, const uint32_t &showRange = 0, const uint32_t &delay = 50);
+    void AutoAim(const Memory::DWORD &pid, const bool &targetBoss = true, const bool &targetPlant = false, const bool &targetNormal = false, const std::vector<std::string> &targets = {}, const std::vector<std::string> &noTargets = {}, const uint32_t &aimRange = 45, const uint32_t &showRange = 0, const uint32_t &delay = 50);
     void SpeedUp(const Memory::DWORD &pid, const float &speed = 50, const uint32_t &delay = 50, const std::vector<std::string> &hotKey = {"W", "A", "S", "D", "Space", "Shift"});
 
     void Tp2Forward(const Memory::DWORD &pid, const float &tpRange = tpStep, const uint32_t &delay = 50);
-    float Tp2Target(const Memory::DWORD &pid, const float &targetX, const float &targetY, const float &targetZ, const uint32_t &delay = 50, const uint32_t &tryAgainMax = 10);
+    void Tp2Target(const Memory::DWORD &pid, const float &targetX, const float &targetY, const float &targetZ, const uint32_t &delay = 50, const uint32_t &tryAgainMax = 10);
     void FollowTarget(const Memory::DWORD &pid, const std::vector<std::string> &targets, const std::vector<std::string> &noTargets = {}, const float &speed = 50, const uint32_t &delay = 50);
 
-    Game::World::Player *FindPlayer(Game &game, const std::vector<std::string> &targets);
-    Game::World::Entity *FindTarget(Game &game, const bool &targetBoss = true, const bool &targetPlant = false, const std::vector<std::string> &targets = {}, const std::vector<std::string> &noTargets = {}, const uint32_t &aimRange = 45, const uint32_t &showRange = 0);
+    std::unique_ptr<Game::World::Player> FindPlayer(Game &game, const std::vector<std::string> &targets);
+    std::unique_ptr<Game::World::Entity> FindTarget(Game &game, const bool &targetBoss = true, const bool &targetPlant = false, const bool &targetNormal = false, const std::vector<std::string> &targets = {}, const std::vector<std::string> &noTargets = {}, const uint32_t &aimRange = 45, const uint32_t &showRange = 0);
 
 };
 
@@ -222,67 +222,67 @@ namespace Module
 {
 
     Feature Feature::hideAnimation = {
-        {0x741BC5},
+        {0x7414D5},
         {0x4C},
         {0x44},
         {0x3, "F3 0F 11 44 24 24 F3 0F 58 84 24 80 00 00 00 50 F3 0F 11 43 24 E8 XX XX XX XX 8D 44 24 34 50"}};
     Feature Feature::autoAttack = {
-        {0x9B14A8},
+        {0x8B7798},
         {0xF0},
         {0xF1},
         {0x1, "DF F1 DD D8 72 1F"}};
     Feature Feature::breakBlocks = {
-        {0xB237E3},
+        {0xB3F193},
         {0x01},
         {0x00},
         {0x3, "80 7F XX 00 0F 84 XX XX XX XX 8B 4B 08 E8 XX XX XX XX FF 75 0C 8B 4D 10 8B F0 FF 75 08 8B 45 14 83 EC 0C 8B 3E 8B D4 6A 01 89 0A 8B CE 89 42 04 8B 45 18"}};
     Feature Feature::byPass = {
-        {0x187A16},
+        {0x1A0A36},
         {0x47},
         {0x67},
         {0x1, "DC 67 68 C6"}};
     Feature Feature::clipCam = {
-        {0xADA36A},
+        {0xAAB99A},
         {0x90, 0x90, 0x90},
         {0x0F, 0x29, 0x01},
         {0x0, "0F 29 01 C7 41 34 00 00 00 00 0F"}};
     Feature Feature::disMount = {
-        {0x375E2E},
+        {0x477A0E},
         {0xEB},
         {0x74},
         {0x0, "74 XX 8B 07 8B CF 6A 00 6A 00 FF 50"}};
     Feature Feature::lockCam = {
-        {0x80AF25},
+        {0x85A6D5},
         {0xEB},
         {0x74},
         {0x0, "74 05 8B 01 FF 50 0C 8B E5"}};
     Feature Feature::locakMapLimit = {
-        {0x89E15D},
+        {0xABE1ED},
         {0xEB},
         {0x77},
         {0x0, "77 XX B8 XX XX XX XX F3 0F 10 08 F3 0F 11 89 XX XX XX XX 8B 89"}};
     Feature Feature::quickMining = {
-        {0xB08D98},
+        {0x90DAB8},
         {0xF0},
         {0xF1},
         {0x1, "DF F1 DD D8 72 61"}};
     Feature Feature::quickMiningGeode = {
-        {0x90E6F7},
+        {0x96BDF7},
         {0xF0},
         {0xF1},
         {0x1, "DF F1 DD D8 72 35 8D"}};
     Feature Feature::noGravity = {
-        {0xA03168, 0xC},
+        {0x4F6CF4, 0xC},
         {0x42, 0xC8},
         {0x0, 0x0},
         {-0x4, "F3 0F 11 45 FC D9 45 FC 8B E5 5D C3 D9 05 XX XX XX XX 8B E5 5D C3 D9 05 XX XX XX XX 8B E5 5D C3"}};
     Feature Feature::noClip = {
-        {0x635A25},
+        {0x565125},
         {0xEB},
         {0x74},
         {0x0, "74 31 FF 73 14 8B 47 04 2B 07"}};
     Feature Feature::unlockZoomLimit = {
-        {0xAD82E6},
+        {0xAA9916},
         {0x57},
         {0x5F},
         {0x3, "F3 0F 11 5F 2C"}};
@@ -321,11 +321,11 @@ namespace Module
         }
     }
 
-    void AutoAim(const Memory::DWORD &pid, const bool &targetBoss, const bool &targetPlant, const std::vector<std::string> &targets, const std::vector<std::string> &noTargets, const uint32_t &aimRange, const uint32_t &showRange, const uint32_t &delay)
+    void AutoAim(const Memory::DWORD &pid, const bool &targetBoss, const bool &targetPlant, const bool &targetNormal, const std::vector<std::string> &targets, const std::vector<std::string> &noTargets, const uint32_t &aimRange, const uint32_t &showRange, const uint32_t &delay)
     {
         Game game(pid);
         game.UpdateAddress().data.player.UpdateAddress();
-        Game::World::Entity *target = nullptr;
+        std::unique_ptr<Game::World::Entity> target = nullptr;
         auto UpdateAddress = [&game]()
         {
             game.data.player.data.coord.UpdateAddress();
@@ -340,7 +340,7 @@ namespace Module
         {
             UpdateAddress();
             std::this_thread::sleep_for(std::chrono::milliseconds(delay));
-            target = FindTarget(game, targetBoss, targetPlant, targets, noTargets, aimRange, showRange);
+            target = FindTarget(game, targetBoss, targetPlant, targetNormal, targets, noTargets, aimRange, showRange);
             if (!target)
                 continue;
             while (funtionRunMap[{pid, "AutoAim"}].load() &&
@@ -440,7 +440,7 @@ namespace Module
             delay);
     }
 
-    float Tp2Target(const Memory::DWORD &pid, const float &targetX, const float &targetY, const float &targetZ, const uint32_t &delay, const uint32_t &tryAgainMax)
+    void Tp2Target(const Memory::DWORD &pid, const float &targetX, const float &targetY, const float &targetZ, const uint32_t &delay, const uint32_t &tryAgainMax)
     {
         Game game(pid);
         game.UpdateAddress().data.player.UpdateAddress();
@@ -464,7 +464,6 @@ namespace Module
         } while (tryAgain < tryAgainMax && dist > tpStep);
         if (tryAgainMax)
             SetFeature(Feature::byPass, pid, false);
-        return dist;
     }
 
     void FollowTarget(const Memory::DWORD &pid, const std::vector<std::string> &targets, const std::vector<std::string> &noTargets, const float &speed, const uint32_t &delay)
@@ -480,20 +479,34 @@ namespace Module
         };
         while (funtionRunMap[{pid, "FollowTarget"}].load())
         {
+            std::this_thread::sleep_for(std::chrono::milliseconds(delay));
+            std::unique_ptr<Game::World::Player> player = nullptr;
+            std::unique_ptr<Game::World::Entity> target = nullptr;
             UpdateAddress();
-            Game::World::Player *player = nullptr;
-            Game::World::Entity *target = nullptr;
+            if (!(player = FindPlayer(game, targets)) &&
+                !(target = FindTarget(game, false, false, false, targets, noTargets, 9999, 0)))
+                continue;
             float x = 0, y = 0, z = 0, targetX = 0;
             float targetY = 0, targetZ = 0, dist = 0, lastDist = 9999;
             uint32_t step = 0;
-            player = FindPlayer(game, targets);
-            if (!player)
-                target = FindTarget(game, false, false, targets, noTargets, 9999, 0);
             SetFeature(Feature::byPass, pid, true);
-            while ((player || target) && funtionRunMap[{pid, "FollowTarget"}].load())
+            while (funtionRunMap[{pid, "FollowTarget"}].load())
             {
                 std::this_thread::sleep_for(std::chrono::milliseconds(delay));
                 UpdateAddress();
+                if (player && !(player = FindPlayer(game, targets)))
+                    break;
+                if (target)
+                {
+                    if (!target->data.isDeath.UpdateData().data)
+                        break;
+                    if (target->data.health.UpdateData().data < 1)
+                    {
+                        const auto &entitys = game.data.world.UpdateAddress().UpdateData().data.entitys;
+                        if (std::find(entitys.begin(), entitys.end(), *target) == entitys.end())
+                            break;
+                    }
+                }
                 x = game.data.player.data.coord.data.x.UpdateData().data;
                 y = game.data.player.data.coord.data.y.UpdateData().data;
                 z = game.data.player.data.coord.data.z.UpdateData().data;
@@ -504,12 +517,9 @@ namespace Module
                 game.data.player.data.coord.data.yVel.UpdateAddress() = 0;
                 game.data.player.data.coord.data.zVel.UpdateAddress() = 0;
                 if ((dist = CalculateDistance(x, y, z, targetX, targetY, targetZ)) <= 1 || std::isnan(dist))
-                    break;
+                    continue;
                 if (step % (1000 / delay) == 0 && tpStep && lastDist - dist < tpStep)
-                {
-                    if (Tp2Target(pid, targetX, targetY, targetZ, delay, 0) < tpStep)
-                        break;
-                }
+                    Tp2Target(pid, targetX, targetY, targetZ, delay, 0);
                 else
                 {
                     game.data.player.data.coord.data.xVel.UpdateAddress() = (targetX - x) / dist * speed;
@@ -519,20 +529,12 @@ namespace Module
                 if (step % (500 / delay) == 0)
                     lastDist = dist;
                 step = (step + 1) % (2000 / delay);
-                if (player && (player = FindPlayer(game, targets)))
-                    continue;
-                if (target && target->data.health.UpdateData().data < 1)
-                {
-                    const auto &entitys = game.data.world.UpdateAddress().UpdateData().data.entitys;
-                    if (std::find(entitys.begin(), entitys.end(), *target) == entitys.end())
-                        break;
-                }
             }
             SetFeature(Feature::byPass, pid, false);
         }
     }
 
-    Game::World::Player *FindPlayer(Game &game, const std::vector<std::string> &targets)
+    std::unique_ptr<Game::World::Player> FindPlayer(Game &game, const std::vector<std::string> &targets)
     {
         auto &players = game.data.world.UpdateAddress().UpdateData().data.players;
         std::vector<std::regex> targetRegexs;
@@ -543,12 +545,12 @@ namespace Module
             auto name = player.UpdateAddress().data.name.UpdateAddress().UpdateData(64).data;
             for (auto targetRegex : targetRegexs)
                 if (std::regex_match(name, targetRegex))
-                    return &player;
+                    return std::make_unique<Game::World::Player>(player);
         }
         return nullptr;
     }
 
-    Game::World::Entity *FindTarget(Game &game, const bool &targetBoss, const bool &targetPlant, const std::vector<std::string> &targets, const std::vector<std::string> &noTargets, const uint32_t &aimRange, const uint32_t &showRange)
+    std::unique_ptr<Game::World::Entity> FindTarget(Game &game, const bool &targetBoss, const bool &targetPlant, const bool &targetNormal, const std::vector<std::string> &targets, const std::vector<std::string> &noTargets, const uint32_t &aimRange, const uint32_t &showRange)
     {
         auto &entitys = game.data.world.UpdateAddress().UpdateData().data.entitys;
         std::vector<std::regex> targetRegexs, noTargetRegexs;
@@ -581,16 +583,18 @@ namespace Module
                 continue;
             for (auto targetRegex : targetRegexs)
                 if (std::regex_match(name, targetRegex))
-                    return &entity;
-            if (targetBoss &&
-                ((entity.data.level.UpdateData().data >= bossLevel &&
-                  std::regex_match(name, std::regex(".*npc.*"))) ||
-                 std::regex_match(name, std::regex(".*boss.*"))))
-                return &entity;
-            if (targetPlant &&
-                std::regex_match(name, std::regex(".*plant.*")) &&
-                !std::regex_match(name, std::regex(".*npc.*")))
-                return &entity;
+                    return std::make_unique<Game::World::Entity>(entity);
+            if (std::regex_match(name, std::regex(".*npc.*")))
+            {
+                if (targetBoss &&
+                    (entity.data.level.UpdateData().data >= bossLevel ||
+                     std::regex_match(name, std::regex(".*boss.*"))))
+                    return std::make_unique<Game::World::Entity>(entity);
+                if (targetNormal)
+                    return std::make_unique<Game::World::Entity>(entity);
+            }
+            else if (targetPlant && std::regex_match(name, std::regex(".*plant.*")))
+                return std::make_unique<Game::World::Entity>(entity);
         }
         return nullptr;
     }
@@ -665,11 +669,12 @@ void FunctionOn(const Memory::DWORD pid, const char *funtion, const char *argv, 
             Module::AutoAim, pid,
             std::stoul(_argv[0]),
             std::stoul(_argv[1]),
-            split(_argv[2], ','),
+            std::stoul(_argv[2]),
             split(_argv[3], ','),
-            std::stoul(_argv[4]),
+            split(_argv[4], ','),
             std::stoul(_argv[5]),
-            std::stoul(_argv[6]));
+            std::stoul(_argv[6]),
+            std::stoul(_argv[7]));
     else if (std::strcmp(funtion, "SpeedUp") == 0)
         thread = new std::thread(
             Module::SpeedUp, pid,

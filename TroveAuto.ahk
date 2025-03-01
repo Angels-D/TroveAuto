@@ -1,6 +1,6 @@
 ;@Ahk2Exe-UpdateManifest 2
 ;@Ahk2Exe-SetName TroveAuto
-;@Ahk2Exe-SetProductVersion 2.4.5
+;@Ahk2Exe-SetProductVersion 2.4.6
 ;@Ahk2Exe-SetCopyright GPL-3.0 license
 ;@Ahk2Exe-SetLanguage Chinese_PRC
 ;@Ahk2Exe-SetMainIcon TroveAuto.ico
@@ -28,8 +28,8 @@ config := _Config(
         "Global", Map(
             "GameTitle", "Trove.exe",
             "GamePath", "",
-            "ConfigVersion", "20250224170000",
-            "AppVersion", "20250224170000",
+            "ConfigVersion", "20250301145000",
+            "AppVersion", "20250301145000",
             "Source", "https://github.com/Angels-D/TroveAuto/",
             "Mirror", "https://github.moeyy.xyz/",
         ),
@@ -56,22 +56,22 @@ config := _Config(
             "Fish", "f",
         ),
         "Address", Map(
-            "Animation", "0x741BC5",
-            "Attack", "0x9B14A8",
-            "Breakblocks", "0xB237E3",
-            "ByPass", "0x187A16",
-            "ClipCam", "0xADA36A",
-            "Dismount", "0x375E2E",
-            "Fish", "0x10888AC",
-            "LockCam", "0x80AF25",
-            "Map", "0x89E15D",
-            "Mining", "0xB08D98",
-            "MiningGeode", "0x90E6F7",
-            "Name", "0xA03168",
-            "NoClip", "0x635A25",
-            "Player", "0x108BE40",
-            "World", "0x108BEEC",
-            "Zoom", "0xAD82E6",
+            "Animation", "0x7414D5",
+            "Attack", "0x8B7798",
+            "Breakblocks", "0xB3F193",
+            "ByPass", "0x1A0A36",
+            "ClipCam", "0xAAB99A",
+            "Dismount", "0x477A0E",
+            "Fish", "0x1062AA4",
+            "LockCam", "0x85A6D5",
+            "Map", "0xABE1ED",
+            "Mining", "0x90DAB8",
+            "MiningGeode", "0x96BDF7",
+            "Name", "0x8A8458",
+            "NoClip", "0x565125",
+            "Player", "0x108BD70",
+            "World", "0x108E4FC",
+            "Zoom", "0xAA9916",
         ),
         "Address_Offset", Map(
             "Name", "0x0,0x10,0x0",
@@ -512,6 +512,7 @@ Save(GuiCtrlObj := unset, Info := unset) {
         }
     }
     config.Save()
+    config.UpdateDllConfig()
 }
 UpdateFromInternet(GuiCtrlObj, Info) {
     Source := config.data["Global"]["Source"] "releases/latest/download/config.ini"
@@ -786,16 +787,7 @@ class _Config {
         this.path := path
         this.data := data
     }
-    Load(path := unset) {
-        path := IsSet(path) ? path : this.path
-        if ((NewConfigVersion := IniRead(path, "Global", "ConfigVersion", this.data["Global"]["ConfigVersion"])) <
-            (OldConfigVersion := this.data["Global"]["ConfigVersion"])) {
-            MsgBox(Format("警告: 配置文件非最新版本 {1} => {2}", OldConfigVersion, NewConfigVersion))
-        }
-        for sect, data in this.data
-            for key, value in data
-                if key != "AppVersion"
-                    this.data[sect][key] := IniRead(path, sect, key, this.data[sect][key])
+    UpdateDllConfig() {
         UpdateConfig("Module::Feature::hideAnimation", this.data["Address"]["Animation"] "|-|-|-")
         UpdateConfig("Module::Feature::autoAttack", this.data["Address"]["Attack"] "|-|-|-")
         UpdateConfig("Module::Feature::breakBlocks", this.data["Address"]["Breakblocks"] "|-|-|-")
@@ -812,6 +804,18 @@ class _Config {
         UpdateConfig("Game::Player::Data::nameOffsets", this.data["Address"]["Name"] "|" this.data["Address_Offset"]["Name"])
         UpdateConfig("Game::Player::Fish::offsets", this.data["Address"]["Fish"] "|0x68|0x0")
         UpdateConfig("Game::World::offsets", this.data["Address"]["World"] "|0x0")
+    }
+    Load(path := unset) {
+        path := IsSet(path) ? path : this.path
+        if ((NewConfigVersion := IniRead(path, "Global", "ConfigVersion", this.data["Global"]["ConfigVersion"])) <
+            (OldConfigVersion := this.data["Global"]["ConfigVersion"])) {
+            MsgBox(Format("警告: 配置文件非最新版本 {1} => {2}", OldConfigVersion, NewConfigVersion))
+        }
+        for sect, data in this.data
+            for key, value in data
+                if key != "AppVersion"
+                    this.data[sect][key] := IniRead(path, sect, key, this.data[sect][key])
+        this.UpdateDllConfig()
     }
     Save(path := unset) {
         path := IsSet(path) ? path : this.path
@@ -1261,11 +1265,11 @@ class Game {
     }
     AutoAim() {
         if (this.setting["AutoAim"]["On"])
-            FunctionOn(this.pid, "AutoAim", Format("{1}|{2}|{3}|{4}|{5}|{6}|{7}"
+            FunctionOn(this.pid, "AutoAim", Format("{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}"
                 , this.setting["AutoAim"]["TargetBoss"]
                 , this.setting["AutoAim"]["TargetPlant"]
+                , this.setting["AutoAim"]["TargetNormal"]
                 , config.data["AutoAim"]["TargetList"]
-                (this.setting["AutoAim"]["TargetNormal"] ? ".*npc.*," : "")
                 , config.data["AutoAim"]["NoTargetList"]
                 , this.setting["AutoAim"]["AimRange"]
                 , this.setting["AutoAim"]["ShowRange"]
