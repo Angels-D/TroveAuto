@@ -2,7 +2,7 @@
  *    -> Auther: Angels-D
  *
  * LastChange
- *    -> 2025/02/23 16:45
+ *    -> 2025/03/07 16:30
  *    -> 1.0.0
  *
  * Build
@@ -53,6 +53,7 @@ namespace Module
         Memory::Offsets offsets;
         std::vector<BYTE> dataOn, dataOff;
         Game::Signature signature;
+        std::vector<BYTE> dataIn;
         static Feature hideAnimation;
         static Feature autoAttack;
         static Feature breakBlocks;
@@ -144,9 +145,10 @@ namespace Module
          {"Game::Player::Fish::Data::plasmaStatusOffsets", &Game::Player::Fish::Data::plasmaStatusOffsets},
          {"Game::Player::Bag::offset", &Game::Player::Bag::offsets}};
 
-    static std::map<std::pair<int, std::string>, std::atomic<bool>> funtionRunMap;
+    static std::map<std::pair<int, std::string>, std::atomic<bool>> functionRunMap;
 
     void SetFeature(const Feature &feature, const Memory::DWORD &pid, const bool &on = true);
+    void SetNoClip(const Feature &feature, const Memory::DWORD &pid, const bool &on = true);
     void SetAutoAttack(const Memory::DWORD &pid, const uint32_t &keep, const uint32_t &delay = 50);
     void SetAutoRespawn(const Memory::DWORD &pid, const uint32_t &delay = 50);
 
@@ -220,7 +222,6 @@ std::pair<float, float> CalculateAngles(const float &ax, const float &ay, const 
 
 namespace Module
 {
-
     Feature Feature::hideAnimation = {
         {0x7414D5},
         {0x4C},
@@ -276,11 +277,64 @@ namespace Module
         {0x42, 0xC8},
         {0x0, 0x0},
         {-0x4, "F3 0F 11 45 FC D9 45 FC 8B E5 5D C3 D9 05 XX XX XX XX 8B E5 5D C3 D9 05 XX XX XX XX 8B E5 5D C3"}};
+    /*
+        code:
+            pop eax
+            add esp,8
+            push eax
+            mov eax,[ebx+14]
+
+            push ebx
+            push ecx
+            sub esp, 10*3
+            movdqu [esp+20], xmm0
+            movdqu [esp+10], xmm1
+            movdqu [esp], xmm2
+
+            mov ebx, [Trove.exe+108BD70]
+            mov ecx, 0
+
+        offsetLoop:
+            add ebx, dword ptr [offsetArray+ecx*4]
+            mov ebx, [ebx]
+            cmp ebx, 0
+            je return
+            inc ecx
+            cmp ecx, 6
+            jl offsetLoop
+
+            movups xmm0, [ebx+80]
+
+            movaps xmm1, xmm0
+            cmpps xmm1, xmm4, 2
+            movaps xmm2, xmm5
+            cmpps xmm2, xmm0, 2
+            pand xmm1, xmm2
+
+            movmskps ecx, xmm1
+            and ecx, 7
+            cmp ecx, 7
+            jne return
+
+            mov byte ptr [eax+1], 0
+
+        return:
+            movdqu xmm2, [esp]
+            movdqu xmm1, [esp+10]
+            movdqu xmm0, [esp+20]
+            add esp, 10*3
+            pop ecx
+            pop ebx
+            ret
+        offsetArray:
+            dd 0C 28 54 88 AC 4
+     */
     Feature Feature::noClip = {
-        {0x565125},
-        {0xEB},
-        {0x74},
-        {0x0, "74 31 FF 73 14 8B 47 04 2B 07"}};
+        {0x564B82},
+        {0xE8, 0xFF, 0xFF, 0xFF, 0xFF, 0x90},
+        {0x8B, 0x43, 0x14, 0x83, 0xC4, 0x8},
+        {-0x5A3, "74 31 FF 73 14 8B 47 04 2B 07"},
+        {0x58, 0x83, 0xC4, 0x08, 0x50, 0x8B, 0x43, 0x14, 0x53, 0x51, 0x83, 0xEC, 0x30, 0xF3, 0x0F, 0x7F, 0x44, 0x24, 0x20, 0xF3, 0x0F, 0x7F, 0x4C, 0x24, 0x10, 0xF3, 0x0F, 0x7F, 0x14, 0x24, 0xBB, 0xE0, 0xE6, 0x30, 0x1D, 0xB9, 0x00, 0x00, 0x00, 0x00, 0x03, 0x1C, 0x8D, 0xFF, 0xFF, 0xFF, 0xFF, 0x8B, 0x1B, 0x83, 0xFB, 0x00, 0x0F, 0x84, 0x32, 0x00, 0x00, 0x00, 0x41, 0x83, 0xF9, 0x06, 0x7C, 0xE8, 0x0F, 0x10, 0x83, 0x80, 0x00, 0x00, 0x00, 0x0F, 0x28, 0xC8, 0x0F, 0xC2, 0xCC, 0x02, 0x0F, 0x28, 0xD5, 0x0F, 0xC2, 0xD0, 0x02, 0x66, 0x0F, 0xDB, 0xCA, 0x0F, 0x50, 0xC9, 0x83, 0xE1, 0x07, 0x83, 0xF9, 0x07, 0x0F, 0x85, 0x04, 0x00, 0x00, 0x00, 0xC6, 0x40, 0x01, 0x00, 0xF3, 0x0F, 0x6F, 0x14, 0x24, 0xF3, 0x0F, 0x6F, 0x4C, 0x24, 0x10, 0xF3, 0x0F, 0x6F, 0x44, 0x24, 0x20, 0x83, 0xC4, 0x30, 0x59, 0x5B, 0xC3, 0x0C, 0x00, 0x00, 0x00, 0x28, 0x00, 0x00, 0x00, 0x54, 0x00, 0x00, 0x00, 0x88, 0x00, 0x00, 0x00, 0xAC, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00}};
     Feature Feature::unlockZoomLimit = {
         {0xAA9916},
         {0x57},
@@ -292,14 +346,37 @@ namespace Module
         Game game(pid);
         game.UpdateAddress();
         const Memory::Address address = game.GetAddress(game.baseAddress, feature.offsets);
-        for (size_t i = 0; i < feature.dataOn.size(); i++)
-            game.WriteMemory<BYTE>(on ? feature.dataOn[i] : feature.dataOff[i],
-                                   address + i * sizeof(BYTE));
+        game.WriteMemory(on ? feature.dataOn : feature.dataOff, address);
+    }
+
+    void SetNoClip(const Feature &feature, const Memory::DWORD &pid, const bool &on)
+    {
+        Game game(pid);
+        game.UpdateAddress();
+        const Memory::Address address = game.GetAddress(game.baseAddress, feature.offsets);
+        Memory::Address inAddress;
+        memcpy(&inAddress, feature.dataOn.data() + 0x1, sizeof(Memory::Address));
+        inAddress += address + 5;
+        if (inAddress != 0x0 && inAddress != 0xFFFFFFFF)
+            game.FreeMemory(0, MEM_RELEASE, inAddress);
+        if (on)
+        {
+            DWORD temp;
+            memcpy((void *)(feature.dataIn.data() + 0x1F), &game.data.player.UpdateAddress().address, sizeof(Memory::Address));
+            inAddress = game.AllocMemory(feature.dataIn.size(), MEM_COMMIT, PAGE_READWRITE);
+            temp = inAddress + 0x83;
+            memcpy((void *)(feature.dataIn.data() + 0x2B), &temp, sizeof(Memory::Address));
+            temp = inAddress - address - 5;
+            memcpy((void *)(feature.dataOn.data() + 0x1), &temp, sizeof(Memory::Address));
+            game.WriteMemory(feature.dataIn, inAddress);
+            VirtualProtectEx(game.hProcess, reinterpret_cast<LPVOID>(inAddress), feature.dataIn.size(), PAGE_EXECUTE, &temp);
+        }
+        game.WriteMemory(on ? feature.dataOn : feature.dataOff, address);
     }
 
     void SetAutoAttack(const Memory::DWORD &pid, const uint32_t &keep, const uint32_t &delay)
     {
-        while (funtionRunMap[{pid, "AutoAttack"}].load())
+        while (functionRunMap[{pid, "AutoAttack"}].load())
         {
             SetFeature(Feature::autoAttack, pid, true);
             std::this_thread::sleep_for(std::chrono::milliseconds(keep));
@@ -312,7 +389,7 @@ namespace Module
     {
         Game game(pid);
         game.UpdateAddress().data.player.UpdateAddress();
-        while (funtionRunMap[{pid, "AutoAim"}].load() &&
+        while (functionRunMap[{pid, "AutoAim"}].load() &&
                game.data.player.data.health.UpdateAddress().UpdateData().data == 0)
         {
             // 未完工
@@ -336,14 +413,14 @@ namespace Module
             game.data.player.data.camera.data.v.UpdateAddress();
             game.data.player.data.camera.data.h.UpdateAddress();
         };
-        while (funtionRunMap[{pid, "AutoAim"}].load())
+        while (functionRunMap[{pid, "AutoAim"}].load())
         {
             UpdateAddress();
             std::this_thread::sleep_for(std::chrono::milliseconds(delay));
             target = FindTarget(game, targetBoss, targetPlant, targetNormal, targets, noTargets, aimRange, showRange);
             if (!target)
                 continue;
-            while (funtionRunMap[{pid, "AutoAim"}].load() &&
+            while (functionRunMap[{pid, "AutoAim"}].load() &&
                    CalculateDistance(
                        game.data.player.data.coord.data.x.UpdateData().data,
                        game.data.player.data.coord.data.y.UpdateData().data + aimOffset.first,
@@ -381,7 +458,7 @@ namespace Module
         // float xVel = 0, yVel = 0, zVel = 0;
         // float xPer = 0, zPer = 0;
         // float hrzMagnitude = 0, xMagnitude = 0, zMagnitude = 0;
-        // while (funtionRunMap[{pid, "SpeedUp"}].load())
+        // while (functionRunMap[{pid, "SpeedUp"}].load())
         // {
         //     game.data.player.data.coord.UpdateAddress();
         //     game.data.player.data.camera.UpdateAddress();
@@ -477,7 +554,7 @@ namespace Module
             game.data.player.data.coord.data.y.UpdateAddress();
             game.data.player.data.coord.data.z.UpdateAddress();
         };
-        while (funtionRunMap[{pid, "FollowTarget"}].load())
+        while (functionRunMap[{pid, "FollowTarget"}].load())
         {
             std::this_thread::sleep_for(std::chrono::milliseconds(delay));
             std::unique_ptr<Game::World::Player> player = nullptr;
@@ -490,7 +567,7 @@ namespace Module
             float targetY = 0, targetZ = 0, dist = 0, lastDist = 9999;
             uint32_t step = 0;
             SetFeature(Feature::byPass, pid, true);
-            while (funtionRunMap[{pid, "FollowTarget"}].load())
+            while (functionRunMap[{pid, "FollowTarget"}].load())
             {
                 std::this_thread::sleep_for(std::chrono::milliseconds(delay));
                 UpdateAddress();
@@ -663,7 +740,7 @@ void FunctionOn(const Memory::DWORD pid, const char *funtion, const char *argv, 
 {
     std::thread *thread = nullptr;
     const std::vector<std::string> _argv = split(argv, '|');
-    Module::funtionRunMap[{pid, funtion}].store(true);
+    Module::functionRunMap[{pid, funtion}].store(true);
     if (std::strcmp(funtion, "AutoAim") == 0)
         thread = new std::thread(
             Module::AutoAim, pid,
@@ -701,6 +778,8 @@ void FunctionOn(const Memory::DWORD pid, const char *funtion, const char *argv, 
             split(_argv[1], ','),
             std::stof(_argv[2]),
             std::stoul(_argv[3]));
+    else if (std::strcmp(funtion, "SetNoClip") == 0)
+        thread = new std::thread(Module::SetNoClip, Module::Feature::noClip, pid, std::stoul(_argv[0]));
     else if (std::strcmp(funtion, "SetAutoAttack") == 0)
         thread = new std::thread(Module::SetAutoAttack, pid, std::stoul(_argv[0]), std::stoul(_argv[1]));
     else if (std::strcmp(funtion, "SetAutoRespawn") == 0)
@@ -725,20 +804,18 @@ void FunctionOn(const Memory::DWORD pid, const char *funtion, const char *argv, 
         thread = new std::thread(Module::SetFeature, Module::Feature::quickMiningGeode, pid, std::stoul(_argv[0]));
     else if (std::strcmp(funtion, "SetNoGravity") == 0)
         thread = new std::thread(Module::SetFeature, Module::Feature::noGravity, pid, std::stoul(_argv[0]));
-    else if (std::strcmp(funtion, "SetNoClip") == 0)
-        thread = new std::thread(Module::SetFeature, Module::Feature::noClip, pid, std::stoul(_argv[0]));
     else if (std::strcmp(funtion, "SetUnlockZoomLimit") == 0)
         thread = new std::thread(Module::SetFeature, Module::Feature::unlockZoomLimit, pid, std::stoul(_argv[0]));
     if (thread && waiting)
     {
         thread->join();
-        Module::funtionRunMap[{pid, funtion}].store(false);
+        Module::functionRunMap[{pid, funtion}].store(false);
     }
 }
 
 void FunctionOff(const Memory::DWORD pid, const char *funtion)
 {
-    Module::funtionRunMap[{pid, funtion}].store(false);
+    Module::functionRunMap[{pid, funtion}].store(false);
 }
 
 #endif

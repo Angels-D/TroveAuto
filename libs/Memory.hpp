@@ -6,7 +6,7 @@
  *    -> Src: https://github.com/wanttobeno/x64_AOB_Search
  *
  * LastChange
- *    -> 2025/02/20 11:50
+ *    -> 2025/03/07 16:30
  *    -> 1.0.0
  *
  * Build
@@ -69,7 +69,6 @@ public:
     DWORD pid;
 
     // 构造函数：通过PID打开进程句柄
-    
     Memory(const DWORD &pid);
     Memory(const Memory &memory);
 
@@ -128,6 +127,12 @@ public:
     template <typename T>
     bool WriteMemory(const T &data, const Address &address, const Offsets &offsets = {}) const;
 
+    // 申请内存空间
+    Address AllocMemory(const size_t &size, const DWORD &allocationType, const DWORD &protect, const Address &address = (Address)NULL);
+
+    // 释放内存空间
+    bool FreeMemory(const size_t &size, const DWORD &freeType, const Address &address);
+
 protected:
     // 泛型读取
     template <typename T>
@@ -138,10 +143,7 @@ protected:
 
     // 泛型写入
     template <typename T>
-    bool Write(const Address &address, T &data) const;
-
-    // 写入字符串
-    bool Write(const Address &address, std::string &str) const;
+    bool Write(const Address &address, const T &data) const;
 
 private:
     bool isRoot;
@@ -521,7 +523,7 @@ Memory::Memory(const Memory &memory)
 }
 
 Memory::~Memory()
-{    
+{
     if (hProcess && isRoot)
         CloseHandle(hProcess);
 }
@@ -850,10 +852,24 @@ std::string Memory::ReadMemory(const Address &address, const Offsets &offsets, c
 template <typename T>
 bool Memory::WriteMemory(const T &data, const Address &address, const Offsets &offsets) const
 {
-    const Address& finalAddress = GetAddress(address, offsets);
+    const Address &finalAddress = GetAddress(address, offsets);
     if (!finalAddress)
         return false;
     return Write(finalAddress, data);
+}
+
+Memory::Address Memory::AllocMemory(const size_t &size, const DWORD &allocationType, const DWORD &protect, const Address &address)
+{
+    return reinterpret_cast<uintptr_t>(VirtualAllocEx(
+        hProcess, reinterpret_cast<LPVOID>(address),
+        size, allocationType, protect));
+}
+
+bool Memory::FreeMemory(const size_t &size, const DWORD &freeType, const Address &address)
+{
+    return VirtualFreeEx(
+        hProcess, reinterpret_cast<Memory::Address *>(address),
+        size, freeType);
 }
 
 void Memory::Update(const DWORD &pid)
@@ -882,12 +898,19 @@ std::string Memory::Read(const Address &address, const size_t &maxLen) const
 }
 
 template <typename T>
-bool Memory::Write(const Address &address, T &data) const
+bool Memory::Write(const Address &address, const T &data) const
 {
     return WriteProcessMemory(hProcess, reinterpret_cast<LPVOID>(address), &data, sizeof(T), nullptr);
 }
 
-bool Memory::Write(const Address &address, std::string &str) const
+template <>
+bool Memory::Write(const Address &address, const std::vector<BYTE> &bytes) const
+{
+    return WriteProcessMemory(hProcess, reinterpret_cast<LPVOID>(address), bytes.data(), bytes.size(), nullptr);
+}
+
+template <>
+bool Memory::Write(const Address &address, const std::string &str) const
 {
     return WriteProcessMemory(hProcess, reinterpret_cast<LPVOID>(address), str.c_str(), str.length() + 1, nullptr);
 }

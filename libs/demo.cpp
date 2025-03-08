@@ -4,6 +4,7 @@
 
 void FindTarget()
 {
+    const uint32_t aimRange = 45;
     printf("\033c");
     Game game(Memory::GetProcessPid("Trove.exe")[0]);
     game.UpdateAddress();
@@ -24,15 +25,21 @@ void FindTarget()
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
         UpdateAddress();
         target = Module::FindTarget(
-            game, true, false, false, 
-            {".*chest_quest_standard.*", ".*chest_quest_recipe.*"},
-            {".*pet.*",
-             ".*placeable.*",
-             ".*services.*",
-             ".*client.*",
-             ".*abilities.*",
-             ".*portal.*"},
-            45, 0);
+            game, true, false, false,
+            {
+                ".*quest_spawn_trigger_fivestar_dep.*",
+                 ".*chest_quest_standard.*",
+                 ".*chest_quest_recipe.*"
+            },
+            {
+                 ".*pet.*",
+                 ".*placeable.*",
+                 ".*services.*",
+                 ".*client.*",
+                 ".*abilities.*",
+                 ".*portal.*"
+            },
+            aimRange, 0);
         if (!target)
         {
             printf("Finding ...\r");
@@ -50,7 +57,7 @@ void FindTarget()
                    game.data.player.data.coord.data.z.UpdateData().data,
                    target->data.x.UpdateData().data,
                    target->data.y.UpdateData().data + Module::aimOffset.second,
-                   target->data.z.UpdateData().data) <= 45 &&
+                   target->data.z.UpdateData().data) <= aimRange &&
                target->data.isDeath.UpdateData().data)
         {
             UpdateAddress();
@@ -85,5 +92,6 @@ int main(int argc, char *argv[])
 
     // FunctionOn(Memory::GetProcessPid("Trove.exe")[0],"FollowTarget",".*hellbug.*| |50|50",true);
 
+    // FunctionOn(Memory::GetProcessPid("Trove.exe")[0],"SetNoClip","1",true);
     return 0;
 }
