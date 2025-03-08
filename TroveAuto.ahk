@@ -68,7 +68,7 @@ config := _Config(
             "Mining", "0x90DAB8",
             "MiningGeode", "0x96BDF7",
             "Name", "0x8A8458",
-            "NoClip", "0x565125",
+            "NoClip", "0x564B82",
             "Player", "0x108BD70",
             "World", "0x108E4FC",
             "Zoom", "0xAA9916",
@@ -129,7 +129,7 @@ config := _Config(
             "Mining", "1,DF F1 DD D8 72 61",
             "MiningGeode", "1,DF F1 DD D8 72 35 8D",
             "Name", "-9,FF 70 1C FF 70 18 8D 45 B0",
-            "NoClip", "0,74 31 FF 73 14 8B 47 04 2B 07",
+            "NoClip", "-1443, 74 31 FF 73 14 8B 47 04 2B 07",
             "Player", "20,55 8B EC 83 E4 F8 83 EC 08 F3 0F 2A 45 10 56 8B F1 57 8B 3D",
             "World", "10,55 8B EC 83 7D 08 04 75 10 A1 XX XX XX XX 85 C0 74 07 C6 80 59 01 00 00 01 5D C2 04 00",
             "Zoom", "3,F3 0F 11 5F 2C",
@@ -1340,6 +1340,9 @@ class Game {
                 SetTimer(this.FeaturesAttackFunc, Value ? config.data["AttackTime"]["Value"] : 0)
             case "Health":
                 SetTimer(this.FeaturesHealthFunc, Value ? config.data["HealthTime"]["Value"] : 0)
+                return
+            case "NoClip":
+                FunctionOn(this.pid, "SetNoClip", String(Value), true)
                 return
             case "UseLog":
                 try this.threads["Log"]["STOP"] := true
