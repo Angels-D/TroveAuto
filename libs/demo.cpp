@@ -27,11 +27,16 @@ void FindTarget()
         target = Module::FindTarget(
             game, true, false, false,
             {
-                ".*quest_spawn_trigger_fivestar_dep.*",
-                 ".*chest_quest_standard.*",
-                 ".*chest_quest_recipe.*"
+                ".*gameplay.*"
+                // ".*quest_assault_trigger.*",
+                // ".*gameplay/chest_quest_worldboss.*",
+                // ".*viking.*",
+                // ".*quest_spawn_trigger_fivestar_dep.*",
+                //  ".*chest_quest_standard.*",
+                //  ".*chest_quest_recipe.*"
             },
             {
+                ".*clam_depths_fire_boss.*",
                  ".*pet.*",
                  ".*placeable.*",
                  ".*services.*",
@@ -50,7 +55,7 @@ void FindTarget()
                target->data.x.UpdateData().data,
                target->data.y.UpdateData().data,
                target->data.z.UpdateData().data,
-               target->data.name.UpdateData(32).data.c_str());
+               target->data.name.UpdateData(64).data.c_str());
         while (CalculateDistance(
                    game.data.player.data.coord.data.x.UpdateData().data,
                    game.data.player.data.coord.data.y.UpdateData().data + Module::aimOffset.first,
@@ -84,14 +89,15 @@ void FindAobScan(const char *signature)
 
 int main(int argc, char *argv[])
 {
-    // FindTarget();
-
     // FindAobScan(argv[1]);
 
     // Module::Tp2Forward(Memory::GetProcessPid("Trove.exe")[0], 50, 50);
 
-    // FunctionOn(Memory::GetProcessPid("Trove.exe")[0],"FollowTarget",".*hellbug.*| |50|50",true);
-
+    // FunctionOn(Memory::GetProcessPid("Trove.exe")[0],"FollowTarget",".*quest_assault_trigger.*|.*pet.*,.*placeable.*,.*services.*,.*client.*,.*abilities.*,.*portal.*|50|50",false);
+    
     // FunctionOn(Memory::GetProcessPid("Trove.exe")[0],"SetNoClip","1",true);
+
+    FindTarget();
+    
     return 0;
 }
