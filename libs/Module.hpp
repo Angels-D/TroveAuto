@@ -157,7 +157,7 @@ namespace Module
 
     void Tp2Forward(const Memory::DWORD &pid, const float &tpRange = tpStep, const uint32_t &delay = 50);
     void Tp2Target(const Memory::DWORD &pid, const float &targetX, const float &targetY, const float &targetZ, const uint32_t &delay = 50, const uint32_t &tryAgainMax = 10);
-    void FollowTarget(const Memory::DWORD &pid, const std::vector<std::string> &targets, const std::vector<std::string> &noTargets = {}, const float &speed = 50, const uint32_t &delay = 50);
+    void FollowTarget(const Memory::DWORD &pid, const std::vector<std::string> &players = {}, const std::vector<std::string> &targets = {}, const std::vector<std::string> &noTargets = {}, const float &speed = 50, const uint32_t &delay = 50);
 
     std::unique_ptr<Game::World::Player> FindPlayer(Game &game, const std::vector<std::string> &targets);
     std::unique_ptr<Game::World::Entity> FindTarget(Game &game, const bool &targetBoss = true, const bool &targetPlant = false, const bool &targetNormal = false, const std::vector<std::string> &targets = {}, const std::vector<std::string> &noTargets = {}, const uint32_t &aimRange = 45, const uint32_t &showRange = 0);
@@ -543,7 +543,7 @@ namespace Module
             SetFeature(Feature::byPass, pid, false);
     }
 
-    void FollowTarget(const Memory::DWORD &pid, const std::vector<std::string> &targets, const std::vector<std::string> &noTargets, const float &speed, const uint32_t &delay)
+    void FollowTarget(const Memory::DWORD &pid, const std::vector<std::string> &players, const std::vector<std::string> &targets, const std::vector<std::string> &noTargets, const float &speed, const uint32_t &delay)
     {
         Game game(pid);
         game.UpdateAddress().data.player.UpdateAddress();
@@ -560,7 +560,7 @@ namespace Module
             std::unique_ptr<Game::World::Player> player = nullptr;
             std::unique_ptr<Game::World::Entity> target = nullptr;
             UpdateAddress();
-            if (!(player = FindPlayer(game, targets)) &&
+            if (!(player = FindPlayer(game, players)) &&
                 !(target = FindTarget(game, false, false, false, targets, noTargets, 9999, 0)))
                 continue;
             float x = 0, y = 0, z = 0, targetX = 0;
@@ -571,7 +571,7 @@ namespace Module
             {
                 std::this_thread::sleep_for(std::chrono::milliseconds(delay));
                 UpdateAddress();
-                if (player && !(player = FindPlayer(game, targets)))
+                if (player && !(player = FindPlayer(game, players)))
                     break;
                 if (target)
                 {
@@ -776,8 +776,9 @@ void FunctionOn(const Memory::DWORD pid, const char *funtion, const char *argv, 
             Module::FollowTarget, pid,
             split(_argv[0], ','),
             split(_argv[1], ','),
-            std::stof(_argv[2]),
-            std::stoul(_argv[3]));
+            split(_argv[2], ','),
+            std::stof(_argv[3]),
+            std::stoul(_argv[4]));
     else if (std::strcmp(funtion, "SetNoClip") == 0)
         thread = new std::thread(Module::SetNoClip, Module::Feature::noClip, pid, std::stoul(_argv[0]));
     else if (std::strcmp(funtion, "SetAutoAttack") == 0)
