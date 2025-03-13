@@ -595,7 +595,7 @@ namespace Module
                 game.data.player.data.coord.data.zVel.UpdateAddress() = 0;
                 if ((dist = CalculateDistance(x, y, z, targetX, targetY, targetZ)) <= 1 || std::isnan(dist))
                     continue;
-                if (step % (1000 / delay) == 0 && tpStep && lastDist - dist < tpStep)
+                if (step % (300 / delay) == 0 && tpStep && lastDist - dist < tpStep)
                     Tp2Target(pid, targetX, targetY, targetZ, delay, 0);
                 else
                 {
@@ -603,9 +603,9 @@ namespace Module
                     game.data.player.data.coord.data.yVel.UpdateAddress() = (targetY - y) / dist * speed;
                     game.data.player.data.coord.data.zVel.UpdateAddress() = (targetZ - z) / dist * speed;
                 }
-                if (step % (500 / delay) == 0)
+                if (step % (100 / delay) == 0)
                     lastDist = dist;
-                step = (step + 1) % (2000 / delay);
+                step = (step + 1) % (600 / delay);
             }
             SetFeature(Feature::byPass, pid, false);
         }
