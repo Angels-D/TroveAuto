@@ -1,6 +1,6 @@
 ;@Ahk2Exe-UpdateManifest 2
 ;@Ahk2Exe-SetName TroveAuto
-;@Ahk2Exe-SetProductVersion 2.4.6
+;@Ahk2Exe-SetProductVersion 2.4.7
 ;@Ahk2Exe-SetCopyright GPL-3.0 license
 ;@Ahk2Exe-SetLanguage Chinese_PRC
 ;@Ahk2Exe-SetMainIcon TroveAuto.ico
@@ -28,10 +28,11 @@ config := _Config(
         "Global", Map(
             "GameTitle", "Trove.exe",
             "GamePath", "",
-            "ConfigVersion", "20250301145000",
-            "AppVersion", "20250301145000",
+            "ConfigVersion", "20250313160000",
+            "AppVersion", "20250313160000",
             "Source", "https://github.com/Angels-D/TroveAuto/",
             "Mirror", "https://github.moeyy.xyz/",
+            "StrCrypto", "y(Hn,(}I+2209Zd^s5(E%vfpoKh.I=",
         ),
         "RestartTime", Map("Value", "5000",),
         "AttackTime", Map("Value", "1000",),
@@ -42,6 +43,7 @@ config := _Config(
             "Step", "4",
             "Distance", "4",
             "HotKey", "3",
+            "WhiteList", "",
         ),
         "SpeedUp", Map(
             "Delay", "100",
@@ -167,7 +169,8 @@ MainGui.Add("Link", "w200 cRed", "
         工具管理你的Mod和CFG文件, 还有装备推荐、模拟加点、模组开发管理、模组下载等功能
     )"
 )
-MainGui.Add("Button", "w200 h40 vUseLogPathBtn", "物品栏使用日志文件夹")
+MainGui.Add("Button", "y+10 w200 h40 vUseLogPathBtn", "物品栏使用日志文件夹")
+MainGui.Add("Button", "y+10 w200 h40 vConfigFileBtn", "打开配置文件")
 
 ; 面板内容
 MainGui["Tab"].UseTab("面板")
@@ -203,15 +206,17 @@ for key, value in Map(
     "Zoom", "视野放大",
 )
     MainGui.Add("CheckBox", (Mod(A_Index, 2) ? ((A_Index == 1 ? "xp+10 yp+30" : "xs") " Section") : "ys") " w140 v" key, value)
-MainGui.Add("GroupBox", "xs-10 ys+40 w310 r2 Section", "跟踪目标       正则表达式 逗号分割")
+MainGui.Add("GroupBox", "xs-10 ys+40 w310 r3 Section", "跟踪目标       正则表达式 逗号分割")
 MainGui.Add("CheckBox", "xp+80 yp vFollowTarget")
-MainGui.Add("Text", "xs+10 ys+30 Section", "目标列表:")
-MainGui.Add("Edit", "ys w205 vFollowTarget_Name")
+MainGui.Add("Text", "xs+10 ys+30 Section", "玩家列表:")
+MainGui.Add("Edit", "ys w205 vFollowTarget_PlayerName")
+MainGui.Add("Text", "xs ys+30 Section", "实体列表:")
+MainGui.Add("Edit", "ys w205 vFollowTarget_TargetName")
 MainGui.Add("GroupBox", "xs-10 ys+50 w310 r2 Section", "矢量移动       WASD/Shift/Space移动")
 MainGui.Add("CheckBox", "xp+80 yp vSpeedUp")
 MainGui.Add("Text", "xs+10 ys+30 Section", "加速倍率:")
 MainGui.Add("Edit", "ys w205 vSpeedUp_SpeedUpRate")
-MainGui.Add("GroupBox", "xs-10 ys+50 w310 r3 Section", "自瞄")
+MainGui.Add("GroupBox", "xs-10 ys+50 w310 r3 Section", "自动瞄准")
 MainGui.Add("CheckBox", "xp+80 yp vAutoAim")
 MainGui.Add("Text", "xs+10 ys+30 Section", "瞄准范围:")
 MainGui.Add("Edit", "ys w55 vAutoAim_AimRange")
@@ -299,8 +304,10 @@ MainGui.Add("Text", "xs w100 Section", "加速频率(ms):")
 MainGui.Add("Edit", "ys w150 vDelaySpeedUp", config.data["SpeedUp"]["Delay"])
 MainGui.Add("Text", "xs w100 Section", "自瞄频率(ms):")
 MainGui.Add("Edit", "ys w150 vDelayAutoAim", config.data["AutoAim"]["Delay"])
+MainGui.Add("Text", "xs w100 Section", "跟随白名单:")
+MainGui.Add("Edit", "ys w150 r1 vWhiteListTP", config.data["TP"]["WhiteList"])
 MainGui.Add("Text", "xs w100 Section", "镜像源:")
-MainGui.Add("Edit", "ys w150 vMirror", config.data["Global"]["Mirror"])
+MainGui.Add("Edit", "ys w150 r1 vMirror", config.data["Global"]["Mirror"])
 MainGui.Add("Button", "xs w80 Section vSaveBtn", "保存")
 MainGui.Add("Button", "ys w80 vUpdateFromInternetBtn", "联网更新")
 MainGui.Add("Button", "ys w80 vUpdateFromLocalBtn", "本地更新")
@@ -328,6 +335,7 @@ MainGui["GameStartBtn"].OnEvent("Click", GameStart)
 MainGui["ModsPathBtn"].OnEvent("Click", OpenModsPath)
 MainGui["ModCfgsPathBtn"].OnEvent("Click", OpenModCfgsPath)
 MainGui["UseLogPathBtn"].OnEvent("Click", OpenUseLogPath)
+MainGui["ConfigFileBtn"].OnEvent("Click", ConfigFile)
 MainGui["ResetBtn"].OnEvent("Click", Reset)
 MainGui["RefreshBtn"].OnEvent("Click", Refresh)
 MainGui["StartBtn"].OnEvent("Click", Start)
@@ -348,7 +356,7 @@ MainGui["FollowTarget"].OnEvent("Click", FollowTarget)
 MainGui["AutoAim"].OnEvent("Click", AutoAim)
 MainGui["SpeedUp"].OnEvent("Click", SpeedUp)
 MainGui["AutoRestart"].OnEvent("Click", AutoRestart)
-for key in ["FollowTarget_Name", "SpeedUp_SpeedUpRate", "AutoAim_AimRange"
+for key in ["FollowTarget_PlayerName", "FollowTarget_TargetName", "SpeedUp_SpeedUpRate", "AutoAim_AimRange"
     , "AutoAim_ShowRange", "AutoAim_TargetBoss", "AutoAim_TargetNormal", "AutoAim_TargetPlant"
     , "AutoRestart_Account", "AutoRestart_Password"] {
     try MainGui[key].OnEvent("Change", SomeUiSetChangeEvent)
@@ -429,6 +437,11 @@ OpenUseLogPath(GuiCtrlObj, Info) {
     catch
         MsgBox("日志文件夹打开失败, 请检查文件夹是否存在")
 }
+ConfigFile(GuiCtrlObj, Info) {
+    try Run("config.ini")
+    catch
+        MsgBox("配置文件打开失败, 请先保存配置以生成")
+}
 Reset(GuiCtrlObj := unset, Info := unset) {
     Game.Reset()
     Game.Refresh()
@@ -442,7 +455,7 @@ UIReset() {
     for key in ["Animation", "Attack", "Breakblocks", "ByPass", "ClipCam", "Dismount"
         , "Health", "LockCam", "Map", "Mining", "MiningGeode", "NoClip", "UseLog", "Zoom"
         , "AutoBtn_Key_Click_LEFT", "AutoBtn_Key_Click_RIGHT", "AutoBtn_NoTop", "HotKeyBox"
-        , "Interval", "SelectAction", "StartBtn", "FollowTarget", "FollowTarget_Name"
+        , "Interval", "SelectAction", "StartBtn", "FollowTarget", "FollowTarget_PlayerName", "FollowTarget_TargetName"
         , "SpeedUp", "SpeedUp_SpeedUpRate", "AutoAim", "AutoAim_AimRange"
         , "AutoAim_ShowRange", "AutoAim_TargetBoss", "AutoAim_TargetNormal", "AutoAim_TargetPlant"
         , "AutoRestart", "AutoRestart_Account", "AutoRestart_Password"]
@@ -450,7 +463,7 @@ UIReset() {
     for key in ["Animation", "Attack", "Breakblocks", "ByPass", "ClipCam", "Dismount"
         , "Health", "LockCam", "Map", "Mining", "MiningGeode", "NoClip", "UseLog", "Zoom"
         , "AutoBtn_Key_Click_LEFT", "AutoBtn_Key_Click_RIGHT", "AutoBtn_NoTop"
-        , "Interval", "SelectAction", "FollowTarget", "FollowTarget_Name"
+        , "Interval", "SelectAction", "FollowTarget", "FollowTarget_PlayerName", "FollowTarget_TargetName"
         , "SpeedUp", "SpeedUp_SpeedUpRate", "AutoAim", "AutoAim_AimRange"
         , "AutoAim_ShowRange", "AutoAim_TargetBoss", "AutoAim_TargetNormal", "AutoAim_TargetPlant"
         , "AutoRestart", "AutoRestart_Account", "AutoRestart_Password"]
@@ -458,6 +471,7 @@ UIReset() {
         catch
             MainGui[key].Value := 0
     MainGui["HotKeyBox"].Delete()
+    MainGui["WhiteListTP"].Value := config.data["TP"]["WhiteList"]
 }
 Start(GuiCtrlObj, Info) {
     theGame := Game.Lists[MainGui["SelectGame"].Text]
@@ -504,7 +518,7 @@ Save(GuiCtrlObj := unset, Info := unset) {
                 try value := MainGui[key == "Value" ? sect : key].Value
                 catch
                     value := config.data[sect][key]
-            if ( not value and key != "GamePath") {
+            if ( not value and key != "GamePath" and key != "WhiteList") {
                 MsgBox("配置项不能为空")
                 return
             }
@@ -730,12 +744,24 @@ HotKeyCheck(GuiCtrlObj, Item, Checked) {
     Game.Lists[MainGui["SelectGame"].Text].setting["AutoBtn"]["keys"][Item].enabled := Checked
 }
 FollowTarget(GuiCtrlObj, Info) {
-    if GuiCtrlObj.Value and not MainGui["FollowTarget_Name"].Value {
-        MsgBox("目标不能为空")
-        GuiCtrlObj.Value := false
-        return
+    if GuiCtrlObj.Value {
+        if not MainGui["FollowTarget_PlayerName"].Value and not MainGui["FollowTarget_TargetName"].Value {
+            MsgBox("目标不能为空")
+            GuiCtrlObj.Value := false
+            return
+        }
+        else {
+            for name in StrSplit(MainGui["FollowTarget_PlayerName"].Value, ",")
+                if not InStr(config.data["TP"]["WhiteList"]
+                    , Format("<{1}:{2}>", name, StrCrypto(name))) {
+                    MsgBox("玩家" name "未允许跟随, 请配置跟随白名单")
+                    GuiCtrlObj.Value := false
+                    return
+                }
+        }
     }
-    MainGui["FollowTarget_Name"].Enabled := !GuiCtrlObj.Value
+
+    MainGui["FollowTarget_PlayerName"].Enabled := MainGui["FollowTarget_TargetName"].Enabled := !GuiCtrlObj.Value
     theGame := Game.Lists[MainGui["SelectGame"].Text]
     theGame.setting["FollowTarget"]["On"] := GuiCtrlObj.Value
     theGame.FollowTarget()
@@ -777,6 +803,30 @@ AutoRestart(GuiCtrlObj, Info) {
 SomeUiSetChangeEvent(GuiCtrlObj, Info) {
     kv := StrSplit(GuiCtrlObj.Name, "_")
     Game.Lists[MainGui["SelectGame"].Text].setting[kv[1]][kv[2]] := GuiCtrlObj.Value
+}
+
+StrCrypto(src, decode := false) {
+    static chars := "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#%*_+"
+    static charsLen := StrLen(chars)
+    key := "y(Hn,(}I+2209Zd^s5(E%vfpoKh.I="
+    keyLen := StrLen(key)
+    result := ""
+    keyIndex := 1
+    Loop Parse src {
+        charPos := InStr(chars, A_LoopField, true) - 1
+        if (charPos = -1) {
+            result .= A_LoopField
+            keyIndex := Mod(keyIndex, keyLen) + 1
+            Continue
+        }
+        keyChar := SubStr(key, keyIndex, 1)
+        direction := (keyIndex & 1) ? 1 : -1
+        shift := Mod(Ord(keyChar), charsLen) * direction
+        newPos := Mod(charPos + (decode ? -shift : shift) + charsLen, charsLen)
+        result .= SubStr(chars, newPos + 1, 1)
+        keyIndex := Mod(keyIndex, keyLen) + 1
+    }
+    return result
 }
 
 ; 核心类
@@ -1074,7 +1124,8 @@ class Game {
         ),
         "FollowTarget", Map(
             "On", false,
-            "Name", "",
+            "PlayerName", "",
+            "TargetName", "",
         ),
         "SpeedUp", Map(
             "On", false,
@@ -1113,11 +1164,21 @@ class Game {
     __New(id) {
         this.GetBase(id)
         this.name := this.GetName(this.BaseAddress + config.data["Address"]["Name"])
+        if (this.name == "")
+            return
+
         for key in ["Animation", "Attack", "Breakblocks", "ByPass", "ClipCam", "Dismount"
             , "Health", "LockCam", "Map", "Mining", "MiningGeode", "NoClip", "UseLog", "Zoom"]
             this.setting["Features"][key] := false
         this.FeaturesAttackFunc := ObjBindMethod(this, "Features_Attack")
         this.FeaturesHealthFunc := ObjBindMethod(this, "Features_Health")
+
+        named := Format("<{1}:{2}>", this.name, StrCrypto(this.name))
+        if ( not InStr(config.data["TP"]["WhiteList"], named, true)) {
+            if (StrLen(config.data["TP"]["WhiteList"]))
+                config.data["TP"]["WhiteList"] .= ","
+            config.data["TP"]["WhiteList"] .= named
+        }
     }
     static Reset() {
         for Key, Value in Game.Lists
@@ -1259,7 +1320,16 @@ class Game {
     }
     FollowTarget() {
         if (this.setting["FollowTarget"]["On"])
-            FunctionOn(this.pid, "FollowTarget", this.setting["FollowTarget"]["Name"] "| |50|50", false)
+            FunctionOn(this.pid, "FollowTarget",
+                Format("{1}|{2}|{3}|{4}|{5}"
+                    , StrLen(this.setting["FollowTarget"]["PlayerName"]) == 0 ?
+                        " " : this.setting["FollowTarget"]["PlayerName"]
+                    , StrLen(this.setting["FollowTarget"]["TargetName"]) == 0 ?
+                        " " : this.setting["FollowTarget"]["TargetName"]
+                    , " "
+                    , this.setting["SpeedUp"]["SpeedUpRate"]
+                    , config.data["TP"]["Delay"])
+                , false)
         else
             FunctionOff(this.pid, "FollowTarget")
     }
