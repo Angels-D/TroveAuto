@@ -48,7 +48,7 @@ config := _Config(
         ),
         "AutoAim", Map(
             "Delay", "50",
-            "TargetList", ".*chest_quest_standard.*,.*chest_quest_recipe.*",
+            "TargetList", ".*box_of_coins_mar2022.*,.*pile_of_coins_mar2022.*,.*chest_quest_standard.*,.*chest_quest_recipe.*",
             "NoTargetList", ".*pet.*,.*placeable.*,.*services.*,.*client.*,.*abilities.*",
         ),
         "Key", Map(
@@ -56,22 +56,22 @@ config := _Config(
             "Fish", "f",
         ),
         "Address", Map(
-            "Animation", "0x7414D5",
-            "Attack", "0x8B7798",
-            "Breakblocks", "0xB3F193",
-            "ByPass", "0x1A0A36",
-            "ClipCam", "0xAAB99A",
-            "Dismount", "0x477A0E",
-            "Fish", "0x1062AA4",
-            "LockCam", "0x85A6D5",
-            "Map", "0xABE1ED",
-            "Mining", "0x90DAB8",
-            "MiningGeode", "0x96BDF7",
-            "Name", "0x8A8458",
-            "NoClip", "0x564B82",
-            "Player", "0x108BD70",
-            "World", "0x108E4FC",
-            "Zoom", "0xAA9916",
+            "Animation", "0x749E85",
+            "Attack", "0x86C948",
+            "Breakblocks", "0x94A623",
+            "ByPass", "0x1E1846",
+            "ClipCam", "0xB4E8BA",
+            "Dismount", "0x33BBEE",
+            "Fish", "0x1094B94",
+            "LockCam", "0x8F4895",
+            "Map", "0xB112BD",
+            "Mining", "0xB3C268",
+            "MiningGeode", "0xAE8B97",
+            "Name", "0x92EC28",
+            "NoClip", "0x6430D2",
+            "Player", "0x1096468",
+            "World", "0x1098C08",
+            "Zoom", "0xB4C836",
         ),
         "Address_Offset", Map(
             "Name", "0x0,0x10,0x0",
@@ -1312,6 +1312,8 @@ class Game {
         CloseHandle(this.ProcessHandle)
         if keepStatus
             this.running := running
+        else
+            FunctionOff(this.pid, 0)
     }
     Features_Attack() {
         this.WriteMemory(
