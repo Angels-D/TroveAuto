@@ -9,13 +9,13 @@
 
 ; DLL封装
 #DllLoad Module
-AobScan := DynaCall("Module\AobScanFindSig", ["ui=tuiuiaui6ui6i"])
 CloseHandle := DynaCall("CloseHandle", ["c=ui"])
 OpenProcess := DynaCall("OpenProcess", ["ui=uicui", 3], 0x38, 0)
 GetProcessBaseAddress := DynaCall("GetWindowLongPtr", ["ui=tiui"])
 ReadProcessMemory := DynaCall("ReadProcessMemory", ["c=uiuituit"])
 WriteProcessMemory := DynaCall("WriteProcessMemory", ["c=uiuituit"])
 
+AobScan := DynaCall("Module\AobScanFindSig", ["ui=tuiuiaui6ui6i"])
 UpdateConfig := DynaCall("Module\UpdateConfig", ["aa"])
 FunctionOn := DynaCall("Module\FunctionOn", ["uiaai"])
 FunctionOff := DynaCall("Module\FunctionOff", ["uia"])
@@ -58,22 +58,22 @@ config := _Config(
             "Fish", "f",
         ),
         "Address", Map(
-            "Animation", "0x749E85",
-            "Attack", "0x86C948",
-            "Breakblocks", "0x94A623",
-            "ByPass", "0x1E1846",
-            "ClipCam", "0xB4E8BA",
-            "Dismount", "0x33BBEE",
-            "Fish", "0x1094B94",
-            "LockCam", "0x8F4895",
-            "Map", "0xB112BD",
-            "Mining", "0xB3C268",
-            "MiningGeode", "0xAE8B97",
-            "Name", "0x92EC28",
-            "NoClip", "0x6430D2",
-            "Player", "0x1096468",
-            "World", "0x1098C08",
-            "Zoom", "0xB4C836",
+            "Animation", "0x829535",
+            "Attack", "0x938FF8",
+            "Breakblocks", "0x9D5793",
+            "ByPass", "0x1520A6",
+            "ClipCam", "0xA85BCA",
+            "Dismount", "0x3CB5EE",
+            "Fish", "0x11CB76C",
+            "LockCam", "0xC5EBD5",
+            "Map", "0xAEB4ED",
+            "Mining", "0x920368",
+            "MiningGeode", "0x9BFDD7",
+            "Name", "0xAC27E8",
+            "NoClip", "0x6E9FE2",
+            "Player", "0x11F9D40",
+            "World", "0x11F74BC",
+            "Zoom", "0xA83B06",
         ),
         "Address_Offset", Map(
             "Name", "0x0,0x10,0x0",
@@ -753,7 +753,7 @@ FollowTarget(GuiCtrlObj, Info) {
         else {
             for name in StrSplit(MainGui["FollowTarget_PlayerName"].Value, ",")
                 if not InStr(config.data["TP"]["WhiteList"]
-                    , Format("<{1}:{2}>", name, StrCrypto(name))) {
+                    , Format("<{1}:{2}>", name, StrCrypto(name)), true) {
                     MsgBox("玩家" name "未允许跟随, 请配置跟随白名单")
                     GuiCtrlObj.Value := false
                     return
@@ -808,7 +808,7 @@ SomeUiSetChangeEvent(GuiCtrlObj, Info) {
 StrCrypto(src, decode := false) {
     static chars := "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#%*_+"
     static charsLen := StrLen(chars)
-    key := "y(Hn,(}I+2209Zd^s5(E%vfpoKh.I="
+    key := config.data["Global"]["StrCrypto"]
     keyLen := StrLen(key)
     result := ""
     keyIndex := 1
@@ -845,7 +845,7 @@ class _Config {
         UpdateConfig("Module::Feature::clipCam", this.data["Address"]["ClipCam"] "|-|-|-")
         UpdateConfig("Module::Feature::disMount", this.data["Address"]["Dismount"] "|-|-|-")
         UpdateConfig("Module::Feature::lockCam", this.data["Address"]["LockCam"] "|-|-|-")
-        UpdateConfig("Module::Feature::locakMapLimit", this.data["Address"]["Map"] "|-|-|-")
+        UpdateConfig("Module::Feature::unlockMapLimit", this.data["Address"]["Map"] "|-|-|-")
         UpdateConfig("Module::Feature::quickMining", this.data["Address"]["Mining"] "|-|-|-")
         UpdateConfig("Module::Feature::quickMiningGeode", this.data["Address"]["MiningGeode"] "|-|-|-")
         UpdateConfig("Module::Feature::noClip", this.data["Address"]["NoClip"] "|-|-|-")
