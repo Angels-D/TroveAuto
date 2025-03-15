@@ -1,10 +1,15 @@
-// g++ .\libs\demo.cpp -Os -Wall -o demo.exe && sudo .\demo.exe
+// g++ .\libs\demo.cpp -static -Os -Wall -o demo.exe && sudo .\demo.exe
 
 #include "Module.hpp"
 
-void FindTarget()
+void FindTarget(const bool &targetBoss = true,
+                const bool &targetPlant = false,
+                const bool &targetNormal = false,
+                const std::vector<std::string> &targets = {},
+                const std::vector<std::string> &noTargets = {},
+                const uint32_t &aimRange = 45,
+                const uint32_t &showRange = 0)
 {
-    const uint32_t aimRange = 45;
     printf("\033c");
     Game game(Memory::GetProcessPid("Trove.exe")[0]);
     game.UpdateAddress();
@@ -24,27 +29,7 @@ void FindTarget()
     {
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
         UpdateAddress();
-        target = Module::FindTarget(
-            game, true, false, false,
-            {
-                ".*gameplay.*"
-                // ".*quest_assault_trigger.*",
-                // ".*gameplay/chest_quest_worldboss.*",
-                // ".*viking.*",
-                // ".*quest_spawn_trigger_fivestar_dep.*",
-                //  ".*chest_quest_standard.*",
-                //  ".*chest_quest_recipe.*"
-            },
-            {
-                ".*clam_depths_fire_boss.*",
-                 ".*pet.*",
-                 ".*placeable.*",
-                 ".*services.*",
-                 ".*client.*",
-                 ".*abilities.*",
-                 ".*portal.*"
-            },
-            aimRange, 0);
+        target = Module::FindTarget(game, targetBoss, targetPlant, targetNormal, targets, noTargets, aimRange, showRange);
         if (!target)
         {
             printf("Finding ...\r");
@@ -55,7 +40,7 @@ void FindTarget()
                target->data.x.UpdateData().data,
                target->data.y.UpdateData().data,
                target->data.z.UpdateData().data,
-               target->data.name.UpdateData(64).data.c_str());
+               target->data.name.UpdateData(128).data.c_str());
         while (CalculateDistance(
                    game.data.player.data.coord.data.x.UpdateData().data,
                    game.data.player.data.coord.data.y.UpdateData().data + Module::aimOffset.first,
@@ -93,11 +78,29 @@ int main(int argc, char *argv[])
 
     // Module::Tp2Forward(Memory::GetProcessPid("Trove.exe")[0], 50, 50);
 
-    // FunctionOn(Memory::GetProcessPid("Trove.exe")[0],"FollowTarget",".*quest_assault_trigger.*|.*pet.*,.*placeable.*,.*services.*,.*client.*,.*abilities.*,.*portal.*|50|50",false);
-    
+    // FunctionOn(Memory::GetProcessPid("Trove.exe")[0],"FollowTarget",".*|.*pet.*,.*placeable.*,.*services.*,.*client.*,.*abilities.*,.*portal.*|50|50", true);
+
     // FunctionOn(Memory::GetProcessPid("Trove.exe")[0],"SetNoClip","1",true);
 
-    FindTarget();
-    
+    FindTarget(true, false, false,
+                {
+                    ".*gameplay.*"
+                    ".*quest_assault_trigger.*",
+                    ".*gameplay/chest_quest_worldboss.*", 
+                    ".*viking.*", 
+                    ".*quest_spawn_trigger_fivestar_dep.*", 
+                    ".*chest_quest_standard.*", 
+                    ".*chest_quest_recipe.*"
+                },
+                {
+                    ".*clam_depths_fire_boss.*",
+                    ".*pet.*",
+                    ".*placeable.*",
+                    ".*services.*",
+                    ".*client.*",
+                    ".*abilities.*",
+                    ".*portal.*"
+                });
+
     return 0;
 }
