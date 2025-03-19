@@ -6,7 +6,7 @@
  *    -> 0.0.0
  *
  * Build
- *    -> g++ -shared -static -Os -Wall -o WindowInput.dll -x c++ .\libs\WindowInput.hpp
+ *    -> g++ -shared -static -Os -Wall -o WindowInput.dll -x c++ ./libs/WindowInput.hpp
  */
 
 #ifndef _WINDOWINPUT_HPP_

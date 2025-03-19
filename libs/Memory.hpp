@@ -10,7 +10,7 @@
  *    -> 1.0.0
  *
  * Build
- *    -> g++ -shared -static -Os -Wall -o Memory.dll -x c++ .\libs\Memory.hpp
+ *    -> g++ -shared -static -Os -Wall -o Memory.dll -x c++ ./libs/Memory.hpp
  */
 
 // Memory.h

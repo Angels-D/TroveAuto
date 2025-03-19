@@ -9,7 +9,7 @@
  *    -> 1.0.0
  *
  * Build
- *    -> g++ -shared -static -Os -Wall -o Game.dll -x c++ .\libs\Game.hpp
+ *    -> g++ -shared -static -Os -Wall -o Game.dll -x c++ ./libs/Game.hpp
  */
 
 // Game.h
@@ -230,7 +230,6 @@ public:
             static Offsets healthOffsets;
             static Offsets itemROffsets;
             static Offsets itemTOffsets;
-            static Signature nameSignature;
             static Signature itemRSignature;
             static Signature itemTSignature;
             Object<std::string> name;
@@ -284,10 +283,9 @@ Memory::Offsets Game::World::Player::Data::yOffsets = {0xC4, 0x04, 0x84};
 Memory::Offsets Game::World::Player::Data::zOffsets = {0xC4, 0x04, 0x88};
 Game::Signature Game::Player::signature = {0x14, "55 8B EC 83 E4 F8 83 EC 08 F3 0F 2A 45 10 56 8B F1 57 8B 3D"};
 Memory::Offsets Game::Player::offsets = {0x11F9D40, 0x0};
-Game::Signature Game::Player::Data::nameSignature = {-0x9, "FF 70 1C FF 70 18 8D 45 B0"};
 Game::Signature Game::Player::Data::itemRSignature = {-0x180, "FE FF FF FF 00 00 00 00 65 CF XX XX 0C 00 00 00 55 CF"};
 Game::Signature Game::Player::Data::itemTSignature = {-0x180, "FE FF FF FF 00 00 00 00 65 CF XX XX 0C 00 00 00 55 CF"};
-Memory::Offsets Game::Player::Data::nameOffsets = {0xAC27E8, 0x0, 0x10, 0x0};
+Memory::Offsets Game::Player::Data::nameOffsets = {0x0, 0x28, 0x1D0, 0x0};
 Memory::Offsets Game::Player::Data::healthOffsets = {0x0, 0x28, 0x1A4, 0x80};
 Memory::Offsets Game::Player::Data::itemROffsets = {};
 Memory::Offsets Game::Player::Data::itemTOffsets = {};
@@ -297,7 +295,7 @@ Memory::Offsets Game::Player::Camera::Data::yPerOffsets = {0x24, 0x84, 0x0, 0x10
 Memory::Offsets Game::Player::Camera::Data::zPerOffsets = {0x24, 0x84, 0x0, 0x108};
 Memory::Offsets Game::Player::Camera::Data::vOffsets = {0x2C};
 Memory::Offsets Game::Player::Camera::Data::hOffsets = {0x28};
-Memory::Offsets Game::Player::Coord::offsets = {0xC, 0x28, 0x54, 0x88, 0xAC, 0x4, 0x0};
+Memory::Offsets Game::Player::Coord::offsets = {0x0, 0x28, 0xC4, 0x4, 0x0};
 Memory::Offsets Game::Player::Coord::Data::xOffsets = {0x80};
 Memory::Offsets Game::Player::Coord::Data::yOffsets = {0x84};
 Memory::Offsets Game::Player::Coord::Data::zOffsets = {0x88};
@@ -679,7 +677,7 @@ Game::Player::Bag &Game::Player::Bag::UpdateData()
 
 Game::Player::Player(const Object &obj)
     : Object(obj, offsets, signature),
-      data({{*this, Data::nameOffsets, Data::nameSignature},
+      data({{*this, Data::nameOffsets},
             {*this, Data::healthOffsets},
             {*this, Data::itemROffsets, Data::itemRSignature},
             {*this, Data::itemTOffsets, Data::itemTSignature},
@@ -693,7 +691,7 @@ Game::Player::Player(const Object &obj)
 Game::Player &Game::Player::UpdateAddress()
 {
     Object::UpdateAddress();
-    data.name.UpdateBaseAddress(baseAddress);
+    data.name.UpdateBaseAddress(address);
     data.health.UpdateBaseAddress(address);
     data.itemR.UpdateBaseAddress(address);
     data.itemT.UpdateBaseAddress(address);
