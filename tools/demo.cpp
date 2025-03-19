@@ -1,6 +1,6 @@
-// g++ .\libs\demo.cpp -static -Os -Wall -o demo.exe && sudo .\demo.exe
+// g++ ./tools/demo.cpp -static -Os -Wall -o demo.exe && sudo ./demo.exe
 
-#include "Module.hpp"
+#include "../libs/Module.hpp"
 
 void FindTarget(const bool &targetBoss = true,
                 const bool &targetPlant = false,

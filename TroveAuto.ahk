@@ -69,21 +69,20 @@ config := _Config(
             "Map", "0xAEB4ED",
             "Mining", "0x920368",
             "MiningGeode", "0x9BFDD7",
-            "Name", "0xAC27E8",
             "NoClip", "0x6E9FE2",
             "Player", "0x11F9D40",
             "World", "0x11F74BC",
             "Zoom", "0xA83B06",
         ),
         "Address_Offset", Map(
-            "Name", "0x0,0x10,0x0",
+            "Name", "0x0,0x28,0x1D0,0x0",
             "Player_Health", "0x0,0x28,0x1A4,0x80",
-            "Player_Coord_X", "0xC,0x28,0x54,0x88,0xAC,0x4,0x80",
-            "Player_Coord_Y", "0xC,0x28,0x54,0x88,0xAC,0x4,0x84",
-            "Player_Coord_Z", "0xC,0x28,0x54,0x88,0xAC,0x4,0x88",
-            "Player_Coord_XVel", "0xC,0x28,0x54,0x88,0xAC,0x4,0xB0",
-            "Player_Coord_YVel", "0xC,0x28,0x54,0x88,0xAC,0x4,0xB4",
-            "Player_Coord_ZVel", "0xC,0x28,0x54,0x88,0xAC,0x4,0xB8",
+            "Player_Coord_X", "0x0,0x28,0xC4,0x4,0x80",
+            "Player_Coord_Y", "0x0,0x28,0xC4,0x4,0x84",
+            "Player_Coord_Z", "0x0,0x28,0xC4,0x4,0x88",
+            "Player_Coord_XVel", "0x0,0x28,0xC4,0x4,0xB0",
+            "Player_Coord_YVel", "0x0,0x28,0xC4,0x4,0xB4",
+            "Player_Coord_ZVel", "0x0,0x28,0xC4,0x4,0xB8",
             "Player_Cam_V", "0x4,0x2C",
             "Player_Cam_H", "0x4,0x28",
             "Player_Cam_XPer", "0x4,0x24,0x84,0x0,0x100",
@@ -130,7 +129,6 @@ config := _Config(
             "Map", "0,77 XX B8 XX XX XX XX F3 0F 10 08 F3 0F 11 89 XX XX XX XX 8B 89",
             "Mining", "1,DF F1 DD D8 72 61",
             "MiningGeode", "1,DF F1 DD D8 72 35 8D",
-            "Name", "-9,FF 70 1C FF 70 18 8D 45 B0",
             "NoClip", "-1443, 74 31 FF 73 14 8B 47 04 2B 07",
             "Player", "20,55 8B EC 83 E4 F8 83 EC 08 F3 0F 2A 45 10 56 8B F1 57 8B 3D",
             "World", "10,55 8B EC 83 7D 08 04 75 10 A1 XX XX XX XX 85 C0 74 07 C6 80 59 01 00 00 01 5D C2 04 00",
@@ -275,7 +273,6 @@ for key, value in Map(
     "Map", "地图放大",
     "Mining", "快速挖矿",
     "MiningGeode", "快速挖矿(晶洞)",
-    "Name", "账号",
     "NoClip", "穿墙",
     "Player", "玩家",
     "World", "世界",
@@ -851,7 +848,6 @@ class _Config {
         UpdateConfig("Module::Feature::noClip", this.data["Address"]["NoClip"] "|-|-|-")
         UpdateConfig("Module::Feature::unlockZoomLimit", this.data["Address"]["Zoom"] "|-|-|-")
         UpdateConfig("Game::Player::offsets", this.data["Address"]["Player"] "|0x0")
-        UpdateConfig("Game::Player::Data::nameOffsets", this.data["Address"]["Name"] "|" this.data["Address_Offset"]["Name"])
         UpdateConfig("Game::Player::Fish::offsets", this.data["Address"]["Fish"] "|0x68|0x0")
         UpdateConfig("Game::World::offsets", this.data["Address"]["World"] "|0x0")
     }
@@ -1163,7 +1159,7 @@ class Game {
     )
     __New(id) {
         this.GetBase(id)
-        this.name := this.GetName(this.BaseAddress + config.data["Address"]["Name"])
+        this.name := this.GetName(this.BaseAddress + config.data["Address"]["Player"])
         if (this.name == "")
             return
 
