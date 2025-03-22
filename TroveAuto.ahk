@@ -34,7 +34,7 @@ config := _Config(
             "Mirror", "https://github.moeyy.xyz/",
             "StrCrypto", "y(Hn,(}I+2209Zd^s5(E%vfpoKh.I=",
         ),
-        "RestartTime", Map("Value", "5000",),
+        "RefreshTime", Map("Value", "3000",),
         "AttackTime", Map("Value", "1000",),
         "HealthTime", Map("Value", "3000",),
         "UseLogTime", Map("Value", "3000",),
@@ -227,14 +227,19 @@ MainGui.Add("Text", "xs+40 ys+50 cRed", "任何脚本都有风险, 请慎用!")
 
 ; 其他功能内容
 MainGui["Tab"].UseTab("其他功能")
-MainGui.Add("GroupBox", "xs-10 y+30 w310 r14 Section", "传送相关")
-MainGui.Add("GroupBox", "xs+10 ys+40 w290 r3 Section", "当前玩家传送")
+MainGui.Add("GroupBox", "xs-10 y+30 w310 r4 Section", "崩溃相关")
+MainGui.Add("GroupBox", "xs+10 ys+30 w290 r2 Section", "自动刷新")
+MainGui.Add("CheckBox", "xp+110 yp vAutoRefresh")
+MainGui.Add("Text", "xs+10 ys+30 w100 Section", "刷新间隔(ms):")
+MainGui.Add("Edit", "ys w140 vRefreshTime", config.data["RefreshTime"]["Value"])
+MainGui.Add("GroupBox", "xs-20 y+50 w310 r13 Section", "传送相关")
+MainGui.Add("GroupBox", "xs+10 ys+30 w290 r3 Section", "当前玩家传送")
 MainGui.Add("CheckBox", "xp+110 yp vTP")
 MainGui.Add("Text", "xs+10 ys+30 w90 Section", "传送距离:")
 MainGui.Add("Edit", "ys w150 vDistanceTP", config.data["TP"]["Distance"])
 MainGui.Add("Text", "xs w90 Section", "传送热键:")
 MainGui.Add("HotKey", "ys w150 vHotKeyTP", config.data["TP"]["HotKey"])
-MainGui.Add("GroupBox", "xs-10 ys+50 w290 r7 Section", "指定坐标传送")
+MainGui.Add("GroupBox", "xs-10 ys+40 w290 r7 Section", "指定坐标传送")
 MainGui.Add("Text", "xs+10 ys+30 w90 Section", "玩家名:")
 MainGui.Add("Edit", "ys w150 vTPPlayerName")
 MainGui.Add("Text", "xs w30 Section", "X:")
@@ -244,12 +249,21 @@ MainGui.Add("Edit", "ys w210 vTPtoY", 0)
 MainGui.Add("Text", "xs w30 Section", "Z:")
 MainGui.Add("Edit", "ys w210 vTPtoZ", 0)
 MainGui.Add("Button", "xs w250 vTPtoXYZBtn", "传送")
-MainGui.Add("GroupBox", "xs-20 y+50 w310 r21 Section", "自瞄相关   正则表达式 逗号隔开")
-MainGui.Add("GroupBox", "xs+10 ys+40 w290 r9 Section", "目标名单")
-MainGui.Add("Edit", "xs+10 ys+30 w260 h210 vTargetListAutoAim", config.data["AutoAim"]["TargetList"])
-MainGui.Add("GroupBox", "xs w290 r9 Section", "非目标名单")
-MainGui.Add("Edit", "xs+10 ys+30 w260 h210 vNoTargetListAutoAim", config.data["AutoAim"]["NoTargetList"])
-MainGui.Add("Text", "xs+60 y+20", "部分内容保存后生效")
+MainGui.Add("GroupBox", "xs-20 y+40 w310 r16 Section", "自动瞄准相关")
+MainGui.Add("GroupBox", "xs+10 ys+30 w290 r3 Section", "当前玩家静默攻击瞄准")
+MainGui.Add("CheckBox", "xp+170 yp vTop_AutoAim")
+MainGui.Add("Text", "xs+10 ys+30 Section", "瞄准范围:")
+MainGui.Add("Edit", "ys w45 vTop_AutoAim_AimRange", 45)
+MainGui.Add("Text", "ys", "显示范围:")
+MainGui.Add("Edit", "ys w45 vTop_AutoAim_ShowRange", 200)
+MainGui.Add("CheckBox", "xs w85 Section checked vTop_AutoAim_TargetBoss", "锁定Boss")
+MainGui.Add("CheckBox", "ys w80 vTop_AutoAim_TargetNormal", "锁定小怪")
+MainGui.Add("CheckBox", "ys w80 vTop_AutoAim_TargetPlant", "锁定植物")
+MainGui.Add("GroupBox", "xs-10 ys+50 w290 r4 Section", "目标名单     正则表达式 逗号隔开")
+MainGui.Add("Edit", "xs+10 ys+30 w260 h80 vTargetListAutoAim", config.data["AutoAim"]["TargetList"])
+MainGui.Add("GroupBox", "xs w290 r4 Section", "非目标名单   正则表达式 逗号隔开")
+MainGui.Add("Edit", "xs+10 ys+30 w260 h80 vNoTargetListAutoAim", config.data["AutoAim"]["NoTargetList"])
+MainGui.Add("Text", "xs+60 y+50", "部分内容保存后生效")
 
 ; 设置内容
 MainGui["Tab"].UseTab("设置")
@@ -279,8 +293,6 @@ MainGui.Add("Text", "xs w100 Section", "交互按键:")
 MainGui.Add("HotKey", "ys w150 vPressKey", config.data["Key"]["Press"])
 MainGui.Add("Text", "xs w100 Section", "钓鱼按键:")
 MainGui.Add("HotKey", "ys w150 vFishKey", config.data["Key"]["Fish"])
-MainGui.Add("Text", "xs w100 Section", "自启扫描(ms):")
-MainGui.Add("Edit", "ys w150 vRestartTime", config.data["RestartTime"]["Value"])
 MainGui.Add("Text", "xs w100 Section", "攻击扫描(ms):")
 MainGui.Add("Edit", "ys w150 vAttackTime", config.data["AttackTime"]["Value"])
 MainGui.Add("Text", "xs w100 Section", "血量扫描(ms):")
@@ -355,8 +367,11 @@ for key in ["FollowTarget_PlayerName", "FollowTarget_TargetName", "SpeedUp_Speed
 for key in ["Animation", "Attack", "Breakblocks", "ByPass", "ClipCam", "Dismount"
     , "Health", "LockCam", "Map", "Mining", "MiningGeode", "NoClip", "UseLog", "Zoom"]
     MainGui[key].OnEvent("Click", Features)
+MainGui["AutoRefresh"].OnEvent("Click", AutoRefresh)
 MainGui["TP"].OnEvent("Click", TP)
 MainGui["TPtoXYZBtn"].OnEvent("Click", TPtoXYZ)
+MainGui["Top_AutoAim"].OnEvent("Click", Top_AutoAim)
+
 
 ; 托盘图标
 A_TrayMenu.Delete()
@@ -433,12 +448,18 @@ ConfigFile(GuiCtrlObj, Info) {
 }
 Reset(GuiCtrlObj := unset, Info := unset) {
     Game.Reset()
-    Game.Refresh()
-    UIReset()
+    Refresh()
 }
 Refresh(GuiCtrlObj := unset, Info := unset) {
-    Game.Refresh()
-    UIReset()
+    GameNameList := Game.Refresh()
+    theGameName := MainGui["SelectGame"].Text
+    MainGui["SelectGame"].Delete()
+    MainGui["SelectGame"].Add(GameNameList)
+    for name in GameNameList
+        if (name == theGameName)
+            MainGui["SelectGame"].Text := theGameName
+    if (MainGui["SelectGame"].Text == "")
+        UIReset()
 }
 UIReset() {
     for key in ["Animation", "Attack", "Breakblocks", "ByPass", "ClipCam", "Dismount"
@@ -622,11 +643,15 @@ Features(GuiCtrlObj, Info) {
     theGame.setting["Features"][GuiCtrlObj.Name] := GuiCtrlObj.Value
     theGame.Features(GuiCtrlObj.Name, GuiCtrlObj.Value)
 }
+AutoRefresh(GuiCtrlObj, Info) {
+    SetTimer(Refresh, GuiCtrlObj.Value ? config.data["RefreshTime"]["Value"] : 0)
+}
 TP(GuiCtrlObj, Info) {
     if (GuiCtrlObj.Value)
         Hotkey(MainGui["HotKeyTP"].Value, (*) {
-            if (WinGetProcessName("A") == config.data["Global"]["GameTitle"])
-                FunctionOn(WingetPID("A"), "Tp2Forward", MainGui["DistanceTP"].Value "|" MainGui["DelayTP"].Value, true)
+            try
+                if (WinGetProcessName("A") == config.data["Global"]["GameTitle"])
+                    FunctionOn(WingetPID("A"), "Tp2Forward", MainGui["DistanceTP"].Value "|" MainGui["DelayTP"].Value, true)
             Send(MainGui["HotKeyTP"].Value)
         }, "On I1")
     else
@@ -652,6 +677,34 @@ TPtoXYZ(GuiCtrlObj, Info) {
         MainGui["TPtoY"].Value "|"
         MainGui["TPtoZ"].Value "|"
         MainGui["DelayTP"].Value "|10", true)
+}
+Top_AutoAim(GuiCtrlObj, Info) {
+    if (GuiCtrlObj.Value)
+        Hotkey("LButton", (*) {
+            Click("Down")
+            try
+                if (WinGetProcessName("A") == config.data["Global"]["GameTitle"]){
+                    pid := WingetPID("A")
+                    FunctionOn(pid, "AutoAim", Format("{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}"
+                        , MainGui["Top_AutoAim_TargetBoss"].Value
+                        , MainGui["Top_AutoAim_TargetPlant"].Value
+                        , MainGui["Top_AutoAim_TargetNormal"].Value
+                        , config.data["AutoAim"]["TargetList"]
+                        , config.data["AutoAim"]["NoTargetList"]
+                        , MainGui["Top_AutoAim_AimRange"].Value
+                        , MainGui["Top_AutoAim_ShowRange"].Value
+                        , config.data["AutoAim"]["Delay"]), false)
+                }
+            while (GetKeyState("LButton", "P"))
+                Sleep(100)
+            if IsSet(pid)
+                FunctionOff(pid, "AutoAim")
+            Click("UP")
+        }, "On I1")
+    else
+        Hotkey("LButton", , "Off")
+    for key in ["Top_AutoAim_AimRange", "Top_AutoAim_ShowRange", "Top_AutoAim_TargetBoss", "Top_AutoAim_TargetNormal", "Top_AutoAim_TargetPlant"]
+        MainGui[key].enabled := not GuiCtrlObj.Value
 }
 Interval(GuiCtrlObj, Info) {
     theGame := Game.Lists[MainGui["SelectGame"].Text]
@@ -1157,16 +1210,15 @@ class Game {
         Game.Lists.Clear()
     }
     static Refresh() {
-        LOADING := false
+        GameNameList := []
         GameIDs_HOLD := Map()
-        MainGui["SelectGame"].Delete()
         GameIDs := WinGetList("ahk_exe " config.data["Global"]["GameTitle"])
         for Key, Value in Game.Lists.Clone() {
             if not WinExist("ahk_id " Value.id) {
                 Game.Lists[Key].StopAll(true)
             } else {
                 GameIDs_HOLD[Value.id] := ""
-                MainGui["SelectGame"].Add([Value.Name])
+                GameNameList.Push(Value.Name)
             }
         }
         for key in GameIDs {
@@ -1191,12 +1243,11 @@ class Game {
                         theGame.SpeedUp()
                     }
                     else Game.Lists[theGame.name] := theGame
-                    MainGui["SelectGame"].Add([theGame.name])
+                    GameNameList.Push(theGame.name)
                 }
-                else LOADING := true
             }
         }
-        return LOADING
+        return GameNameList
     }
     GetBase(id) {
         this.id := id
