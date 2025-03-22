@@ -223,12 +223,6 @@ MainGui.Add("Edit", "ys w55 vAutoAim_ShowRange")
 MainGui.Add("CheckBox", "xs w90 Section vAutoAim_TargetBoss", "锁定Boss")
 MainGui.Add("CheckBox", "ys w90 vAutoAim_TargetNormal", "锁定小怪")
 MainGui.Add("CheckBox", "ys w90 vAutoAim_TargetPlant", "锁定植物")
-MainGui.Add("GroupBox", "xs-10 ys+60 w310 r3 Section", "崩溃自启          实验性功能")
-MainGui.Add("CheckBox", "xp+80 yp vAutoRestart")
-MainGui.Add("Text", "xs+10 ys+30 Section", "账号:")
-MainGui.Add("Edit", "ys w220 vAutoRestart_Account")
-MainGui.Add("Text", "xs Section", "密码:")
-MainGui.Add("Edit", "ys w220 vAutoRestart_Password")
 MainGui.Add("Text", "xs+40 ys+50 cRed", "任何脚本都有风险, 请慎用!")
 
 ; 其他功能内容
@@ -352,10 +346,8 @@ MainGui["AutoBtn_NoTop"].OnEvent("Click", AutoBtn_NoTop)
 MainGui["FollowTarget"].OnEvent("Click", FollowTarget)
 MainGui["AutoAim"].OnEvent("Click", AutoAim)
 MainGui["SpeedUp"].OnEvent("Click", SpeedUp)
-MainGui["AutoRestart"].OnEvent("Click", AutoRestart)
 for key in ["FollowTarget_PlayerName", "FollowTarget_TargetName", "SpeedUp_SpeedUpRate", "AutoAim_AimRange"
-    , "AutoAim_ShowRange", "AutoAim_TargetBoss", "AutoAim_TargetNormal", "AutoAim_TargetPlant"
-    , "AutoRestart_Account", "AutoRestart_Password"] {
+    , "AutoAim_ShowRange", "AutoAim_TargetBoss", "AutoAim_TargetNormal", "AutoAim_TargetPlant"] {
     try MainGui[key].OnEvent("Change", SomeUiSetChangeEvent)
     catch
         MainGui[key].OnEvent("Click", SomeUiSetChangeEvent)
@@ -454,16 +446,14 @@ UIReset() {
         , "AutoBtn_Key_Click_LEFT", "AutoBtn_Key_Click_RIGHT", "AutoBtn_NoTop", "HotKeyBox"
         , "Interval", "SelectAction", "StartBtn", "FollowTarget", "FollowTarget_PlayerName", "FollowTarget_TargetName"
         , "SpeedUp", "SpeedUp_SpeedUpRate", "AutoAim", "AutoAim_AimRange"
-        , "AutoAim_ShowRange", "AutoAim_TargetBoss", "AutoAim_TargetNormal", "AutoAim_TargetPlant"
-        , "AutoRestart", "AutoRestart_Account", "AutoRestart_Password"]
+        , "AutoAim_ShowRange", "AutoAim_TargetBoss", "AutoAim_TargetNormal", "AutoAim_TargetPlant"]
         MainGui[key].Enabled := false
     for key in ["Animation", "Attack", "Breakblocks", "ByPass", "ClipCam", "Dismount"
         , "Health", "LockCam", "Map", "Mining", "MiningGeode", "NoClip", "UseLog", "Zoom"
         , "AutoBtn_Key_Click_LEFT", "AutoBtn_Key_Click_RIGHT", "AutoBtn_NoTop"
         , "Interval", "SelectAction", "FollowTarget", "FollowTarget_PlayerName", "FollowTarget_TargetName"
         , "SpeedUp", "SpeedUp_SpeedUpRate", "AutoAim", "AutoAim_AimRange"
-        , "AutoAim_ShowRange", "AutoAim_TargetBoss", "AutoAim_TargetNormal", "AutoAim_TargetPlant"
-        , "AutoRestart", "AutoRestart_Account", "AutoRestart_Password"]
+        , "AutoAim_ShowRange", "AutoAim_TargetBoss", "AutoAim_TargetNormal", "AutoAim_TargetPlant"]
         try MainGui[key].Value := ""
         catch
             MainGui[key].Value := 0
@@ -590,7 +580,7 @@ SelectGame(GuiCtrlObj, Info) {
 SelectAction(GuiCtrlObj, Info := unset) {
     theGame := Game.Lists[MainGui["SelectGame"].Text]
     theGame.action := GuiCtrlObj.Text
-    for key in ["FollowTarget", "SpeedUp", "AutoAim", "AutoRestart"] {
+    for key in ["FollowTarget", "SpeedUp", "AutoAim"] {
         MainGui[key].Enabled := true
         for item in theGame.setting[key] {
             if (item == "On")
@@ -788,15 +778,6 @@ SpeedUp(GuiCtrlObj, Info) {
     theGame.Features("ByPass", true)
     theGame.SpeedUp()
 }
-AutoRestart(GuiCtrlObj, Info) {
-    if GuiCtrlObj.Value and not MainGui["AutoRestart_Account"].Value or not MainGui["AutoRestart_Password"] {
-        MsgBox("账号密码不能为空")
-        GuiCtrlObj.Value := false
-        return
-    }
-    MainGui["AutoRestart_Account"].Enabled := MainGui["AutoRestart_Password"].Enabled := !GuiCtrlObj.Value
-    Game.Lists[MainGui["SelectGame"].Text].setting["AutoRestart"]["On"] := GuiCtrlObj.Value
-}
 SomeUiSetChangeEvent(GuiCtrlObj, Info) {
     kv := StrSplit(GuiCtrlObj.Name, "_")
     Game.Lists[MainGui["SelectGame"].Text].setting[kv[1]][kv[2]] := GuiCtrlObj.Value
@@ -904,7 +885,6 @@ class Game {
         "钓鱼", "AutoFish",
         "自动按键", "AutoBtn",
     )
-    static AutoRestartFunc := ObjBindMethod(Game, "AutoRestart")
     static ScriptAHK := "
     (
         #NoTrayIcon
@@ -1113,11 +1093,6 @@ class Game {
     running := false
     threads := Map()
     setting := Map(
-        "AutoRestart", Map(
-            "On", false,
-            "Account", "",
-            "Password", "",
-        ),
         "FollowTarget", Map(
             "On", false,
             "PlayerName", "",
@@ -1221,61 +1196,7 @@ class Game {
                 else LOADING := true
             }
         }
-        SetTimer(Game.AutoRestartFunc, config.data["RestartTime"]["Value"])
         return LOADING
-    }
-    static AutoRestart() {
-        NatureClick(ControlOrPos, WinTitle) {
-            SetControlDelay(-1)
-            ControlClick(ControlOrPos, WinTitle, , , , "NA")
-        }
-        for Key, theGame in Game.Lists {
-            if ( not theGame.setting["AutoRestart"]["On"])
-                Continue
-            if not WinExist("ahk_id " theGame.id) {
-                if Game.Refresh()
-                    return
-                try WinActivate("Glyph")
-                catch {
-                    GameStart()
-                    Sleep(10000)
-                }
-                try {
-                    if WinWaitActive("登录 Glyph", , 3) or WinWaitActive("Glyph", , 15) {
-                        WinSetAlwaysOnTop(1, "Glyph")
-                        WinGetPos(&X, &Y, &W, &H, "Glyph")
-                        if ( not WinWaitActive("登录 Glyph", , 0.5)
-                            and not ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/select1.png")
-                            and not ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/select2.png")
-                            and ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/select3.png")
-                            or ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/select4.png")) {
-                            NatureClick("x" OutputVarX " y" OutputVarY, "Glyph")
-                            ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "*2 image/logout1.png")
-                                or ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "*2 image/logout2.png")
-                            NatureClick("x" OutputVarX " y" OutputVarY, "Glyph")
-                            Sleep(3000)
-                        }
-                        if ( not WinWaitActive("登录 Glyph", , 3)
-                            and ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/select1.png")
-                            or ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/select2.png")) {
-                            ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/start1.png")
-                                or ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/start2.png")
-                                or ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/start3.png")
-                            NatureClick("x" OutputVarX " y" OutputVarY, "Glyph")
-                            Sleep(3000)
-                        }
-                        WinGetPos(&X, &Y, &W, &H, "登录 Glyph")
-                        if (ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/login1.png")
-                            or ImageSearch(&OutputVarX, &OutputVarY, 0, 0, W, H, "image/login2.png")) {
-                            SetKeyDelay(10, 20)
-                            ControlSend(theGame.setting["AutoRestart"]["Account"] "{Tab}" theGame.setting["AutoRestart"]["Password"], , "登录 Glyph")
-                            NatureClick("x" OutputVarX " y" OutputVarY, "登录 Glyph")
-                            Sleep(30000)
-                        }
-                    }
-                }
-            }
-        }
     }
     GetBase(id) {
         this.id := id
