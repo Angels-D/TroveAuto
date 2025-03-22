@@ -1,6 +1,6 @@
 ;@Ahk2Exe-UpdateManifest 2
 ;@Ahk2Exe-SetName TroveAuto
-;@Ahk2Exe-SetProductVersion 2.4.7
+;@Ahk2Exe-SetProductVersion 2.4.8
 ;@Ahk2Exe-SetCopyright GPL-3.0 license
 ;@Ahk2Exe-SetLanguage Chinese_PRC
 ;@Ahk2Exe-SetMainIcon TroveAuto.ico
@@ -28,8 +28,8 @@ config := _Config(
         "Global", Map(
             "GameTitle", "Trove.exe",
             "GamePath", "",
-            "ConfigVersion", "20250313160000",
-            "AppVersion", "20250313160000",
+            "ConfigVersion", "20250322173000",
+            "AppVersion", "20250322173000",
             "Source", "https://github.com/Angels-D/TroveAuto/",
             "Mirror", "https://github.moeyy.xyz/",
             "StrCrypto", "y(Hn,(}I+2209Zd^s5(E%vfpoKh.I=",
@@ -163,8 +163,12 @@ MainGui.Add("Text", "w200", "Mod使用教程: 后缀为.tmod的文件存放在Mo
 MainGui.Add("Link", "w200", "附: 官方邮箱<a href=`"mailto:support@gamigo.com`">support@gamigo.com</a>(通过此邮箱询问交易问题、账号问题等内容,注意使用英文描述")
 MainGui.Add("Link", "w200 cRed", "
     (
-        新: 强烈推荐使用<a href="https://github.com/Sly0511/RenewedTroveTools/">RenewedTroveTools</a>
-        工具管理你的Mod和CFG文件, 还有装备推荐、模拟加点、模组开发管理、模组下载等功能
+        推荐: 
+        > <a href="https://github.com/Sly0511/RenewedTroveTools/">RenewedTroveTools</a>工具
+        管理你的Mod和CFG文件, 还有装备推荐、模拟加点、模组开发管理、模组下载等功能
+
+        > <a href="https://qm.qq.com/q/mu0FmpznQm">Trove ToolBox</a>工具
+        管理你的游戏登录, 还有多开窗口自动排列、崩溃重启、防掉线等功能
     )"
 )
 MainGui.Add("Button", "y+10 w200 h40 vUseLogPathBtn", "物品栏使用日志文件夹")
