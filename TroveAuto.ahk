@@ -1,6 +1,6 @@
 ;@Ahk2Exe-UpdateManifest 2
 ;@Ahk2Exe-SetName TroveAuto
-;@Ahk2Exe-SetProductVersion 2.4.8
+;@Ahk2Exe-SetProductVersion 2.4.9
 ;@Ahk2Exe-SetCopyright GPL-3.0 license
 ;@Ahk2Exe-SetLanguage Chinese_PRC
 ;@Ahk2Exe-SetMainIcon TroveAuto.ico
@@ -28,11 +28,12 @@ config := _Config(
         "Global", Map(
             "GameTitle", "Trove.exe",
             "GamePath", "",
-            "ConfigVersion", "20250322173000",
-            "AppVersion", "20250322173000",
+            "ConfigVersion", "20250328193000",
+            "AppVersion", "20250328193000",
             "Source", "https://github.com/Angels-D/TroveAuto/",
             "Mirror", "https://github.moeyy.xyz/",
             "StrCrypto", "y(Hn,(}I+2209Zd^s5(E%vfpoKh.I=",
+            "Cheat", "Enter 你的30条命秘籍",
         ),
         "RefreshTime", Map("Value", "3000",),
         "AttackTime", Map("Value", "1000",),
@@ -50,7 +51,7 @@ config := _Config(
         ),
         "AutoAim", Map(
             "Delay", "50",
-            "TargetList", ".*box_of_coins_mar2022.*,.*pile_of_coins_mar2022.*,.*chest_quest_standard.*,.*chest_quest_recipe.*",
+            "TargetList", ".*chest_quest_.*",
             "NoTargetList", ".*pet.*,.*placeable.*,.*services.*,.*client.*,.*abilities.*",
         ),
         "Key", Map(
@@ -208,22 +209,23 @@ for key, value in Map(
     "Zoom", "视野放大",
 )
     MainGui.Add("CheckBox", (Mod(A_Index, 2) ? ((A_Index == 1 ? "xp+10 yp+30" : "xs") " Section") : "ys") " w140 v" key, value)
-MainGui.Add("GroupBox", "xs-10 ys+40 w310 r3 Section", "跟踪目标       正则表达式 逗号分割")
+MainGui.Add("GroupBox", "xs-10 ys+40 w310 r4.2 Section", "跟随目标       正则表达式 逗号分割")
 MainGui.Add("CheckBox", "xp+80 yp vFollowTarget")
 MainGui.Add("Text", "xs+10 ys+30 Section", "玩家列表:")
 MainGui.Add("Edit", "ys w205 vFollowTarget_PlayerName")
 MainGui.Add("Text", "xs ys+30 Section", "实体列表:")
 MainGui.Add("Edit", "ys w205 vFollowTarget_TargetName")
-MainGui.Add("GroupBox", "xs-10 ys+50 w310 r2 Section", "矢量移动       WASD/Shift/Space移动")
+MainGui.Add("CheckBox", "xs w90 Section vFollowTarget_TargetBoss", "跟踪Boss")
+MainGui.Add("CheckBox", "ys w90 vFollowTarget_TargetList", "全局名单")
+MainGui.Add("CheckBox", "ys w90 vFollowTarget_ScanAll", "扫图模式")
+MainGui.Add("GroupBox", "xs-10 ys+40 w310 r2 Section", "矢量移动       WASD/Shift/Space移动")
 MainGui.Add("CheckBox", "xp+80 yp vSpeedUp")
 MainGui.Add("Text", "xs+10 ys+30 Section", "加速倍率:")
 MainGui.Add("Edit", "ys w205 vSpeedUp_SpeedUpRate")
 MainGui.Add("GroupBox", "xs-10 ys+50 w310 r3 Section", "自动瞄准")
 MainGui.Add("CheckBox", "xp+80 yp vAutoAim")
 MainGui.Add("Text", "xs+10 ys+30 Section", "瞄准范围:")
-MainGui.Add("Edit", "ys w55 vAutoAim_AimRange")
-MainGui.Add("Text", "ys", "显示范围:")
-MainGui.Add("Edit", "ys w55 vAutoAim_ShowRange")
+MainGui.Add("Edit", "ys w205 vAutoAim_AimRange")
 MainGui.Add("CheckBox", "xs w90 Section vAutoAim_TargetBoss", "锁定Boss")
 MainGui.Add("CheckBox", "ys w90 vAutoAim_TargetNormal", "锁定小怪")
 MainGui.Add("CheckBox", "ys w90 vAutoAim_TargetPlant", "锁定植物")
@@ -231,12 +233,12 @@ MainGui.Add("Text", "xs+40 ys+50 cRed", "任何脚本都有风险, 请慎用!")
 
 ; 其他功能内容
 MainGui["Tab"].UseTab("其他功能")
-MainGui.Add("GroupBox", "xs-10 y+30 w310 r4 Section", "崩溃相关")
+MainGui.Add("GroupBox", "xs-10 y+10 w310 r3.5 Section", "崩溃相关")
 MainGui.Add("GroupBox", "xs+10 ys+30 w290 r2 Section", "自动刷新")
 MainGui.Add("CheckBox", "xp+110 yp vAutoRefresh")
 MainGui.Add("Text", "xs+10 ys+30 w100 Section", "刷新间隔(ms):")
 MainGui.Add("Edit", "ys w140 vRefreshTime", config.data["RefreshTime"]["Value"])
-MainGui.Add("GroupBox", "xs-20 y+50 w310 r13 Section", "传送相关")
+MainGui.Add("GroupBox", "xs-20 y+40 w310 r13 Section", "传送相关")
 MainGui.Add("GroupBox", "xs+10 ys+30 w290 r3 Section", "当前玩家传送")
 MainGui.Add("CheckBox", "xp+110 yp vTP")
 MainGui.Add("Text", "xs+10 ys+30 w90 Section", "传送距离:")
@@ -253,13 +255,11 @@ MainGui.Add("Edit", "ys w210 vTPtoY", 0)
 MainGui.Add("Text", "xs w30 Section", "Z:")
 MainGui.Add("Edit", "ys w210 vTPtoZ", 0)
 MainGui.Add("Button", "xs w250 vTPtoXYZBtn", "传送")
-MainGui.Add("GroupBox", "xs-20 y+40 w310 r16 Section", "自动瞄准相关")
+MainGui.Add("GroupBox", "xs-20 y+30 w310 r15.4 Section", "自动瞄准相关")
 MainGui.Add("GroupBox", "xs+10 ys+30 w290 r3 Section", "当前玩家静默攻击瞄准")
 MainGui.Add("CheckBox", "xp+170 yp vTop_AutoAim")
 MainGui.Add("Text", "xs+10 ys+30 Section", "瞄准范围:")
-MainGui.Add("Edit", "ys w45 vTop_AutoAim_AimRange", 45)
-MainGui.Add("Text", "ys", "显示范围:")
-MainGui.Add("Edit", "ys w45 vTop_AutoAim_ShowRange", 200)
+MainGui.Add("Edit", "ys w170 vTop_AutoAim_AimRange", 45)
 MainGui.Add("CheckBox", "xs w85 Section checked vTop_AutoAim_TargetBoss", "锁定Boss")
 MainGui.Add("CheckBox", "ys w80 vTop_AutoAim_TargetNormal", "锁定小怪")
 MainGui.Add("CheckBox", "ys w80 vTop_AutoAim_TargetPlant", "锁定植物")
@@ -267,11 +267,11 @@ MainGui.Add("GroupBox", "xs-10 ys+50 w290 r4 Section", "目标名单     正则�
 MainGui.Add("Edit", "xs+10 ys+30 w260 h80 vTargetListAutoAim", config.data["AutoAim"]["TargetList"])
 MainGui.Add("GroupBox", "xs w290 r4 Section", "非目标名单   正则表达式 逗号隔开")
 MainGui.Add("Edit", "xs+10 ys+30 w260 h80 vNoTargetListAutoAim", config.data["AutoAim"]["NoTargetList"])
-MainGui.Add("Text", "xs+60 y+50", "部分内容保存后生效")
+MainGui.Add("Text", "xs+60 y+30", "部分内容保存后生效")
 
 ; 设置内容
 MainGui["Tab"].UseTab("设置")
-MainGui.Add("Text", "x+40 y+20 w100 Section", "游戏标题:")
+MainGui.Add("Text", "x+40 y+10 w100 Section", "游戏标题:")
 MainGui.Add("Edit", "ys w150 vGameTitle", config.data["Global"]["GameTitle"])
 for key, value in Map(
     "Animation", "隐藏特效",
@@ -362,8 +362,8 @@ MainGui["AutoBtn_NoTop"].OnEvent("Click", AutoBtn_NoTop)
 MainGui["FollowTarget"].OnEvent("Click", FollowTarget)
 MainGui["AutoAim"].OnEvent("Click", AutoAim)
 MainGui["SpeedUp"].OnEvent("Click", SpeedUp)
-for key in ["FollowTarget_PlayerName", "FollowTarget_TargetName", "SpeedUp_SpeedUpRate", "AutoAim_AimRange"
-    , "AutoAim_ShowRange", "AutoAim_TargetBoss", "AutoAim_TargetNormal", "AutoAim_TargetPlant"] {
+for key in ["FollowTarget_PlayerName", "FollowTarget_TargetName", "FollowTarget_TargetBoss", "FollowTarget_TargetList", "FollowTarget_ScanAll"
+    , "SpeedUp_SpeedUpRate", "AutoAim_AimRange", "AutoAim_TargetBoss", "AutoAim_TargetNormal", "AutoAim_TargetPlant"] {
     try MainGui[key].OnEvent("Change", SomeUiSetChangeEvent)
     catch
         MainGui[key].OnEvent("Click", SomeUiSetChangeEvent)
@@ -452,6 +452,7 @@ ConfigFile(GuiCtrlObj, Info) {
 }
 Reset(GuiCtrlObj := unset, Info := unset) {
     Game.Reset()
+    MainGui["SelectGame"].Text := ""
     Refresh()
 }
 Refresh(GuiCtrlObj := unset, Info := unset) {
@@ -469,19 +470,23 @@ UIReset() {
     for key in ["Animation", "Attack", "Breakblocks", "ByPass", "ClipCam", "Dismount"
         , "Health", "LockCam", "Map", "Mining", "MiningGeode", "NoClip", "UseLog", "Zoom"
         , "AutoBtn_Key_Click_LEFT", "AutoBtn_Key_Click_RIGHT", "AutoBtn_NoTop", "HotKeyBox"
-        , "Interval", "SelectAction", "StartBtn", "FollowTarget", "FollowTarget_PlayerName", "FollowTarget_TargetName"
+        , "Interval", "SelectAction", "StartBtn", "FollowTarget", "FollowTarget_PlayerName"
+        , "FollowTarget_TargetName", "FollowTarget_TargetBoss", "FollowTarget_TargetList", "FollowTarget_ScanAll"
         , "SpeedUp", "SpeedUp_SpeedUpRate", "AutoAim", "AutoAim_AimRange"
-        , "AutoAim_ShowRange", "AutoAim_TargetBoss", "AutoAim_TargetNormal", "AutoAim_TargetPlant"]
+        , "AutoAim_TargetBoss", "AutoAim_TargetNormal", "AutoAim_TargetPlant"]
         MainGui[key].Enabled := false
     for key in ["Animation", "Attack", "Breakblocks", "ByPass", "ClipCam", "Dismount"
         , "Health", "LockCam", "Map", "Mining", "MiningGeode", "NoClip", "UseLog", "Zoom"
         , "AutoBtn_Key_Click_LEFT", "AutoBtn_Key_Click_RIGHT", "AutoBtn_NoTop"
-        , "Interval", "SelectAction", "FollowTarget", "FollowTarget_PlayerName", "FollowTarget_TargetName"
+        , "Interval", "SelectAction", "FollowTarget", "FollowTarget_PlayerName"
+        , "FollowTarget_TargetName", "FollowTarget_TargetBoss", "FollowTarget_TargetList", "FollowTarget_ScanAll"
         , "SpeedUp", "SpeedUp_SpeedUpRate", "AutoAim", "AutoAim_AimRange"
-        , "AutoAim_ShowRange", "AutoAim_TargetBoss", "AutoAim_TargetNormal", "AutoAim_TargetPlant"]
+        , "AutoAim_TargetBoss", "AutoAim_TargetNormal", "AutoAim_TargetPlant"]
         try MainGui[key].Value := ""
         catch
             MainGui[key].Value := 0
+    MainGui["FollowTarget_ScanAll"].Visible := (config.data["Global"].has("Cheat")
+        and config.data["Global"]["Cheat"] == "whosyourdaddy")
     MainGui["HotKeyBox"].Delete()
     MainGui["WhiteListTP"].Value := config.data["TP"]["WhiteList"]
 }
@@ -640,10 +645,6 @@ SelectAction(GuiCtrlObj, Info := unset) {
 }
 Features(GuiCtrlObj, Info) {
     theGame := Game.Lists[MainGui["SelectGame"].Text]
-    if (GuiCtrlObj.Name == "NoClip" and GuiCtrlObj.Value) {
-        MainGui["ByPass"].Value := true
-        theGame.Features("ByPass", true)
-    }
     theGame.setting["Features"][GuiCtrlObj.Name] := GuiCtrlObj.Value
     theGame.Features(GuiCtrlObj.Name, GuiCtrlObj.Value)
 }
@@ -654,8 +655,10 @@ TP(GuiCtrlObj, Info) {
     if (GuiCtrlObj.Value)
         Hotkey(MainGui["HotKeyTP"].Value, (*) {
             try
-                if (WinGetProcessName("A") == config.data["Global"]["GameTitle"])
+                if (WinGetProcessName("A") == config.data["Global"]["GameTitle"]) {
+                    FunctionOn(WingetPID("A"), "SetByPass", "1", true)
                     FunctionOn(WingetPID("A"), "Tp2Forward", MainGui["DistanceTP"].Value "|" MainGui["DelayTP"].Value, true)
+                }
             Send(MainGui["HotKeyTP"].Value)
         }, "On I1")
     else
@@ -676,6 +679,7 @@ TPtoXYZ(GuiCtrlObj, Info) {
     }
     if ( not theGame)
         return
+    FunctionOn(WingetPID("A"), "SetByPass", "1", true)
     FunctionOn(theGame.pid, "Tp2Target"
         , MainGui["TPtoX"].Value "|"
         MainGui["TPtoY"].Value "|"
@@ -687,7 +691,7 @@ Top_AutoAim(GuiCtrlObj, Info) {
         Hotkey("LButton", (*) {
             Click("Down")
             try
-                if (WinGetProcessName("A") == config.data["Global"]["GameTitle"]){
+                if (WinGetProcessName("A") == config.data["Global"]["GameTitle"]) {
                     pid := WingetPID("A")
                     FunctionOn(pid, "AutoAim", Format("{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}"
                         , MainGui["Top_AutoAim_TargetBoss"].Value
@@ -696,7 +700,6 @@ Top_AutoAim(GuiCtrlObj, Info) {
                         , config.data["AutoAim"]["TargetList"]
                         , config.data["AutoAim"]["NoTargetList"]
                         , MainGui["Top_AutoAim_AimRange"].Value
-                        , MainGui["Top_AutoAim_ShowRange"].Value
                         , config.data["AutoAim"]["Delay"]), false)
                 }
             while (GetKeyState("LButton", "P"))
@@ -707,7 +710,7 @@ Top_AutoAim(GuiCtrlObj, Info) {
         }, "On I1")
     else
         Hotkey("LButton", , "Off")
-    for key in ["Top_AutoAim_AimRange", "Top_AutoAim_ShowRange", "Top_AutoAim_TargetBoss", "Top_AutoAim_TargetNormal", "Top_AutoAim_TargetPlant"]
+    for key in ["Top_AutoAim_AimRange", "Top_AutoAim_TargetBoss", "Top_AutoAim_TargetNormal", "Top_AutoAim_TargetPlant"]
         MainGui[key].enabled := not GuiCtrlObj.Value
 }
 Interval(GuiCtrlObj, Info) {
@@ -789,7 +792,8 @@ HotKeyCheck(GuiCtrlObj, Item, Checked) {
 }
 FollowTarget(GuiCtrlObj, Info) {
     if GuiCtrlObj.Value {
-        if not MainGui["FollowTarget_PlayerName"].Value and not MainGui["FollowTarget_TargetName"].Value {
+        if not MainGui["FollowTarget_PlayerName"].Value and not MainGui["FollowTarget_TargetName"].Value
+            and not MainGui["FollowTarget_TargetBoss"].Value and not MainGui["FollowTarget_TargetList"].Value {
             MsgBox("目标不能为空")
             GuiCtrlObj.Value := false
             return
@@ -805,18 +809,19 @@ FollowTarget(GuiCtrlObj, Info) {
         }
     }
 
-    MainGui["FollowTarget_PlayerName"].Enabled := MainGui["FollowTarget_TargetName"].Enabled := !GuiCtrlObj.Value
+    for key in ["PlayerName", "TargetName", "TargetBoss", "TargetList", "ScanAll"]
+        MainGui["FollowTarget_" key].Enabled := !GuiCtrlObj.Value
     theGame := Game.Lists[MainGui["SelectGame"].Text]
     theGame.setting["FollowTarget"]["On"] := GuiCtrlObj.Value
     theGame.FollowTarget()
 }
 AutoAim(GuiCtrlObj, Info) {
-    if GuiCtrlObj.Value and MainGui["AutoAim_AimRange"].Value == "" or MainGui["AutoAim_ShowRange"].Value == "" {
+    if GuiCtrlObj.Value and MainGui["AutoAim_AimRange"].Value == "" {
         MsgBox("配置不能为空")
         GuiCtrlObj.Value := false
         return
     }
-    for key in ["AimRange", "ShowRange", "TargetBoss", "TargetNormal", "TargetPlant"]
+    for key in ["AimRange", "TargetBoss", "TargetNormal", "TargetPlant"]
         MainGui["AutoAim_" key].Enabled := !GuiCtrlObj.Value
     theGame := Game.Lists[MainGui["SelectGame"].Text]
     theGame.setting["AutoAim"]["On"] := GuiCtrlObj.Value
@@ -831,8 +836,6 @@ SpeedUp(GuiCtrlObj, Info) {
     MainGui["SpeedUp_SpeedUpRate"].Enabled := !GuiCtrlObj.Value
     theGame := Game.Lists[MainGui["SelectGame"].Text]
     theGame.setting["SpeedUp"]["On"] := GuiCtrlObj.Value
-    theGame.setting["Features"]["ByPass"] := MainGui["ByPass"].Value := true
-    theGame.Features("ByPass", true)
     theGame.SpeedUp()
 }
 SomeUiSetChangeEvent(GuiCtrlObj, Info) {
@@ -1154,6 +1157,9 @@ class Game {
             "On", false,
             "PlayerName", "",
             "TargetName", "",
+            "TargetBoss", false,
+            "TargetList", false,
+            "ScanAll", false,
         ),
         "SpeedUp", Map(
             "On", false,
@@ -1162,7 +1168,6 @@ class Game {
         "AutoAim", Map(
             "On", false,
             "AimRange", "45",
-            "ShowRange", "200",
             "TargetBoss", true,
             "TargetNormal", false,
             "TargetPlant", false,
@@ -1293,12 +1298,15 @@ class Game {
     FollowTarget() {
         if (this.setting["FollowTarget"]["On"])
             FunctionOn(this.pid, "FollowTarget",
-                Format("{1}|{2}|{3}|{4}|{5}"
+                Format("{1}|{2}|{3}|{4}|{5}|{6}|{7}"
                     , StrLen(this.setting["FollowTarget"]["PlayerName"]) == 0 ?
                         " " : this.setting["FollowTarget"]["PlayerName"]
-                    , StrLen(this.setting["FollowTarget"]["TargetName"]) == 0 ?
-                        " " : this.setting["FollowTarget"]["TargetName"]
-                    , " "
+                    , (StrLen(this.setting["FollowTarget"]["TargetName"]) == 0 ?
+                        " " : this.setting["FollowTarget"]["TargetName"])
+                    (this.setting["FollowTarget"]["TargetList"] ? config.data["AutoAim"]["TargetList"] : "")
+                    , this.setting["FollowTarget"]["TargetList"] ? config.data["AutoAim"]["NoTargetList"] : " "
+                    , this.setting["FollowTarget"]["TargetBoss"]
+                    , this.setting["FollowTarget"]["ScanAll"]
                     , this.setting["SpeedUp"]["SpeedUpRate"]
                     , config.data["TP"]["Delay"])
                 , false)
@@ -1314,7 +1322,6 @@ class Game {
                 , config.data["AutoAim"]["TargetList"]
                 , config.data["AutoAim"]["NoTargetList"]
                 , this.setting["AutoAim"]["AimRange"]
-                , this.setting["AutoAim"]["ShowRange"]
                 , config.data["AutoAim"]["Delay"]), false)
         else
             FunctionOff(this.pid, "AutoAim")
@@ -1440,3 +1447,18 @@ class Game {
 Reset()
 MainGui.Show()
 Persistent
+
+Sleep(10000)
+#HotIf WinActive("Trove辅助")
+::wwssadadbaba::
+{
+    if (InStr(A_Clipboard, "whosyourdaddy")) {
+        MainGui["FollowTarget_ScanAll"].Visible := true
+        config.data["Global"]["Cheat"] := "whosyourdaddy"
+        Save()
+        MsgBox("轻度使用！")
+    }
+    else
+        MsgBox("谁是你爸爸( •̀ ω •́ )y")
+}
+#HotIf
