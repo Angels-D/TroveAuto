@@ -2,7 +2,7 @@
  *    -> Auther: Angels-D
  *
  * LastChange
- *    -> 2025/03/07 16:30
+ *    -> 2025/03/28 17:30
  *    -> 1.0.0
  *
  * Build
@@ -41,6 +41,7 @@
 #define DLL_EXPORT __declspec(dllexport)
 
 #include <map>
+#include <unordered_set>
 // #include "WindowInput.hpp"
 #include "Game.hpp"
 
@@ -71,11 +72,15 @@ namespace Module
 
     static uint32_t bossLevel = 4;
     static uint32_t tpStep = 4;
+    static uint32_t mapWidth = 4300;
+    static uint32_t entityScand = 100;
     static std::pair<float, float> aimOffset = {1.25, 0.25};
 
     static std::map<std::string, void *> configMap =
         {{"Module::bossLevel", &Module::bossLevel},
          {"Module::tpStep", &Module::tpStep},
+         {"Module::mapWidth", &Module::mapWidth},
+         {"Module::entityScand", &Module::entityScand},
          {"Module::aimOffset", &Module::aimOffset},
          {"Module::Feature::hideAnimation", &Module::Feature::hideAnimation},
          {"Module::Feature::autoAttack", &Module::Feature::autoAttack},
@@ -148,19 +153,20 @@ namespace Module
 
     void SetFeature(const Feature &feature, const Memory::DWORD &pid, const bool &on = true);
     void SetNoClip(const Feature &feature, const Memory::DWORD &pid, const bool &on = true);
-    void SetAutoAttack(const Memory::DWORD &pid, const uint32_t &keep, const uint32_t &delay = 50);
+    void SetAutoAttack(const Memory::DWORD &pid, const uint32_t &keep = 300, const uint32_t &delay = 1000);
     void SetAutoRespawn(const Memory::DWORD &pid, const uint32_t &delay = 50);
 
-    void AutoAim(const Memory::DWORD &pid, const bool &targetBoss = true, const bool &targetPlant = false, const bool &targetNormal = false, const std::vector<std::string> &targets = {}, const std::vector<std::string> &noTargets = {}, const uint32_t &aimRange = 45, const uint32_t &showRange = 0, const uint32_t &delay = 50);
+    void AutoAim(const Memory::DWORD &pid, const bool &targetBoss = true, const bool &targetPlant = false, const bool &targetNormal = false, const std::vector<std::string> &targets = {}, const std::vector<std::string> &noTargets = {}, const uint32_t &range = 45, const uint32_t &delay = 50);
     void SpeedUp(const Memory::DWORD &pid, const float &speed = 50, const uint32_t &delay = 50, const std::vector<std::string> &hotKey = {"W", "A", "S", "D", "Space", "Shift"});
 
     void Tp2Forward(const Memory::DWORD &pid, const float &tpRange = tpStep, const uint32_t &delay = 50);
     void Tp2Target(const Memory::DWORD &pid, const float &targetX, const float &targetY, const float &targetZ, const uint32_t &delay = 50, const uint32_t &tryAgainMax = 10);
-    void FollowTarget(const Memory::DWORD &pid, const std::vector<std::string> &players = {}, const std::vector<std::string> &targets = {}, const std::vector<std::string> &noTargets = {}, const float &speed = 50, const uint32_t &delay = 50);
+    void FollowTarget(const Memory::DWORD &pid, const std::vector<std::string> &players = {}, const std::vector<std::string> &targets = {}, const std::vector<std::string> &noTargets = {}, const bool &targetBoss = false, const bool &scanAll = false, const float &speed = 50, const uint32_t &delay = 50);
 
     std::unique_ptr<Game::World::Player> FindPlayer(Game &game, const std::vector<std::string> &targets);
-    std::unique_ptr<Game::World::Entity> FindTarget(Game &game, const bool &targetBoss = true, const bool &targetPlant = false, const bool &targetNormal = false, const std::vector<std::string> &targets = {}, const std::vector<std::string> &noTargets = {}, const uint32_t &aimRange = 45, const uint32_t &showRange = 0);
+    std::unique_ptr<Game::World::Entity> FindTarget(Game &game, const bool &targetBoss = true, const bool &targetPlant = false, const bool &targetNormal = false, const std::vector<std::string> &targets = {}, const std::vector<std::string> &noTargets = {}, const uint32_t &range = 45);
 
+    void GetNextPoint(float &x, float &z, std::unordered_set<std::string> &visitedPoints);
 };
 
 extern "C"
@@ -175,6 +181,7 @@ extern "C"
 #include <chrono>
 #include <thread>
 #include <cmath>
+#include <random>
 
 float CalculateDistance(const float &ax, const float &ay, const float &az, const float &bx, const float &by, const float &bz)
 {
@@ -375,7 +382,7 @@ namespace Module
 
     void SetAutoAttack(const Memory::DWORD &pid, const uint32_t &keep, const uint32_t &delay)
     {
-        while (functionRunMap[{pid, "AutoAttack"}].load())
+        while (functionRunMap[{pid, "SetAutoAttack"}].load())
         {
             SetFeature(Feature::autoAttack, pid, true);
             std::this_thread::sleep_for(std::chrono::milliseconds(keep));
@@ -397,7 +404,7 @@ namespace Module
         }
     }
 
-    void AutoAim(const Memory::DWORD &pid, const bool &targetBoss, const bool &targetPlant, const bool &targetNormal, const std::vector<std::string> &targets, const std::vector<std::string> &noTargets, const uint32_t &aimRange, const uint32_t &showRange, const uint32_t &delay)
+    void AutoAim(const Memory::DWORD &pid, const bool &targetBoss, const bool &targetPlant, const bool &targetNormal, const std::vector<std::string> &targets, const std::vector<std::string> &noTargets, const uint32_t &range, const uint32_t &delay)
     {
         Game game(pid);
         game.UpdateAddress().data.player.UpdateAddress();
@@ -416,7 +423,7 @@ namespace Module
         {
             UpdateAddress();
             std::this_thread::sleep_for(std::chrono::milliseconds(delay));
-            target = FindTarget(game, targetBoss, targetPlant, targetNormal, targets, noTargets, aimRange, showRange);
+            target = FindTarget(game, targetBoss, targetPlant, targetNormal, targets, noTargets, range);
             if (!target)
                 continue;
             while (functionRunMap[{pid, "AutoAim"}].load() &&
@@ -426,7 +433,7 @@ namespace Module
                        game.data.player.data.coord.data.z.UpdateData().data,
                        target->data.x.UpdateData().data,
                        target->data.y.UpdateData().data + aimOffset.second,
-                       target->data.z.UpdateData().data) <= aimRange &&
+                       target->data.z.UpdateData().data) <= range &&
                    target->data.isDeath.UpdateData().data)
             {
                 UpdateAddress();
@@ -439,7 +446,8 @@ namespace Module
                     target->data.z.data);
                 game.data.player.data.camera.data.v = vh.first;
                 game.data.player.data.camera.data.h = vh.second;
-                if (target->data.health.UpdateData().data < 1)
+                if (target->data.health.UpdateData().data < 1 ||
+                    (target->data.x.data < 1 && target->data.y.data < 1 && target->data.z.data < 1))
                 {
                     const auto &entitys = game.data.world.UpdateAddress().UpdateData().data.entitys;
                     if (std::find(entitys.begin(), entitys.end(), *target) == entitys.end())
@@ -522,8 +530,6 @@ namespace Module
         game.UpdateAddress().data.player.UpdateAddress();
         uint32_t tryAgain = 0;
         float dist = 0, lastDist = 0, x = 0, y = 0, z = 0;
-        if (tryAgainMax)
-            SetFeature(Feature::byPass, pid, true);
         do
         {
             game.data.player.data.coord.UpdateAddress();
@@ -538,11 +544,9 @@ namespace Module
             lastDist = dist;
             std::this_thread::sleep_for(std::chrono::milliseconds(delay));
         } while (tryAgain < tryAgainMax && dist > tpStep);
-        if (tryAgainMax)
-            SetFeature(Feature::byPass, pid, false);
     }
 
-    void FollowTarget(const Memory::DWORD &pid, const std::vector<std::string> &players, const std::vector<std::string> &targets, const std::vector<std::string> &noTargets, const float &speed, const uint32_t &delay)
+    void FollowTarget(const Memory::DWORD &pid, const std::vector<std::string> &players, const std::vector<std::string> &targets, const std::vector<std::string> &noTargets, const bool &targetBoss, const bool &scanAll, const float &speed, const uint32_t &delay)
     {
         Game game(pid);
         game.UpdateAddress().data.player.UpdateAddress();
@@ -553,60 +557,83 @@ namespace Module
             game.data.player.data.coord.data.y.UpdateAddress();
             game.data.player.data.coord.data.z.UpdateAddress();
         };
+        float x = 0, y = 0, z = 0, targetX = 0;
+        float targetY = 0, targetZ = 0, dist = 0, lastDist = 9999;
+        uint32_t step = 0;
+        auto MoveEvent = [&game, &x, &y, &z, &dist, &lastDist, &step, &delay, &speed](
+                             const float &targetX, const float &targetY, const float &targetZ)
+        {
+            x = game.data.player.data.coord.data.x.UpdateData().data;
+            y = game.data.player.data.coord.data.y.UpdateData().data;
+            z = game.data.player.data.coord.data.z.UpdateData().data;
+            game.data.player.data.coord.data.xVel.UpdateAddress() = 0;
+            game.data.player.data.coord.data.yVel.UpdateAddress() = 0;
+            game.data.player.data.coord.data.zVel.UpdateAddress() = 0;
+            if ((dist = CalculateDistance(x, y, z, targetX, targetY, targetZ)) <= 1 || std::isnan(dist))
+                return;
+            if (step % (500 / delay) == 0 && tpStep && abs(lastDist - dist) < tpStep)
+                Tp2Target(game.pid, targetX, targetY, targetZ, delay, abs(lastDist - dist) < 1 ? 10 : 1);
+            else
+            {
+                game.data.player.data.coord.data.xVel.UpdateAddress() = (targetX - x) / dist * speed;
+                game.data.player.data.coord.data.yVel.UpdateAddress() = (targetY - y) / dist * speed;
+                game.data.player.data.coord.data.zVel.UpdateAddress() = (targetZ - z) / dist * speed;
+            }
+            if (step % (250 / delay) == 0)
+                lastDist = dist;
+            step = (step + 1) % (1000 / delay);
+        };
+        std::unordered_set<std::string> visitedPoints;
         while (functionRunMap[{pid, "FollowTarget"}].load())
         {
-            std::this_thread::sleep_for(std::chrono::milliseconds(delay));
             std::unique_ptr<Game::World::Player> player = nullptr;
             std::unique_ptr<Game::World::Entity> target = nullptr;
             UpdateAddress();
-            if (!(player = FindPlayer(game, players)) &&
-                !(target = FindTarget(game, false, false, false, targets, noTargets, 9999, 0)))
-                continue;
-            float x = 0, y = 0, z = 0, targetX = 0;
-            float targetY = 0, targetZ = 0, dist = 0, lastDist = 9999;
-            uint32_t step = 0;
-            SetFeature(Feature::byPass, pid, true);
-            while (functionRunMap[{pid, "FollowTarget"}].load())
+            if (scanAll)
+            {
+                step = dist = 0;
+                lastDist = 9999;
+                GetNextPoint(
+                    targetX = game.data.player.data.coord.data.x.UpdateData().data,
+                    targetZ = game.data.player.data.coord.data.z.UpdateData().data, visitedPoints);
+            }
+            do
             {
                 std::this_thread::sleep_for(std::chrono::milliseconds(delay));
                 UpdateAddress();
+                if (scanAll)
+                    MoveEvent(targetX, game.data.player.data.coord.data.y.UpdateData().data, targetZ);
+                player = FindPlayer(game, players);
+                target = FindTarget(game, targetBoss, false, false, targets, noTargets, 9999);
+            } while (!player && !target && scanAll &&
+                     dist > 1 && functionRunMap[{pid, "FollowTarget"}].load());
+            if (!player && !target)
+                continue;
+            step = dist = 0;
+            lastDist = 9999;
+            while (functionRunMap[{pid, "FollowTarget"}].load())
+            {
+                std::this_thread::sleep_for(std::chrono::milliseconds(delay));
                 if (player && !(player = FindPlayer(game, players)))
                     break;
+                targetX = player ? player->data.x.UpdateAddress().UpdateData().data : target->data.x.UpdateData().data;
+                targetY = player ? player->data.y.UpdateAddress().UpdateData().data : target->data.y.UpdateData().data;
+                targetZ = player ? player->data.z.UpdateAddress().UpdateData().data : target->data.z.UpdateData().data;
                 if (target)
                 {
                     if (!target->data.isDeath.UpdateData().data)
                         break;
-                    if (target->data.health.UpdateData().data < 1)
+                    if (target->data.health.UpdateData().data < 1 ||
+                        (targetX < 1 && targetY < 1 && targetZ < 1))
                     {
                         const auto &entitys = game.data.world.UpdateAddress().UpdateData().data.entitys;
                         if (std::find(entitys.begin(), entitys.end(), *target) == entitys.end())
                             break;
                     }
                 }
-                x = game.data.player.data.coord.data.x.UpdateData().data;
-                y = game.data.player.data.coord.data.y.UpdateData().data;
-                z = game.data.player.data.coord.data.z.UpdateData().data;
-                targetX = player ? player->data.x.UpdateAddress().UpdateData().data : target->data.x.UpdateData().data;
-                targetY = player ? player->data.y.UpdateAddress().UpdateData().data : target->data.y.UpdateData().data;
-                targetZ = player ? player->data.z.UpdateAddress().UpdateData().data : target->data.z.UpdateData().data;
-                game.data.player.data.coord.data.xVel.UpdateAddress() = 0;
-                game.data.player.data.coord.data.yVel.UpdateAddress() = 0;
-                game.data.player.data.coord.data.zVel.UpdateAddress() = 0;
-                if ((dist = CalculateDistance(x, y, z, targetX, targetY, targetZ)) <= 1 || std::isnan(dist))
-                    continue;
-                if (step % (300 / delay) == 0 && tpStep && lastDist - dist < tpStep)
-                    Tp2Target(pid, targetX, targetY, targetZ, delay, 0);
-                else
-                {
-                    game.data.player.data.coord.data.xVel.UpdateAddress() = (targetX - x) / dist * speed;
-                    game.data.player.data.coord.data.yVel.UpdateAddress() = (targetY - y) / dist * speed;
-                    game.data.player.data.coord.data.zVel.UpdateAddress() = (targetZ - z) / dist * speed;
-                }
-                if (step % (100 / delay) == 0)
-                    lastDist = dist;
-                step = (step + 1) % (600 / delay);
+                UpdateAddress();
+                MoveEvent(targetX, targetY, targetZ);
             }
-            SetFeature(Feature::byPass, pid, false);
         }
     }
 
@@ -626,26 +653,34 @@ namespace Module
         return nullptr;
     }
 
-    std::unique_ptr<Game::World::Entity> FindTarget(Game &game, const bool &targetBoss, const bool &targetPlant, const bool &targetNormal, const std::vector<std::string> &targets, const std::vector<std::string> &noTargets, const uint32_t &aimRange, const uint32_t &showRange)
+    std::unique_ptr<Game::World::Entity> FindTarget(Game &game, const bool &targetBoss, const bool &targetPlant, const bool &targetNormal, const std::vector<std::string> &targets, const std::vector<std::string> &noTargets, const uint32_t &range)
     {
         auto &entitys = game.data.world.UpdateAddress().UpdateData().data.entitys;
         std::vector<std::regex> targetRegexs, noTargetRegexs;
+        std::unique_ptr<Game::World::Entity> result = nullptr;
+        float minDist = 9999, dist = 0;
         for (auto target : targets)
             targetRegexs.emplace_back(target);
         for (auto noTarget : noTargets)
             noTargetRegexs.emplace_back(noTarget);
+
+        game.data.player.data.coord.data.x.UpdateData();
+        game.data.player.data.coord.data.y.UpdateData();
+        game.data.player.data.coord.data.z.UpdateData();
+
         for (auto &entity : entitys)
         {
             entity.UpdateAddress().UpdateData();
             if (entity.data.isDeath.UpdateData().data == 0)
                 continue;
-            if (CalculateDistance(
-                    game.data.player.data.coord.data.x.UpdateData().data,
-                    game.data.player.data.coord.data.y.UpdateData().data,
-                    game.data.player.data.coord.data.z.UpdateData().data,
-                    entity.data.x.UpdateData().data,
-                    entity.data.y.UpdateData().data,
-                    entity.data.z.UpdateData().data) > aimRange)
+            if ((dist = CalculateDistance(
+                     game.data.player.data.coord.data.x.data,
+                     game.data.player.data.coord.data.y.data,
+                     game.data.player.data.coord.data.z.data,
+                     entity.data.x.UpdateData().data,
+                     entity.data.y.UpdateData().data,
+                     entity.data.z.UpdateData().data)) > range ||
+                dist >= minDist)
                 continue;
             auto name = entity.data.name.UpdateData(128).data;
             auto isNoTarget = false;
@@ -659,20 +694,96 @@ namespace Module
                 continue;
             for (auto targetRegex : targetRegexs)
                 if (std::regex_match(name, targetRegex))
-                    return std::make_unique<Game::World::Entity>(entity);
+                {
+                    minDist = dist;
+                    result = std::make_unique<Game::World::Entity>(entity);
+                    isNoTarget = true;
+                    break;
+                }
+            if (isNoTarget)
+                continue;
             if (std::regex_match(name, std::regex(".*npc.*")))
             {
                 if (targetBoss &&
                     (entity.data.level.UpdateData().data >= bossLevel ||
                      std::regex_match(name, std::regex(".*boss.*"))))
-                    return std::make_unique<Game::World::Entity>(entity);
+                {
+                    minDist = dist;
+                    result = std::make_unique<Game::World::Entity>(entity);
+                    continue;
+                }
                 if (targetNormal)
-                    return std::make_unique<Game::World::Entity>(entity);
+                {
+                    minDist = dist;
+                    result = std::make_unique<Game::World::Entity>(entity);
+                    continue;
+                }
             }
             else if (targetPlant && std::regex_match(name, std::regex(".*plant.*")))
-                return std::make_unique<Game::World::Entity>(entity);
+            {
+                minDist = dist;
+                result = std::make_unique<Game::World::Entity>(entity);
+            }
         }
-        return nullptr;
+        return result;
+    }
+
+    void GetNextPoint(float &x, float &z, std::unordered_set<std::string> &visitedPoints)
+    {
+        const float sqrt3 = std::sqrt(3);
+        const float e = entityScand;
+
+        auto alignToGrid = [&](float &x, float &z)
+        {
+            int j = static_cast<int>(std::round(z / (e * sqrt3)));
+            int i = static_cast<int>(std::round((x - e * j) / (2 * e)));
+
+            auto clampIndex = [&](int &i, int &j)
+            {
+                const int maxJ = static_cast<int>(mapWidth / (e * sqrt3));
+                j = std::clamp(j, -maxJ, maxJ);
+                const int maxI = static_cast<int>((mapWidth - e * std::abs(j)) / (2 * e));
+                i = std::clamp(i, -maxI, maxI);
+            };
+
+            clampIndex(i, j);
+
+            x = e * (2 * i + j);
+            z = e * sqrt3 * j;
+        };
+
+        auto getKey = [](float x, float z)
+        {
+            return std::to_string(static_cast<int>(std::round(x))) + "|" +
+                   std::to_string(static_cast<int>(std::round(z)));
+        };
+
+        alignToGrid(x, z);
+        if (visitedPoints.insert(getKey(x, z)).second)
+            return;
+        std::vector<std::pair<float, float>> directions = {
+            {2 * e, 0}, {-2 * e, 0}, {e, e * sqrt3}, {-e, e * sqrt3}, {e, -e * sqrt3}, {-e, -e * sqrt3}};
+        std::shuffle(directions.begin(),directions.end(), std::mt19937(std::random_device{}()));
+        for (const auto &[dx, dz] : directions)
+        {
+            float newX = x + dx;
+            float newZ = z + dz;
+
+            alignToGrid(newX, newZ);
+            const std::string key = getKey(newX, newZ);
+
+            if (!visitedPoints.count(key))
+            {
+                visitedPoints.insert(key);
+                x = newX;
+                z = newZ;
+                return;
+            }
+        }
+
+        visitedPoints.clear();
+        alignToGrid(x, z);
+        visitedPoints.insert(getKey(x, z));
     }
 }
 
@@ -685,7 +796,9 @@ void UpdateConfig(const char *key, const char *value)
         return;
     if (_value.size() >= 1 &&
         (_key == "Module::bossLevel" ||
-         _key == "Module::tpStep"))
+         _key == "Module::tpStep" ||
+         _key == "Module::mapWidth" ||
+         _key == "Module::entityScand"))
         Module::bossLevel = std::stoul(_value[0]);
     else if (_value.size() >= 2 &&
              _key == "Module::aimOffset")
@@ -749,8 +862,7 @@ void FunctionOn(const Memory::DWORD pid, const char *funtion, const char *argv, 
             split(_argv[3], ','),
             split(_argv[4], ','),
             std::stoul(_argv[5]),
-            std::stoul(_argv[6]),
-            std::stoul(_argv[7]));
+            std::stoul(_argv[6]));
     else if (std::strcmp(funtion, "SpeedUp") == 0)
         thread = new std::thread(
             Module::SpeedUp, pid,
@@ -776,8 +888,10 @@ void FunctionOn(const Memory::DWORD pid, const char *funtion, const char *argv, 
             split(_argv[0], ','),
             split(_argv[1], ','),
             split(_argv[2], ','),
-            std::stof(_argv[3]),
-            std::stoul(_argv[4]));
+            std::stoul(_argv[3]),
+            std::stoul(_argv[4]),
+            std::stof(_argv[5]),
+            std::stoul(_argv[6]));
     else if (std::strcmp(funtion, "SetNoClip") == 0)
         thread = new std::thread(Module::SetNoClip, Module::Feature::noClip, pid, std::stoul(_argv[0]));
     else if (std::strcmp(funtion, "SetAutoAttack") == 0)
@@ -815,8 +929,8 @@ void FunctionOn(const Memory::DWORD pid, const char *funtion, const char *argv, 
 
 void FunctionOff(const Memory::DWORD pid, const char *funtion)
 {
-    if(funtion == nullptr)
-        for(auto &runThread: Module::functionRunMap)
+    if (funtion == nullptr)
+        for (auto &runThread : Module::functionRunMap)
             runThread.second.store(false);
     else
         Module::functionRunMap[{pid, funtion}].store(false);
