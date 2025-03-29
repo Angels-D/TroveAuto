@@ -55,7 +55,7 @@ void FindTarget(const bool &targetBoss = true,
                    CalculateDistance(game.data.player.data.coord.data.x.data, 0,
                                      game.data.player.data.coord.data.z.data,
                                      target->data.x.data, 0, target->data.z.data),
-                   (std::min)(health, 999999999999999.0));
+                   std::clamp(health, 0.0, 999999999999999.0));
             if (health < 1 || (target->data.x.data < 1 && target->data.y.data < 1 && target->data.z.data < 1))
             {
                 const auto &entitys = game.data.world.UpdateAddress().UpdateData().data.entitys;
@@ -75,7 +75,7 @@ void FindAobScan(const char *signature)
         printf("%08X\n", i);
 }
 
-int main(int argc, char *argv[])
+void AutoScan()
 {
     printf("注意: 请以管理员权限运行\n");
     printf("按任意键退出\n");
@@ -85,28 +85,28 @@ int main(int argc, char *argv[])
     FunctionOn(pid, "SetNoClip", "1", false);
     FunctionOn(pid, "SetAutoAttack", "300|1000", false);
 
-    // FindAobScan(argv[1]);
-
-    // Module::Tp2Forward(pid, 50, 50);
-
-    FunctionOn(pid, "FollowTarget", " |.*chest_quest_.*,.*quest_.*_trigger.*|.*pet.*,.*placeable.*,.*services.*,.*client.*,.*abilities.*,.*portal.*|1|1|50|50", false);
-    FunctionOn(pid, "AutoAim", "1|0|0|.*chest_quest_.*|.*pet.*,.*placeable.*,.*services.*,.*client.*,.*abilities.*,.*portal.*|45|50", false);
+    FunctionOn(pid, "FollowTarget", " |.*chest_quest_.*,.*quest_.*_trigger.*|.*quest_spawn_trigger_radiant.*,.*pet.*,.*placeable.*,.*services.*,.*client.*,.*abilities.*,.*portal.*|1|1|50|50", false);
+    FunctionOn(pid, "AutoAim", "1|0|0|.*chest_quest_.*|.*quest_spawn_trigger_radiant.*,.*pet.*,.*placeable.*,.*services.*,.*client.*,.*abilities.*,.*portal.*|45|50", false);
 
     findTarget.store(true);
     new std::thread(
         FindTarget, true, false, false,
         std::vector<std::string>{
-            ".*quest_.*_trigger.*",
-            ".*chest_quest_.*",
+            ".*quest_.*_trigger.*", // 任意开关
+            ".*chest_quest_.*",     // 任意奖励箱 gameplay/...
         },
         std::vector<std::string>{
-            ".*clam_depths_fire_boss.*",
-            ".*pet.*",
-            ".*placeable.*",
+            // radiantprism                    // 天空光辉碎片
+            ".*clam_depths_fire_boss.*",       // 深渊蛤蜊
+            ".*quest_spawn_trigger_radiant.*", // 天空黑暗之心开关
+            ".*pet.*",                         // 任意宠物
+            ".*portal.*",                      // 传送门
+            ".*abilities.*",                   // 任意投射物
+            ".*placeable.*",                   // 任意放置物
+            // 其他未知项
             ".*services.*",
             ".*client.*",
-            ".*abilities.*",
-            ".*portal.*"},
+        },
         9999);
     getchar();
     findTarget.store(false);
@@ -114,5 +114,24 @@ int main(int argc, char *argv[])
     FunctionOn(pid, "SetNoClip", "0", true);
     FunctionOn(pid, "SetByPass", "0", true);
     FunctionOff(pid, "SetAutoAttack");
+}
+
+void WhatItem()
+{
+    printf("注意: 请以管理员权限运行\n");
+    printf("按任意键退出\n");
+    findTarget.store(true);
+    new std::thread(
+        FindTarget, true, false, false,
+        std::vector<std::string>{".*"},
+        std::vector<std::string>{},
+        5);
+    getchar();
+    findTarget.store(false);
+}
+
+int main(int argc, char *argv[])
+{
+    AutoScan();
     return 0;
 }

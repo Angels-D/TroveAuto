@@ -174,6 +174,8 @@ extern "C"
     DLL_EXPORT void UpdateConfig(const char *key, const char *value);
     DLL_EXPORT void FunctionOn(const Memory::DWORD pid, const char *funtion, const char *argv = "", const bool waiting = false);
     DLL_EXPORT void FunctionOff(const Memory::DWORD pid, const char *funtion = nullptr);
+
+    DLL_EXPORT void WhichTarget(const Memory::DWORD pid, char *result, const uint32_t size, const char *argv = "");
 }
 
 // Module.cpp
@@ -763,7 +765,7 @@ namespace Module
             return;
         std::vector<std::pair<float, float>> directions = {
             {2 * e, 0}, {-2 * e, 0}, {e, e * sqrt3}, {-e, e * sqrt3}, {e, -e * sqrt3}, {-e, -e * sqrt3}};
-        std::shuffle(directions.begin(),directions.end(), std::mt19937(std::random_device{}()));
+        std::shuffle(directions.begin(), directions.end(), std::mt19937(std::random_device{}()));
         for (const auto &[dx, dz] : directions)
         {
             float newX = x + dx;
@@ -934,6 +936,48 @@ void FunctionOff(const Memory::DWORD pid, const char *funtion)
             runThread.second.store(false);
     else
         Module::functionRunMap[{pid, funtion}].store(false);
+}
+
+void WhichTarget(const Memory::DWORD pid, char *result, const uint32_t size, const char *argv)
+{
+    Game game(pid);
+    game.UpdateAddress().data.player.UpdateAddress().data.coord.UpdateAddress();
+    game.UpdateAddress().data.player.data.coord.data.x.UpdateAddress();
+    game.UpdateAddress().data.player.data.coord.data.y.UpdateAddress();
+    game.UpdateAddress().data.player.data.coord.data.z.UpdateAddress();
+    const std::vector<std::string> _argv = split(argv, '|');
+    auto target = Module::FindTarget(
+        game,
+        std::stoul(_argv[0]),
+        std::stoul(_argv[1]),
+        std::stoul(_argv[2]),
+        split(_argv[3], ','),
+        split(_argv[4], ','),
+        std::stoul(_argv[5]));
+    if (target == nullptr)
+        result[0] = '\0';
+    else
+    {
+        auto vh = CalculateAngles(
+            game.data.player.data.coord.data.x.data,
+            game.data.player.data.coord.data.y.data,
+            game.data.player.data.coord.data.z.data,
+            target->data.x.data,
+            target->data.y.data,
+            target->data.z.data);
+        game.data.player.data.camera.UpdateAddress().data.v.UpdateAddress() = vh.first;
+        game.data.player.data.camera.UpdateAddress().data.h.UpdateAddress() = vh.second;
+
+        char buffer[1024] = "";
+        sprintf(buffer, "%s,%d,%.3f,%.1f,%.1f,%.1f",
+                target->data.name.UpdateData(128).data.c_str(),
+                target->data.level.UpdateData().data % 100,
+                std::clamp(target->data.health.UpdateData().data, 0.0, 999999999999999.0),
+                target->data.x.data,
+                target->data.y.data,
+                target->data.z.data);
+        std::memcpy(result, buffer, std::min<uint32_t>(size, strlen(buffer)));
+    }
 }
 
 #endif

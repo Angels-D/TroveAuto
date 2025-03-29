@@ -1,6 +1,6 @@
 ;@Ahk2Exe-UpdateManifest 2
 ;@Ahk2Exe-SetName TroveAuto
-;@Ahk2Exe-SetProductVersion 2.4.9
+;@Ahk2Exe-SetProductVersion 2.4.10
 ;@Ahk2Exe-SetCopyright GPL-3.0 license
 ;@Ahk2Exe-SetLanguage Chinese_PRC
 ;@Ahk2Exe-SetMainIcon TroveAuto.ico
@@ -20,6 +20,8 @@ UpdateConfig := DynaCall("Module\UpdateConfig", ["aa"])
 FunctionOn := DynaCall("Module\FunctionOn", ["uiaai"])
 FunctionOff := DynaCall("Module\FunctionOff", ["uia"])
 
+WhichTarget := DynaCall("Module\WhichTarget", ["uituia"])
+
 SetTitleMatchMode("RegEx")
 
 config := _Config(
@@ -28,8 +30,8 @@ config := _Config(
         "Global", Map(
             "GameTitle", "Trove.exe",
             "GamePath", "",
-            "ConfigVersion", "20250328193000",
-            "AppVersion", "20250328193000",
+            "ConfigVersion", "20250329160000",
+            "AppVersion", "20250329160000",
             "Source", "https://github.com/Angels-D/TroveAuto/",
             "Mirror", "https://github.moeyy.xyz/",
             "StrCrypto", "y(Hn,(}I+2209Zd^s5(E%vfpoKh.I=",
@@ -245,7 +247,7 @@ MainGui.Add("Text", "xs+10 ys+30 w90 Section", "传送距离:")
 MainGui.Add("Edit", "ys w150 vDistanceTP", config.data["TP"]["Distance"])
 MainGui.Add("Text", "xs w90 Section", "传送热键:")
 MainGui.Add("HotKey", "ys w150 vHotKeyTP", config.data["TP"]["HotKey"])
-MainGui.Add("GroupBox", "xs-10 ys+40 w290 r7 Section", "指定坐标传送")
+MainGui.Add("GroupBox", "xs-10 ys+40 w290 r7.2 Section", "指定坐标传送")
 MainGui.Add("Text", "xs+10 ys+30 w90 Section", "玩家名:")
 MainGui.Add("Edit", "ys w150 vTPPlayerName")
 MainGui.Add("Text", "xs w30 Section", "X:")
@@ -255,19 +257,19 @@ MainGui.Add("Edit", "ys w210 vTPtoY", 0)
 MainGui.Add("Text", "xs w30 Section", "Z:")
 MainGui.Add("Edit", "ys w210 vTPtoZ", 0)
 MainGui.Add("Button", "xs w250 vTPtoXYZBtn", "传送")
-MainGui.Add("GroupBox", "xs-20 y+30 w310 r15.4 Section", "自动瞄准相关")
-MainGui.Add("GroupBox", "xs+10 ys+30 w290 r3 Section", "当前玩家静默攻击瞄准")
-MainGui.Add("CheckBox", "xp+170 yp vTop_AutoAim")
-MainGui.Add("Text", "xs+10 ys+30 Section", "瞄准范围:")
+MainGui.Add("GroupBox", "xs-20 y+30 w310 r15.5 Section", "目标扫描相关")
+MainGui.Add("CheckBox", "xs+10 ys+30 Section vTop_AutoAim", "当前玩家静默攻击瞄准(鼠标左键)")
+MainGui.Add("CheckBox", "xs w270 vTop_WhichTarget", "当前玩家扫描目标信息(鼠标中键)")
+MainGui.Add("Text", "xs Section", "扫描范围:")
 MainGui.Add("Edit", "ys w170 vTop_AutoAim_AimRange", 45)
 MainGui.Add("CheckBox", "xs w85 Section checked vTop_AutoAim_TargetBoss", "锁定Boss")
 MainGui.Add("CheckBox", "ys w80 vTop_AutoAim_TargetNormal", "锁定小怪")
 MainGui.Add("CheckBox", "ys w80 vTop_AutoAim_TargetPlant", "锁定植物")
-MainGui.Add("GroupBox", "xs-10 ys+50 w290 r4 Section", "目标名单     正则表达式 逗号隔开")
+MainGui.Add("GroupBox", "xs ys+40 w290 r4 Section", "目标名单     正则表达式 逗号隔开")
 MainGui.Add("Edit", "xs+10 ys+30 w260 h80 vTargetListAutoAim", config.data["AutoAim"]["TargetList"])
 MainGui.Add("GroupBox", "xs w290 r4 Section", "非目标名单   正则表达式 逗号隔开")
 MainGui.Add("Edit", "xs+10 ys+30 w260 h80 vNoTargetListAutoAim", config.data["AutoAim"]["NoTargetList"])
-MainGui.Add("Text", "xs+60 y+30", "部分内容保存后生效")
+MainGui.Add("Text", "xs+60 y+35", "部分内容保存后生效")
 
 ; 设置内容
 MainGui["Tab"].UseTab("设置")
@@ -375,6 +377,7 @@ MainGui["AutoRefresh"].OnEvent("Click", AutoRefresh)
 MainGui["TP"].OnEvent("Click", TP)
 MainGui["TPtoXYZBtn"].OnEvent("Click", TPtoXYZ)
 MainGui["Top_AutoAim"].OnEvent("Click", Top_AutoAim)
+MainGui["Top_WhichTarget"].OnEvent("Click", Top_WhichTarget)
 
 
 ; 托盘图标
@@ -712,6 +715,39 @@ Top_AutoAim(GuiCtrlObj, Info) {
         Hotkey("LButton", , "Off")
     for key in ["Top_AutoAim_AimRange", "Top_AutoAim_TargetBoss", "Top_AutoAim_TargetNormal", "Top_AutoAim_TargetPlant"]
         MainGui[key].enabled := not GuiCtrlObj.Value
+}
+Top_WhichTarget(GuiCtrlObj, Info) {
+    if (GuiCtrlObj.Value)
+        Hotkey("MButton", (*) {
+            Click("Middle Down")
+            try
+                if (WinGetProcessName("A") == config.data["Global"]["GameTitle"]) {
+                    pid := WingetPID("A")
+                    Mvalue := Buffer(1024, 0)
+                    WhichTarget(pid, Mvalue, Mvalue.Size
+                        , Format("{1}|{2}|{3}|{4}|{5}|{6}"
+                            , MainGui["Top_AutoAim_TargetBoss"].Value
+                            , MainGui["Top_AutoAim_TargetPlant"].Value
+                            , MainGui["Top_AutoAim_TargetNormal"].Value
+                            , config.data["AutoAim"]["TargetList"]
+                            , config.data["AutoAim"]["NoTargetList"]
+                            , MainGui["Top_AutoAim_AimRange"].Value))
+                    result := StrSplit(StrGet(Mvalue, "utf-8"), ',')
+                    if (result.Length >= 6) {
+                        A_Clipboard := result[1]
+                        ToolTip(Format("名称(见剪贴板): {1}`n等级: {2} 血量: {3}`n坐标(XYZ): {4},{5},{6}"
+                            , result[1], result[2], result[3], result[4], result[5], result[6]))
+                        SetTimer(() => ToolTip(), -3000)
+                }
+        }
+            while (GetKeyState("MButton", "P"))
+                Sleep(100)
+                    Click("Middle UP")
+        }, "On I1")
+else
+    Hotkey("MButton", , "Off")
+for key in ["Top_AutoAim_AimRange", "Top_AutoAim_TargetBoss", "Top_AutoAim_TargetNormal", "Top_AutoAim_TargetPlant"]
+    MainGui[key].enabled := not GuiCtrlObj.Value
 }
 Interval(GuiCtrlObj, Info) {
     theGame := Game.Lists[MainGui["SelectGame"].Text]
@@ -1222,9 +1258,9 @@ class Game {
         GameNameList := []
         GameIDs_HOLD := Map()
         GameIDs := WinGetList("ahk_exe " config.data["Global"]["GameTitle"])
-        for Key, Value in Game.Lists.Clone() {
+        for Key, Value in Game.Lists {
             if not WinExist("ahk_id " Value.id) {
-                Game.Lists[Key].StopAll(true)
+                Value.StopAll(true)
             } else {
                 GameIDs_HOLD[Value.id] := ""
                 GameNameList.Push(Value.Name)
@@ -1448,7 +1484,6 @@ Reset()
 MainGui.Show()
 Persistent
 
-Sleep(10000)
 #HotIf WinActive("Trove辅助")
 ::wwssadadbaba::
 {
