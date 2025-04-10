@@ -2,6 +2,8 @@
 
 #include "../libs/Module.hpp"
 
+Memory::DWORD pid = 0;
+
 std::atomic<bool> findTarget = false;
 void FindTarget(const bool &targetBoss = true,
                 const bool &targetPlant = false,
@@ -10,7 +12,7 @@ void FindTarget(const bool &targetBoss = true,
                 const std::vector<std::string> &noTargets = {},
                 const uint32_t &range = 45)
 {
-    Game game(Memory::GetProcessPid("Trove.exe")[0]);
+    Game game(pid);
     game.UpdateAddress();
     std::unique_ptr<Game::World::Entity> target = nullptr;
     game.data.player.UpdateAddress();
@@ -40,6 +42,7 @@ void FindTarget(const bool &targetBoss = true,
                target->data.y.UpdateData().data,
                target->data.z.UpdateData().data,
                target->data.name.UpdateData(128).data.c_str());
+        uint32_t step = 0;
         while (CalculateDistance(
                    game.data.player.data.coord.data.x.UpdateData().data,
                    game.data.player.data.coord.data.y.UpdateData().data + Module::aimOffset.first,
@@ -56,7 +59,9 @@ void FindTarget(const bool &targetBoss = true,
                                      game.data.player.data.coord.data.z.data,
                                      target->data.x.data, 0, target->data.z.data),
                    std::clamp(health, 0.0, 999999999999999.0));
-            if (health < 1 || (target->data.x.data < 1 && target->data.y.data < 1 && target->data.z.data < 1))
+            if (((step = (step + 1) % 100) == 0) ||
+                health < 1 ||
+                (target->data.x.data < 1 && target->data.y.data < 1 && target->data.z.data < 1))
             {
                 const auto &entitys = game.data.world.UpdateAddress().UpdateData().data.entitys;
                 if (std::find(entitys.begin(), entitys.end(), *target) == entitys.end())
@@ -70,7 +75,7 @@ void FindTarget(const bool &targetBoss = true,
 
 void FindAobScan(const char *signature)
 {
-    Game game(Memory::GetProcessPid("Trove.exe")[0]);
+    Game game(pid);
     for (auto i : game.AobScan(signature, true))
         printf("%08X\n", i);
 }
@@ -79,14 +84,13 @@ void AutoScan()
 {
     printf("注意: 请以管理员权限运行\n");
     printf("按任意键退出\n");
-    auto pid = Memory::GetProcessPid("Trove.exe")[0];
 
     FunctionOn(pid, "SetByPass", "1", false);
     FunctionOn(pid, "SetNoClip", "1", false);
     FunctionOn(pid, "SetAutoAttack", "300|1000", false);
 
-    FunctionOn(pid, "FollowTarget", " |.*chest_quest_.*,.*quest_.*_trigger.*|.*quest_spawn_trigger_radiant.*,.*pet.*,.*placeable.*,.*services.*,.*client.*,.*abilities.*,.*portal.*|1|1|50|50", false);
-    FunctionOn(pid, "AutoAim", "1|0|0|.*chest_quest_.*|.*quest_spawn_trigger_radiant.*,.*pet.*,.*placeable.*,.*services.*,.*client.*,.*abilities.*,.*portal.*|45|50", false);
+    FunctionOn(pid, "FollowTarget", " |.*chest_quest_.*,.*quest_.*_trigger.*|.*quest_spawn_trigger_radiant.*,.*pet.*,.*goodkarma.*,.*placeable.*,.*services.*,.*client.*,.*abilities.*,.*portal.*|1|1|50|50", false);
+    FunctionOn(pid, "AutoAim", "1|0|0|.*chest_quest_.*|.*quest_spawn_trigger_radiant.*,.*pet.*,.*goodkarma.*,.*placeable.*,.*services.*,.*client.*,.*abilities.*,.*portal.*|45|50", false);
 
     findTarget.store(true);
     new std::thread(
@@ -98,6 +102,7 @@ void AutoScan()
         std::vector<std::string>{
             // radiantprism                    // 天空光辉碎片
             ".*clam_depths_fire_boss.*",       // 深渊蛤蜊
+            ".*goodkarma.*",                   // 善业NPC
             ".*quest_spawn_trigger_radiant.*", // 天空黑暗之心开关
             ".*pet.*",                         // 任意宠物
             ".*portal.*",                      // 传送门
@@ -108,12 +113,13 @@ void AutoScan()
             ".*client.*",
         },
         9999);
+    atexit([]()
+           {
+     FunctionOn(pid, "SetNoClip", "0", true);
+     FunctionOn(pid, "SetByPass", "0", true);
+     FunctionOff(pid, "SetAutoAttack"); 
+     findTarget.store(false); });
     getchar();
-    findTarget.store(false);
-
-    FunctionOn(pid, "SetNoClip", "0", true);
-    FunctionOn(pid, "SetByPass", "0", true);
-    FunctionOff(pid, "SetAutoAttack");
 }
 
 void WhatItem()
@@ -126,12 +132,15 @@ void WhatItem()
         std::vector<std::string>{".*"},
         std::vector<std::string>{},
         5);
+    atexit([]()
+           { findTarget.store(false); });
     getchar();
-    findTarget.store(false);
 }
 
 int main(int argc, char *argv[])
 {
+    SetConsoleOutputCP(65001);
+    pid = argc > 1 ? std::stol(argv[1]) : Memory::GetProcessPid("Trove.exe")[0];
     AutoScan();
     return 0;
 }
