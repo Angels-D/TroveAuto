@@ -54,28 +54,28 @@ config := _Config(
         "AutoAim", Map(
             "Delay", "50",
             "TargetList", ".*chest_quest_.*",
-            "NoTargetList", ".*pet.*,.*placeable.*,.*services.*,.*client.*,.*abilities.*",
+            "NoTargetList", ".*pet.*,.*placeable.*,.*services.*,.*client.*,.*abilities.*,.*goodkarma.*",
         ),
         "Key", Map(
             "Press", "e",
             "Fish", "f",
         ),
         "Address", Map(
-            "Animation", "0x829535",
-            "Attack", "0x938FF8",
-            "Breakblocks", "0x9D5793",
-            "ByPass", "0x1520A6",
-            "ClipCam", "0xA85BCA",
-            "Dismount", "0x3CB5EE",
-            "Fish", "0x11CB76C",
-            "LockCam", "0xC5EBD5",
-            "Map", "0xAEB4ED",
-            "Mining", "0x920368",
-            "MiningGeode", "0x9BFDD7",
-            "NoClip", "0x6E9FE2",
-            "Player", "0x11F9D40",
-            "World", "0x11F74BC",
-            "Zoom", "0xA83B06",
+            "Animation", "0x829685",
+            "Attack", "0xBB4918",
+            "Breakblocks", "0xA62753",
+            "ByPass", "0x16E726",
+            "ClipCam", "0xAD99BA",
+            "Dismount", "0x36ABFE",
+            "Fish", "0x11CFBBC",
+            "LockCam", "0x9B0345",
+            "Map", "0x9A552D",
+            "Mining", "0xBD9798",
+            "MiningGeode", "0xB1F787",
+            "NoClip", "0x6E6172",
+            "Player", "0x11F9A3C",
+            "World", "0x11F9BD0",
+            "Zoom", "0xAD7936",
         ),
         "Address_Offset", Map(
             "Name", "0x0,0x28,0x1D0,0x0",
@@ -696,12 +696,12 @@ Top_AutoAim(GuiCtrlObj, Info) {
             try
                 if (WinGetProcessName("A") == config.data["Global"]["GameTitle"]) {
                     pid := WingetPID("A")
-                    FunctionOn(pid, "AutoAim", Format("{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}"
+                    FunctionOn(pid, "AutoAim", Format("{1}|{2}|{3}|{4}|{5}|{6}|{7}"
                         , MainGui["Top_AutoAim_TargetBoss"].Value
                         , MainGui["Top_AutoAim_TargetPlant"].Value
                         , MainGui["Top_AutoAim_TargetNormal"].Value
-                        , config.data["AutoAim"]["TargetList"]
-                        , config.data["AutoAim"]["NoTargetList"]
+                        , MainGui["TargetListAutoAim"].Value
+                        , MainGui["NoTargetListAutoAim"].Value
                         , MainGui["Top_AutoAim_AimRange"].Value
                         , config.data["AutoAim"]["Delay"]), false)
                 }
@@ -729,8 +729,8 @@ Top_WhichTarget(GuiCtrlObj, Info) {
                             , MainGui["Top_AutoAim_TargetBoss"].Value
                             , MainGui["Top_AutoAim_TargetPlant"].Value
                             , MainGui["Top_AutoAim_TargetNormal"].Value
-                            , config.data["AutoAim"]["TargetList"]
-                            , config.data["AutoAim"]["NoTargetList"]
+                            , MainGui["TargetListAutoAim"].Value
+                            , MainGui["NoTargetListAutoAim"].Value
                             , MainGui["Top_AutoAim_AimRange"].Value))
                     result := StrSplit(StrGet(Mvalue, "utf-8"), ',')
                     if (result.Length >= 6) {
@@ -738,16 +738,16 @@ Top_WhichTarget(GuiCtrlObj, Info) {
                         ToolTip(Format("名称(见剪贴板): {1}`n等级: {2} 血量: {3}`n坐标(XYZ): {4},{5},{6}"
                             , result[1], result[2], result[3], result[4], result[5], result[6]))
                         SetTimer(() => ToolTip(), -3000)
+                    }
                 }
-        }
             while (GetKeyState("MButton", "P"))
                 Sleep(100)
-                    Click("Middle UP")
+            Click("Middle UP")
         }, "On I1")
-else
-    Hotkey("MButton", , "Off")
-for key in ["Top_AutoAim_AimRange", "Top_AutoAim_TargetBoss", "Top_AutoAim_TargetNormal", "Top_AutoAim_TargetPlant"]
-    MainGui[key].enabled := not GuiCtrlObj.Value
+    else
+        Hotkey("MButton", , "Off")
+    for key in ["Top_AutoAim_AimRange", "Top_AutoAim_TargetBoss", "Top_AutoAim_TargetNormal", "Top_AutoAim_TargetPlant"]
+        MainGui[key].enabled := not GuiCtrlObj.Value
 }
 Interval(GuiCtrlObj, Info) {
     theGame := Game.Lists[MainGui["SelectGame"].Text]
@@ -1351,7 +1351,7 @@ class Game {
     }
     AutoAim() {
         if (this.setting["AutoAim"]["On"])
-            FunctionOn(this.pid, "AutoAim", Format("{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}"
+            FunctionOn(this.pid, "AutoAim", Format("{1}|{2}|{3}|{4}|{5}|{6}|{7}"
                 , this.setting["AutoAim"]["TargetBoss"]
                 , this.setting["AutoAim"]["TargetPlant"]
                 , this.setting["AutoAim"]["TargetNormal"]

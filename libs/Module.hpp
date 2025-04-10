@@ -41,7 +41,9 @@
 #define DLL_EXPORT __declspec(dllexport)
 
 #include <map>
+#include <queue>
 #include <unordered_set>
+
 // #include "WindowInput.hpp"
 #include "Game.hpp"
 
@@ -231,57 +233,57 @@ std::pair<float, float> CalculateAngles(const float &ax, const float &ay, const 
 namespace Module
 {
     Feature Feature::hideAnimation = {
-        {0x829535},
+        {0x829685},
         {0x4C},
         {0x44},
         {0x3, "F3 0F 11 44 24 24 F3 0F 58 84 24 80 00 00 00 50 F3 0F 11 43 24 E8 XX XX XX XX 8D 44 24 34 50"}};
     Feature Feature::autoAttack = {
-        {0x938FF8},
+        {0xBB4918},
         {0xF0},
         {0xF1},
         {0x1, "DF F1 DD D8 72 1F"}};
     Feature Feature::breakBlocks = {
-        {0x9D5793},
+        {0xA62753},
         {0x01},
         {0x00},
         {0x3, "80 7F XX 00 0F 84 XX XX XX XX 8B 4B 08 E8 XX XX XX XX FF 75 0C 8B 4D 10 8B F0 FF 75 08 8B 45 14 83 EC 0C 8B 3E 8B D4 6A 01 89 0A 8B CE 89 42 04 8B 45 18"}};
     Feature Feature::byPass = {
-        {0x1520A6},
+        {0x16E726},
         {0x47},
         {0x67},
         {0x1, "DC 67 68 C6"}};
     Feature Feature::clipCam = {
-        {0xA85BCA},
+        {0xAD99BA},
         {0x90, 0x90, 0x90},
         {0x0F, 0x29, 0x01},
         {0x0, "0F 29 01 C7 41 34 00 00 00 00 0F"}};
     Feature Feature::disMount = {
-        {0x3CB5EE},
+        {0x36ABFE},
         {0xEB},
         {0x74},
         {0x0, "74 XX 8B 07 8B CF 6A 00 6A 00 FF 50"}};
     Feature Feature::lockCam = {
-        {0xC5EBD5},
+        {0x9B0345},
         {0xEB},
         {0x74},
         {0x0, "74 05 8B 01 FF 50 0C 8B E5"}};
     Feature Feature::unlockMapLimit = {
-        {0xAEB4ED},
+        {0x9A552D},
         {0xEB},
         {0x77},
         {0x0, "77 XX B8 XX XX XX XX F3 0F 10 08 F3 0F 11 89 XX XX XX XX 8B 89"}};
     Feature Feature::quickMining = {
-        {0x920368},
+        {0xBD9798},
         {0xF0},
         {0xF1},
         {0x1, "DF F1 DD D8 72 61"}};
     Feature Feature::quickMiningGeode = {
-        {0x9BFDD7},
+        {0xB1F787},
         {0xF0},
         {0xF1},
         {0x1, "DF F1 DD D8 72 35 8D"}};
     Feature Feature::noGravity = {
-        {0x103A55C, 0xC},
+        {0x1038A00, 0xC},
         {0x42, 0xC8},
         {0x0, 0x0},
         {-0x4, "F3 0F 11 45 FC D9 45 FC 8B E5 5D C3 D9 05 XX XX XX XX 8B E5 5D C3 D9 05 XX XX XX XX 8B E5 5D C3"}};
@@ -338,13 +340,13 @@ namespace Module
             dd 00 28 C4 04
      */
     Feature Feature::noClip = {
-        {0x6E9FE2},
+        {0x6E6172},
         {0xE8, 0xFF, 0xFF, 0xFF, 0xFF, 0x90},
         {0x8B, 0x43, 0x14, 0x83, 0xC4, 0x8},
         {-0x5A3, "74 31 FF 73 14 8B 47 04 2B 07"},
         {0x58, 0x83, 0xC4, 0x08, 0x50, 0x8B, 0x43, 0x14, 0x53, 0x51, 0x83, 0xEC, 0x30, 0xF3, 0x0F, 0x7F, 0x44, 0x24, 0x20, 0xF3, 0x0F, 0x7F, 0x4C, 0x24, 0x10, 0xF3, 0x0F, 0x7F, 0x14, 0x24, 0xBB, 0xE0, 0xE6, 0x30, 0x1D, 0xB9, 0x00, 0x00, 0x00, 0x00, 0x03, 0x1C, 0x8D, 0xFF, 0xFF, 0xFF, 0xFF, 0x8B, 0x1B, 0x83, 0xFB, 0x00, 0x0F, 0x84, 0x32, 0x00, 0x00, 0x00, 0x41, 0x83, 0xF9, 0x04, 0x7C, 0xE8, 0x0F, 0x10, 0x83, 0x80, 0x00, 0x00, 0x00, 0x0F, 0x28, 0xC8, 0x0F, 0xC2, 0xCC, 0x02, 0x0F, 0x28, 0xD5, 0x0F, 0xC2, 0xD0, 0x02, 0x66, 0x0F, 0xDB, 0xCA, 0x0F, 0x50, 0xC9, 0x83, 0xE1, 0x07, 0x83, 0xF9, 0x07, 0x0F, 0x85, 0x04, 0x00, 0x00, 0x00, 0xC6, 0x40, 0x01, 0x00, 0xF3, 0x0F, 0x6F, 0x14, 0x24, 0xF3, 0x0F, 0x6F, 0x4C, 0x24, 0x10, 0xF3, 0x0F, 0x6F, 0x44, 0x24, 0x20, 0x83, 0xC4, 0x30, 0x59, 0x5B, 0xC3, 0x00, 0x00, 0x00, 0x00, 0x28, 0x00, 0x00, 0x00, 0xC4, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00}};
     Feature Feature::unlockZoomLimit = {
-        {0xA83B06},
+        {0xAD7936},
         {0x57},
         {0x5F},
         {0x3, "F3 0F 11 5F 2C"}};
@@ -423,6 +425,7 @@ namespace Module
         };
         while (functionRunMap[{pid, "AutoAim"}].load())
         {
+            uint32_t step = 0;
             UpdateAddress();
             std::this_thread::sleep_for(std::chrono::milliseconds(delay));
             target = FindTarget(game, targetBoss, targetPlant, targetNormal, targets, noTargets, range);
@@ -448,7 +451,8 @@ namespace Module
                     target->data.z.data);
                 game.data.player.data.camera.data.v = vh.first;
                 game.data.player.data.camera.data.h = vh.second;
-                if (target->data.health.UpdateData().data < 1 ||
+                if (((step = (step + 1) % 100) == 0) ||
+                    target->data.health.UpdateData().data < 1 ||
                     (target->data.x.data < 1 && target->data.y.data < 1 && target->data.z.data < 1))
                 {
                     const auto &entitys = game.data.world.UpdateAddress().UpdateData().data.entitys;
@@ -563,7 +567,7 @@ namespace Module
         float targetY = 0, targetZ = 0, dist = 0, lastDist = 9999;
         uint32_t step = 0;
         auto MoveEvent = [&game, &x, &y, &z, &dist, &lastDist, &step, &delay, &speed](
-                             const float &targetX, const float &targetY, const float &targetZ)
+                             const float &targetX, float targetY, const float &targetZ)
         {
             x = game.data.player.data.coord.data.x.UpdateData().data;
             y = game.data.player.data.coord.data.y.UpdateData().data;
@@ -571,8 +575,13 @@ namespace Module
             game.data.player.data.coord.data.xVel.UpdateAddress() = 0;
             game.data.player.data.coord.data.yVel.UpdateAddress() = 0;
             game.data.player.data.coord.data.zVel.UpdateAddress() = 0;
+            if (std::isnan(targetY))
+                targetY = y;
             if ((dist = CalculateDistance(x, y, z, targetX, targetY, targetZ)) <= 1 || std::isnan(dist))
                 return;
+            if (step % (250 / delay) == 0)
+                lastDist = dist;
+            step = (step + 1) % (1000 / delay);
             if (step % (500 / delay) == 0 && tpStep && abs(lastDist - dist) < tpStep)
                 Tp2Target(game.pid, targetX, targetY, targetZ, delay, abs(lastDist - dist) < 1 ? 10 : 1);
             else
@@ -581,9 +590,6 @@ namespace Module
                 game.data.player.data.coord.data.yVel.UpdateAddress() = (targetY - y) / dist * speed;
                 game.data.player.data.coord.data.zVel.UpdateAddress() = (targetZ - z) / dist * speed;
             }
-            if (step % (250 / delay) == 0)
-                lastDist = dist;
-            step = (step + 1) % (1000 / delay);
         };
         std::unordered_set<std::string> visitedPoints;
         while (functionRunMap[{pid, "FollowTarget"}].load())
@@ -604,7 +610,7 @@ namespace Module
                 std::this_thread::sleep_for(std::chrono::milliseconds(delay));
                 UpdateAddress();
                 if (scanAll)
-                    MoveEvent(targetX, game.data.player.data.coord.data.y.UpdateData().data, targetZ);
+                    MoveEvent(targetX, NAN, targetZ);
                 player = FindPlayer(game, players);
                 target = FindTarget(game, targetBoss, false, false, targets, noTargets, 9999);
             } while (!player && !target && scanAll &&
@@ -619,13 +625,14 @@ namespace Module
                 if (player && !(player = FindPlayer(game, players)))
                     break;
                 targetX = player ? player->data.x.UpdateAddress().UpdateData().data : target->data.x.UpdateData().data;
-                targetY = player ? player->data.y.UpdateAddress().UpdateData().data : target->data.y.UpdateData().data;
+                targetY = (player ? player->data.y.UpdateAddress().UpdateData().data : target->data.y.UpdateData().data) - 0.5;
                 targetZ = player ? player->data.z.UpdateAddress().UpdateData().data : target->data.z.UpdateData().data;
                 if (target)
                 {
                     if (!target->data.isDeath.UpdateData().data)
                         break;
-                    if (target->data.health.UpdateData().data < 1 ||
+                    if ((step % 100) == 0 ||
+                        target->data.health.UpdateData().data < 1 ||
                         (targetX < 1 && targetY < 1 && targetZ < 1))
                     {
                         const auto &entitys = game.data.world.UpdateAddress().UpdateData().data.entitys;
@@ -660,7 +667,8 @@ namespace Module
         auto &entitys = game.data.world.UpdateAddress().UpdateData().data.entitys;
         std::vector<std::regex> targetRegexs, noTargetRegexs;
         std::unique_ptr<Game::World::Entity> result = nullptr;
-        float minDist = 9999, dist = 0;
+        float dist = 0, bestDist = 9999;
+        uint32_t bestIndex = 0x7FFFFFFF;
         for (auto target : targets)
             targetRegexs.emplace_back(target);
         for (auto noTarget : noTargets)
@@ -682,49 +690,51 @@ namespace Module
                      entity.data.x.UpdateData().data,
                      entity.data.y.UpdateData().data,
                      entity.data.z.UpdateData().data)) > range ||
-                dist >= minDist)
+                dist >= bestDist)
                 continue;
             auto name = entity.data.name.UpdateData(128).data;
-            auto isNoTarget = false;
-            for (auto noTargetRegex : noTargetRegexs)
-                if (std::regex_match(name, noTargetRegex))
-                {
-                    isNoTarget = true;
-                    break;
-                }
-            if (isNoTarget)
+            size_t i = 0;
+            while (i < noTargetRegexs.size() && !std::regex_match(name, noTargetRegexs[i]))
+                i++;
+            if (i < noTargetRegexs.size())
                 continue;
-            for (auto targetRegex : targetRegexs)
-                if (std::regex_match(name, targetRegex))
-                {
-                    minDist = dist;
-                    result = std::make_unique<Game::World::Entity>(entity);
-                    isNoTarget = true;
-                    break;
-                }
-            if (isNoTarget)
+            i = 0;
+            while (i < bestIndex && i < targetRegexs.size() && !std::regex_match(name, targetRegexs[i]))
+                i++;
+            if (i < bestIndex && i < targetRegexs.size())
+            {
+                bestDist = dist;
+                bestIndex = i;
+                result = std::make_unique<Game::World::Entity>(entity);
                 continue;
+            }
+            if (i < bestIndex && targetPlant && std::regex_match(name, std::regex(".*plant.*")))
+            {
+                bestDist = dist;
+                bestIndex = i;
+                result = std::make_unique<Game::World::Entity>(entity);
+                continue;
+            }
             if (std::regex_match(name, std::regex(".*npc.*")))
             {
-                if (targetBoss &&
+                i++;
+                if (i < bestIndex && targetBoss &&
                     (entity.data.level.UpdateData().data >= bossLevel ||
                      std::regex_match(name, std::regex(".*boss.*"))))
                 {
-                    minDist = dist;
+                    bestDist = dist;
+                    bestIndex = i;
                     result = std::make_unique<Game::World::Entity>(entity);
                     continue;
                 }
-                if (targetNormal)
+                i++;
+                if (i < bestIndex && targetNormal)
                 {
-                    minDist = dist;
+                    bestDist = dist;
+                    bestIndex = i;
                     result = std::make_unique<Game::World::Entity>(entity);
                     continue;
                 }
-            }
-            else if (targetPlant && std::regex_match(name, std::regex(".*plant.*")))
-            {
-                minDist = dist;
-                result = std::make_unique<Game::World::Entity>(entity);
             }
         }
         return result;
@@ -734,57 +744,70 @@ namespace Module
     {
         const float sqrt3 = std::sqrt(3);
         const float e = entityScand;
-
+        const int R = static_cast<int>(mapWidth / (2 * e));
         auto alignToGrid = [&](float &x, float &z)
         {
             int j = static_cast<int>(std::round(z / (e * sqrt3)));
             int i = static_cast<int>(std::round((x - e * j) / (2 * e)));
-
             auto clampIndex = [&](int &i, int &j)
             {
-                const int maxJ = static_cast<int>(mapWidth / (e * sqrt3));
-                j = std::clamp(j, -maxJ, maxJ);
-                const int maxI = static_cast<int>((mapWidth - e * std::abs(j)) / (2 * e));
-                i = std::clamp(i, -maxI, maxI);
+                i = std::clamp(i, -R, R);
+                j = std::clamp(j, -R, R);
+                while (i * i + i * j + j * j > R * R)
+                {
+                    if (std::abs(i) > std::abs(j))
+                        i > 0 ? i-- : i++;
+                    else
+                        j > 0 ? j-- : j++;
+                }
             };
-
             clampIndex(i, j);
-
             x = e * (2 * i + j);
             z = e * sqrt3 * j;
         };
-
         auto getKey = [](float x, float z)
         {
             return std::to_string(static_cast<int>(std::round(x))) + "|" +
                    std::to_string(static_cast<int>(std::round(z)));
         };
-
         alignToGrid(x, z);
         if (visitedPoints.insert(getKey(x, z)).second)
             return;
         std::vector<std::pair<float, float>> directions = {
             {2 * e, 0}, {-2 * e, 0}, {e, e * sqrt3}, {-e, e * sqrt3}, {e, -e * sqrt3}, {-e, -e * sqrt3}};
         std::shuffle(directions.begin(), directions.end(), std::mt19937(std::random_device{}()));
-        for (const auto &[dx, dz] : directions)
+        std::queue<std::pair<float, float>> searchQueue;
+        std::unordered_set<std::string> checkedPoints;
+        searchQueue.push({x, z});
+        checkedPoints.insert(getKey(x, z));
+        while (!searchQueue.empty())
         {
-            float newX = x + dx;
-            float newZ = z + dz;
-
-            alignToGrid(newX, newZ);
-            const std::string key = getKey(newX, newZ);
-
-            if (!visitedPoints.count(key))
+            auto [currentX, currentZ] = searchQueue.front();
+            searchQueue.pop();
+            for (const auto &[dx, dz] : directions)
             {
-                visitedPoints.insert(key);
-                x = newX;
-                z = newZ;
-                return;
+                float newX = currentX + dx;
+                float newZ = currentZ + dz;
+                alignToGrid(newX, newZ);
+                std::string key = getKey(newX, newZ);
+                float dist = std::sqrt(newX * newX + newZ * newZ);
+                if (dist > mapWidth)
+                    continue;
+                if (!checkedPoints.count(key))
+                {
+                    checkedPoints.insert(key);
+                    if (!visitedPoints.count(key))
+                    {
+                        visitedPoints.insert(key);
+                        x = newX;
+                        z = newZ;
+                        return;
+                    }
+                    searchQueue.push({newX, newZ});
+                }
             }
         }
-
         visitedPoints.clear();
-        alignToGrid(x, z);
         visitedPoints.insert(getKey(x, z));
     }
 }
