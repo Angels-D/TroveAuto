@@ -28,7 +28,8 @@ public:
     typedef std::pair<int32_t, std::string> Signature;
 
     Object(const DWORD &pid, const Offsets &offsets = {}, const Signature &signature = {});
-    Object(const Object<> &obj, const Offsets &offsets = {}, const Signature &signature = {});
+    template<typename N>
+    Object(const Object<N> &obj, const Offsets &offsets = {}, const Signature &signature = {});
 
     operator T() const;
     T operator=(const T &data);
@@ -104,7 +105,6 @@ public:
         class Entity : public Object
         {
         public:
-            static Address key;
             static Offsets offsets;
             struct Data
             {
@@ -338,7 +338,8 @@ Object<T>::Object(const DWORD &pid, const Memory::Offsets &offsets, const Signat
 }
 
 template <typename T>
-Object<T>::Object(const Object<> &obj, const Memory::Offsets &offsets, const Signature &signature)
+template <typename N>
+Object<T>::Object(const Object<N> &obj, const Memory::Offsets &offsets, const Signature &signature)
     : Memory(obj),
       address(obj.address),
       baseAddress(obj.baseAddress),
@@ -543,13 +544,20 @@ Game::World &Game::World::UpdateAddress()
 
 Game::World &Game::World::UpdateData()
 {
+    const auto &nodes = data.nodeInfo.UpdateAddress().UpdateData().data.nodes;
     data.entitys.clear();
-    data.players.clear();
-    for (const Address &nodeAddress : data.nodeInfo.UpdateAddress().UpdateData().data.nodes)
-        if (Entity(Entity(*this).UpdateBaseAddress(nodeAddress)).CheckData())
+    data.entitys.reserve(nodes.size());
+    for (const Address &nodeAddress : nodes)
+    {
+        Entity entity(*this);
+        entity.UpdateBaseAddress(nodeAddress);
+        if (entity.CheckData())
             data.entitys.emplace_back(*this).UpdateBaseAddress(nodeAddress);
+    }
     Object playerCount(*this, Data::playerCountOffsets);
     playerCount.UpdateBaseAddress(address).UpdateAddress().UpdateData();
+    data.players.clear();
+    data.entitys.reserve(playerCount.data);
     for (uint32_t i = 0; i < playerCount.data; i++)
         data.players.emplace_back(*this, i).UpdateBaseAddress(address);
     return *this;
