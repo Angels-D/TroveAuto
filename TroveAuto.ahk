@@ -1,6 +1,6 @@
 ;@Ahk2Exe-UpdateManifest 2
 ;@Ahk2Exe-SetName TroveAuto
-;@Ahk2Exe-SetProductVersion 2.4.10
+;@Ahk2Exe-SetProductVersion 2.4.11
 ;@Ahk2Exe-SetCopyright GPL-3.0 license
 ;@Ahk2Exe-SetLanguage Chinese_PRC
 ;@Ahk2Exe-SetMainIcon TroveAuto.ico
@@ -30,8 +30,8 @@ config := _Config(
         "Global", Map(
             "GameTitle", "Trove.exe",
             "GamePath", "",
-            "ConfigVersion", "20250329160000",
-            "AppVersion", "20250329160000",
+            "ConfigVersion", "20250411203000",
+            "AppVersion", "20250411203000",
             "Source", "https://github.com/Angels-D/TroveAuto/",
             "Mirror", "https://github.moeyy.xyz/",
             "StrCrypto", "y(Hn,(}I+2209Zd^s5(E%vfpoKh.I=",
@@ -733,10 +733,10 @@ Top_WhichTarget(GuiCtrlObj, Info) {
                             , MainGui["NoTargetListAutoAim"].Value
                             , MainGui["Top_AutoAim_AimRange"].Value))
                     result := StrSplit(StrGet(Mvalue, "utf-8"), ',')
-                    if (result.Length >= 6) {
+                    if (result.Length >= 7) {
                         A_Clipboard := result[1]
-                        ToolTip(Format("名称(见剪贴板): {1}`n等级: {2} 血量: {3}`n坐标(XYZ): {4},{5},{6}"
-                            , result[1], result[2], result[3], result[4], result[5], result[6]))
+                        ToolTip(Format("名称(见剪贴板): {1}`n等级: {2} 血量: {3} 距离: {4}`n坐标(XYZ): {5},{6},{7}"
+                            , result[1], result[2], result[3], result[4], result[5], result[6], result[7]))
                         SetTimer(() => ToolTip(), -3000)
                     }
                 }

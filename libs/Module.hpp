@@ -699,16 +699,18 @@ namespace Module
             if (i < noTargetRegexs.size())
                 continue;
             i = 0;
-            while (i < bestIndex && i < targetRegexs.size() && !std::regex_match(name, targetRegexs[i]))
+            while (i <= bestIndex && i < targetRegexs.size() && !std::regex_match(name, targetRegexs[i]))
                 i++;
-            if (i < bestIndex && i < targetRegexs.size())
+            if (i > bestIndex)
+                continue;
+            if (i < targetRegexs.size())
             {
                 bestDist = dist;
                 bestIndex = i;
                 result = std::make_unique<Game::World::Entity>(entity);
                 continue;
             }
-            if (i < bestIndex && targetPlant && std::regex_match(name, std::regex(".*plant.*")))
+            if (targetPlant && std::regex_match(name, std::regex(".*plant.*")))
             {
                 bestDist = dist;
                 bestIndex = i;
@@ -718,7 +720,9 @@ namespace Module
             if (std::regex_match(name, std::regex(".*npc.*")))
             {
                 i++;
-                if (i < bestIndex && targetBoss &&
+                if (i > bestIndex)
+                    continue;
+                if (targetBoss &&
                     (entity.data.level.UpdateData().data >= bossLevel ||
                      std::regex_match(name, std::regex(".*boss.*"))))
                 {
@@ -728,7 +732,9 @@ namespace Module
                     continue;
                 }
                 i++;
-                if (i < bestIndex && targetNormal)
+                if (i > bestIndex)
+                    continue;
+                if (targetNormal)
                 {
                     bestDist = dist;
                     bestIndex = i;
@@ -965,9 +971,9 @@ void WhichTarget(const Memory::DWORD pid, char *result, const uint32_t size, con
 {
     Game game(pid);
     game.UpdateAddress().data.player.UpdateAddress().data.coord.UpdateAddress();
-    game.UpdateAddress().data.player.data.coord.data.x.UpdateAddress();
-    game.UpdateAddress().data.player.data.coord.data.y.UpdateAddress();
-    game.UpdateAddress().data.player.data.coord.data.z.UpdateAddress();
+    game.data.player.data.coord.data.x.UpdateAddress();
+    game.data.player.data.coord.data.y.UpdateAddress();
+    game.data.player.data.coord.data.z.UpdateAddress();
     const std::vector<std::string> _argv = split(argv, '|');
     auto target = Module::FindTarget(
         game,
@@ -988,14 +994,22 @@ void WhichTarget(const Memory::DWORD pid, char *result, const uint32_t size, con
             target->data.x.data,
             target->data.y.data,
             target->data.z.data);
-        game.data.player.data.camera.UpdateAddress().data.v.UpdateAddress() = vh.first;
-        game.data.player.data.camera.UpdateAddress().data.h.UpdateAddress() = vh.second;
+
+        game.data.player.data.camera.UpdateAddress();
+        game.data.player.data.camera.data.v.UpdateAddress() = vh.first;
+        game.data.player.data.camera.data.h.UpdateAddress() = vh.second;
 
         char buffer[1024] = "";
-        sprintf(buffer, "%s,%d,%.3f,%.1f,%.1f,%.1f",
+        sprintf(buffer, "%s,%d,%.3f,%.1f,%.1f,%.1f,%.1f",
                 target->data.name.UpdateData(128).data.c_str(),
-                target->data.level.UpdateData().data % 100,
+                std::clamp(target->data.level.UpdateData().data, 0u, 99u),
                 std::clamp(target->data.health.UpdateData().data, 0.0, 999999999999999.0),
+                CalculateDistance(game.data.player.data.coord.data.x.data,
+                                  game.data.player.data.coord.data.y.data,
+                                  game.data.player.data.coord.data.z.data,
+                                  target->data.x.data,
+                                  target->data.y.data,
+                                  target->data.z.data),
                 target->data.x.data,
                 target->data.y.data,
                 target->data.z.data);
