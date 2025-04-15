@@ -4,6 +4,32 @@
 
 Memory::DWORD pid = 0;
 
+const std::vector<std::string> targetAutoAim = {
+    ".*gameplay.*", // 任意奖励箱 gameplay/...
+};
+
+const std::vector<std::string> noTargetAutoAim = {
+    ".*chest_quest_worldboss.*", // 利维坦奖励箱
+    // radiantprism                    // 天空光辉碎片
+    ".*clam_depths_fire_boss.*",       // 深渊蛤蜊
+    ".*goodkarma.*",                   // 善业NPC
+    ".*quest_spawn_trigger_radiant.*", // 天空黑暗之心开关
+    ".*pet.*",                         // 任意宠物
+    ".*portal.*",                      // 传送门
+    ".*abilities.*",                   // 任意投射物
+    ".*placeable.*",                   // 任意放置物
+    // 其他未知项
+    ".*services.*",
+    ".*client.*",
+};
+
+const std::vector<std::string> targetFollow = []
+{auto tmp = targetAutoAim;tmp.insert(tmp.end(),{
+    ".*quest.*trigger.*",              // 任意开关
+});return tmp; }();
+
+const std::vector<std::string> noTargetFollow = noTargetAutoAim;
+
 std::atomic<bool> findTarget = false;
 void FindTarget(const bool &targetBoss = true,
                 const bool &targetPlant = false,
@@ -89,29 +115,43 @@ void AutoScan()
     FunctionOn(pid, "SetNoClip", "1", false);
     FunctionOn(pid, "SetAutoAttack", "300|1000", false);
 
-    FunctionOn(pid, "FollowTarget", " |.*chest_quest_.*,.*quest_.*_trigger.*|.*quest_spawn_trigger_radiant.*,.*pet.*,.*goodkarma.*,.*placeable.*,.*services.*,.*client.*,.*abilities.*,.*portal.*|1|1|50|50", false);
-    FunctionOn(pid, "AutoAim", "1|0|0|.*chest_quest_.*|.*quest_spawn_trigger_radiant.*,.*pet.*,.*goodkarma.*,.*placeable.*,.*services.*,.*client.*,.*abilities.*,.*portal.*|45|50", false);
+    auto vector2string = [](const std::vector<std::string> &vector)
+    {
+        std::string tmp = "";
+        for (const std::string &str : vector)
+            tmp += str + ",";
+        return tmp;
+    };
+
+    char buffer[1024];
+
+    sprintf(buffer, "%s|%s|%s|%d|%d|%u|%u",
+            " ",                                   // 跟随玩家名单
+            vector2string(targetFollow).c_str(),   // 跟随实体名单
+            vector2string(noTargetFollow).c_str(), // 不跟随实体名单
+            true,                                  // 跟随boss实体
+            true,                                  // 扫图模式
+            50,                                    // 跟随速度
+            50                                     // 跟随频率
+    );
+    FunctionOn(pid, "FollowTarget", buffer, false);
+
+    sprintf(buffer, "%d|%d|%d|%s|%s|%u|%u",
+            true,                                   // 瞄准boss实体
+            false,                                  // 瞄准植物实体
+            false,                                  // 瞄准普通怪物实体
+            vector2string(targetAutoAim).c_str(),   // 瞄准实体名单
+            vector2string(noTargetAutoAim).c_str(), // 不瞄准实体名单
+            45,                                     // 瞄准范围
+            50                                      // 瞄准频率
+    );
+    FunctionOn(pid, "AutoAim", buffer, false);
 
     findTarget.store(true);
     new std::thread(
         FindTarget, true, false, false,
-        std::vector<std::string>{
-            ".*quest_.*_trigger.*", // 任意开关
-            ".*chest_quest_.*",     // 任意奖励箱 gameplay/...
-        },
-        std::vector<std::string>{
-            // radiantprism                    // 天空光辉碎片
-            ".*clam_depths_fire_boss.*",       // 深渊蛤蜊
-            ".*goodkarma.*",                   // 善业NPC
-            ".*quest_spawn_trigger_radiant.*", // 天空黑暗之心开关
-            ".*pet.*",                         // 任意宠物
-            ".*portal.*",                      // 传送门
-            ".*abilities.*",                   // 任意投射物
-            ".*placeable.*",                   // 任意放置物
-            // 其他未知项
-            ".*services.*",
-            ".*client.*",
-        },
+        targetAutoAim,
+        noTargetAutoAim,
         9999);
     atexit([]()
            {
