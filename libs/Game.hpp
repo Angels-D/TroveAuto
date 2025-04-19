@@ -557,7 +557,7 @@ Game::World &Game::World::UpdateData()
     Object playerCount(*this, Data::playerCountOffsets);
     playerCount.UpdateBaseAddress(address).UpdateAddress().UpdateData();
     data.players.clear();
-    data.entitys.reserve(playerCount.data);
+    data.players.reserve(playerCount.data);
     for (uint32_t i = 0; i < playerCount.data; i++)
         data.players.emplace_back(*this, i).UpdateBaseAddress(address);
     return *this;
