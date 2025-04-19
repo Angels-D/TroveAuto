@@ -1,0 +1,4 @@
+config.ini
+*.exe
+*.dll
+venv/
