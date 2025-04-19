@@ -182,6 +182,7 @@ extern "C"
 
 // Module.cpp
 
+#include <cstring>
 #include <chrono>
 #include <thread>
 #include <cmath>
