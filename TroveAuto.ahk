@@ -1,6 +1,6 @@
 ;@Ahk2Exe-UpdateManifest 2
 ;@Ahk2Exe-SetName TroveAuto
-;@Ahk2Exe-SetProductVersion 2.4.12
+;@Ahk2Exe-SetProductVersion 2.4.13
 ;@Ahk2Exe-SetCopyright GPL-3.0 license
 ;@Ahk2Exe-SetLanguage Chinese_PRC
 ;@Ahk2Exe-SetMainIcon TroveAuto.ico
@@ -30,12 +30,13 @@ config := _Config(
         "Global", Map(
             "GameTitle", "Trove.exe",
             "GamePath", "",
-            "ConfigVersion", "20250416044000",
-            "AppVersion", "20250416044000",
+            "ConfigVersion", "20250514010000",
+            "AppVersion", "20250514010000",
             "Source", "https://github.com/Angels-D/TroveAuto/",
             "Mirror", "https://github.moeyy.xyz/",
             "StrCrypto", "y(Hn,(}I+2209Zd^s5(E%vfpoKh.I=",
             "Cheat", "Enter 你的30条命秘籍",
+            "Language", _Language.GetLanguage(),
         ),
         "RefreshTime", Map("Value", "3000",),
         "AttackTime", Map("Value", "1000",),
@@ -61,31 +62,31 @@ config := _Config(
             "Fish", "f",
         ),
         "Address", Map(
-            "Animation", "0x74AB35",
-            "Attack", "0x84E198",
-            "Breakblocks", "0x9E9683",
-            "ByPass", "0x193716",
-            "ClipCam", "0x9354EA",
-            "Dismount", "0x384ADE",
-            "Fish", "0x10708FC",
-            "LockCam", "0x8D4B95",
-            "Map", "0xAE09FD",
-            "Mining", "0x9E6768",
-            "MiningGeode", "0xAB25B7",
-            "NoClip", "0x640062",
-            "Player", "0x1098418",
-            "World", "0x1098454",
-            "Zoom", "0x933466",
+            "Animation", "0x74AD25",
+            "Attack", "0xB10718",
+            "Breakblocks", "0x9A8953",
+            "ByPass", "0x13F686",
+            "ClipCam", "0x98653A",
+            "Dismount", "0x366D5E",
+            "Fish", "0x106D24C",
+            "LockCam", "0xA6A4B5",
+            "Map", "0x98C4AD",
+            "Mining", "0xA1C608",
+            "MiningGeode", "0x843397",
+            "NoClip", "0x642552",
+            "Player", "0x1097680",
+            "World", "0x1097504",
+            "Zoom", "0x984476",
         ),
         "Address_Offset", Map(
-            "Name", "0x0,0x28,0x1F0,0x0",
-            "Player_Health", "0x0,0x28,0x1C4,0x80",
-            "Player_Coord_X", "0x0,0x28,0xE8,0x4,0x80",
-            "Player_Coord_Y", "0x0,0x28,0xE8,0x4,0x84",
-            "Player_Coord_Z", "0x0,0x28,0xE8,0x4,0x88",
-            "Player_Coord_XVel", "0x0,0x28,0xE8,0x4,0xB0",
-            "Player_Coord_YVel", "0x0,0x28,0xE8,0x4,0xB4",
-            "Player_Coord_ZVel", "0x0,0x28,0xE8,0x4,0xB8",
+            "Name", "0x0,0x28,0x1D0,0x0",
+            "Player_Health", "0x0,0x28,0x1A4,0x80",
+            "Player_Coord_X", "0x0,0x28,0xC4,0x4,0x80",
+            "Player_Coord_Y", "0x0,0x28,0xC4,0x4,0x84",
+            "Player_Coord_Z", "0x0,0x28,0xC4,0x4,0x88",
+            "Player_Coord_XVel", "0x0,0x28,0xC4,0x4,0xB0",
+            "Player_Coord_YVel", "0x0,0x28,0xC4,0x4,0xB4",
+            "Player_Coord_ZVel", "0x0,0x28,0xC4,0x4,0xB8",
             "Player_Cam_V", "0x4,0x2C",
             "Player_Cam_H", "0x4,0x28",
             "Player_Cam_XPer", "0x4,0x24,0x84,0x0,0x100",
@@ -93,10 +94,10 @@ config := _Config(
             "Player_Cam_ZPer", "0x4,0x24,0x84,0x0,0x108",
             "World_Player_Count", "0xFC,0x2C",
             "World_Player_Base", "0xFC,0x00",
-            "World_Player_Name", "0x1F0,0x00",
-            "World_Player_X", "0xE8,0x04,0x80",
-            "World_Player_Y", "0xE8,0x04,0x84",
-            "World_Player_Z", "0xE8,0x04,0x88",
+            "World_Player_Name", "0x1D0,0x00",
+            "World_Player_X", "0xC4,0x04,0x80",
+            "World_Player_Y", "0xC4,0x04,0x84",
+            "World_Player_Z", "0xC4,0x04,0x88",
             "Fish_Take_Water", "0x68,0xE4,0x3C4",
             "Fish_Take_Lava", "0x68,0xE4,0x898",
             "Fish_Take_Choco", "0x68,0xE4,0x62C",
@@ -138,33 +139,146 @@ config := _Config(
             "Zoom", "3,F3 0F 11 5F 2C",
             "Use_R", "-384,FE FF FF FF 00 00 00 00 65 CF XX XX 0C 00 00 00 55 CF",
             "Use_T", "-384,FE FF FF FF 00 00 00 00 65 CF XX XX 0E 00 00 00 55 CF",
+        ),
+        "Language_English", Map(
+            "ModCfgs文件夹", "ModCfgs Folder",
+            "Mods文件夹", "Mods Folder",
+            "Mod使用教程: 后缀为.tmod的文件存放在Mods文件夹, 后缀为.cfg的文件存放在ModCfgs文件夹, 放置后重启游戏生效", "Mod Usage Tutorial: .tmod files are stored in the Mods folder, .cfg files are stored in the ModCfgs folder. Restart the game after placement to take effect",
+            "Trove辅助", "TroveAuto",
+            "WASD/Shift/Space移动", "WASD/Shift/Space Movement",
+            "世界", "World",
+            "主页", "Home",
+            "交互按键:", "Interaction Key:",
+            "任何脚本都有风险, 请慎用!", "Any script carries risks, use with caution!",
+            "传送", "Teleport",
+            "传送热键:", "Teleport Hotkey:",
+            "传送相关", "Teleportation Related",
+            "传送距离:", "Teleport Distance:",
+            "传送频率(ms):", "Teleport Frequency (ms):",
+            "作者: とても残念だ(AnglesD)", "Author: とても残念だ (AnglesD)",
+            "保存", "Save",
+            "保持骑乘", "Maintain Mount",
+            "全局名单", "Global List",
+            "关于", "About",
+            "其他功能", "Other Features",
+            "刷新", "Refresh",
+            "刷新间隔(ms):", "Refresh Interval (ms):",
+            "前台时禁用", "Disable in Foreground",
+            "功能区", "Functional Area",
+            "加速倍率:", "Acceleration Multiplier:",
+            "加速频率(ms):", "Acceleration Frequency (ms):",
+            "启动", "Start",
+            "启动游戏", "Launch Game",
+            "地图放大", "Map Zoom",
+            "地址:", "Address:",
+            "实体列表:", "Entity List:",
+            "崩溃相关", "Crash Related",
+            "当前玩家传送", "Current Player Teleport",
+            "当前玩家扫描目标信息(鼠标中键)", "Current Player Scan Target Info (Middle Mouse Button)",
+            "当前玩家静默攻击瞄准(鼠标左键)", "Current Player Silent Attack Aiming (Left Mouse Button)",
+            "快速挖矿", "Fast Mining",
+            "快速挖矿(晶洞)", "Fast Mining (Geode)",
+            "打开配置文件", "Open Configuration File",
+            "打破障碍", "Break Obstacles",
+            "扫图模式", "Sweep Mode",
+            "扫描范围:", "Scan Range:",
+            "持续时间", "Duration",
+            "指定坐标传送", "Teleport to Specified Coordinates",
+            "推荐:@2@> <a href@1@@4@https://github.com/Sly0511/RenewedTroveTools/@4@>RenewedTroveTools</a>工具@2@管理你的Mod和CFG文件, 还有装备推荐、模拟加点、模组开发管理、模组下载等功能@2@@2@> <a href@1@@4@https://qm.qq.com/q/mu0FmpznQm@4@>Trove ToolBox</a>工具@2@管理你的游戏登录, 还有多开窗口自动排列、崩溃重启、防掉线等功能", "Recommendations:@2@> <a href@1@@4@https://github.com/Sly0511/RenewedTroveTools/@4@>RenewedTroveTools</a> tool @2@manage your Mod and CFG files, with features like equipment recommendations, simulation builds, mod development management, and mod downloads@2@@2@> <a href@1@@4@https://qm.qq.com/q/mu0FmpznQm@4@>Trove ToolBox</a> tool @2@manage game login, multi-window auto-arrangement, crash restart, anti-disconnect, etc.",
+            "攻击扫描(ms):", "Attack Scan (ms):",
+            "显示", "Display",
+            "最新版脚本下载", "Latest Script Download",
+            "本地更新", "Local Update",
+            "本软件完全开源免费, 仅供学习使用！", "This software is completely open-source and free, for educational use only!",
+            "次数", "Count",
+            "正则表达式 逗号隔开", "Regular Expressions, separated by commas",
+            "步进距离:", "Step Distance:",
+            "游戏标题:", "Game Title:",
+            "游戏路径:", "Game Path:",
+            "热键", "Hotkeys",
+            "物品扫描(ms):", "Item Scan (ms):",
+            "物品栏使用日志文件夹", "Inventory Usage Log Folder",
+            "物品栏计数", "Inventory Count",
+            "玩家", "Player",
+            "玩家列表:", "Player List:",
+            "玩家名:", "Player Name:",
+            "目标名单", "Target List",
+            "目标扫描相关", "Target Scan Related",
+            "瞄准范围:", "Aiming Range:",
+            "矢量移动", "Vector Movement",
+            "穿墙", "Wallhack",
+            "绕过", "ByPass",
+            "联网更新", "Online Update",
+            "脚本动作:", "Script Action:",
+            "自动刷新", "Auto Refresh",
+            "自动右击", "Auto Right-Click",
+            "自动复活", "Auto Resurrect",
+            "自动左击", "Auto Left-Click",
+            "自动按键", "Auto Key Press",
+            "自动按键配置区", "Auto Key Configuration Area",
+            "自动攻击", "Auto Attack",
+            "自动瞄准", "Auto Aim",
+            "自瞄频率(ms):", "Auto Aim Frequency (ms):",
+            "获取游戏路径", "Get Game Path",
+            "血量扫描(ms):", "Health Scan (ms):",
+            "视角固定", "Lock View",
+            "视角遮挡", "View Occlusion",
+            "视野放大", "Field of View Zoom",
+            "许可协议: <a href@1@@4@https://www.gnu.org/licenses/gpl-3.0.zh-cn.html/@4@>GPL-3.0 license</a>@2@@2@博客: <a href@1@@4@https://Angels-D.github.io/@4@>https://Angels-D.github.io</a>@2@@2@源码: <a href@1@@4@https://github.com/Angels-D/TroveAuto@4@>Angels-D/TroveAuto On Github</a>@2@@2@应用版本: {1}@2@", "License: <a href@1@@4@https://www.gnu.org/licenses/gpl-3.0.zh-cn.html/@4@>GPL-3.0 license</a>@2@@2@Blog: <a href@1@@4@https://Angels-D.github.io/@4@>https://Angels-D.github.io</a>@2@@2@Source Code: <a href@1@@4@https://github.com/Angels-D/TroveAuto@4@>Angels-D/TroveAuto On Github</a>@2@@2@App Version: {1}@2@",
+            "设置", "Settings",
+            "说明: Cfgs用于保存某些Mod的配置信息,一般位于<a href@1@@4@file:///{1}\Trove\ModCfgs\@4@>%AppData%\Trove\ModCfgs\</a>中", "Note: Cfgs are used to store configuration information for certain mods, typically located in <a href@1@@4@file:///{1}\Trove\ModCfgs\@4@>%AppData%\Trove\ModCfgs\</a>",
+            "说明: 当前使用Steam打开游戏会强制绑定账号, 直接使用官方启动器即可跳过绑定", "Note: Launching the game via Steam will force account binding. Use the official launcher directly to bypass this.",
+            "说明: 本游戏支持模组, 可通过各公会群和Steam创意工坊等渠道下载, Mod制作或下载可使用@2@<a href@1@@4@https://github.com/DazoTrove/TroveTools.NET/@4@>TroveTools.NET</a>等工具", "Note: This game supports mods. Download them from guild communities or Steam Workshop. Use tools like @2@<a href@1@@4@https://github.com/DazoTrove/TroveTools.NET/@4@>TroveTools.NET</a> for mod creation/download.",
+            "跟踪Boss", "Follow Boss",
+            "跟随白名单:", "Follow Whitelist:",
+            "跟随目标", "Follow Target",
+            "退出", "Exit",
+            "部分内容保存后生效", "Some settings take effect after saving",
+            "重新启动", "Restart",
+            "重置", "Reset",
+            "钓鱼", "Fishing",
+            "钓鱼按键:", "Fishing Key:",
+            "锁定Boss", "Lock Boss",
+            "锁定小怪", "Lock Minions",
+            "锁定植物", "Lock Plants",
+            "镜像源:", "Mirror Source:",
+            "间隔时间", "Interval Time",
+            "附: 官方邮箱<a href@1@@4@mailto:support@gamigo.com@4@>support@gamigo.com</a>(通过此邮箱询问交易问题、账号问题等内容,注意使用英文描述", "Note: Official Email<a href@1@@4@mailto:support@gamigo.com@4@>support@gamigo.com</a>(Use this email to inquire about transaction issues, account problems, etc. Please use English for communication.)",
+            "隐藏特效", "Hide Effects",
+            "非目标名单", "Non-Target List",
+            "面板", "Panel",
+            "频率(毫秒):", "Frequency (ms):",
+            "语言:", "Language:",
         )
     )
 )
 config.Load()
 
-MainGui := Gui("-DPIScale +Resize +MaxSize HScroll VScroll", "Trove辅助")
-MainGui.Add("Tab3", "vTab", ["主页", "面板", "其他功能", "设置", "关于"])
+language := _Language(config)
+t := ObjBindMethod(language, "Translate")
+
+MainGui := Gui("-DPIScale +Resize +MaxSize HScroll VScroll", t("Trove辅助"))
+MainGui.Add("Tab3", "vTab", [t("主页"), t("面板"), t("其他功能"), t("设置"), t("关于")])
 
 ; 主页内容
-MainGui["Tab"].UseTab("主页")
-MainGui.Add("Text", "x+60 y+70", "游戏路径:")
+MainGui["Tab"].UseTab(t("主页"))
+MainGui.Add("Text", "x+60 y+70", t("游戏路径:"))
 MainGui.Add("Edit", "w200 h70 vGamePath", config.data["Global"]["GamePath"])
-MainGui.Add("Button", "Section vGamePathBtn", "获取游戏路径")
-MainGui.Add("Button", "ys vGameStartBtn", "启动游戏")
-MainGui.Add("Text", "xs w200", "说明: 当前使用Steam打开游戏会强制绑定账号, 直接使用官方启动器即可跳过绑定")
-MainGui.Add("Button", "w200 vModsPathBtn", "Mods文件夹")
-MainGui.Add("Link", "w200", "
+MainGui.Add("Button", "Section vGamePathBtn", t("获取游戏路径"))
+MainGui.Add("Button", "ys vGameStartBtn", t("启动游戏"))
+MainGui.Add("Text", "xs w200", t("说明: 当前使用Steam打开游戏会强制绑定账号, 直接使用官方启动器即可跳过绑定"))
+MainGui.Add("Button", "w200 vModsPathBtn", t("Mods文件夹"))
+MainGui.Add("Link", "w200", t("
     (
         说明: 本游戏支持模组, 可通过各公会群和Steam创意工坊等渠道下载, Mod制作或下载可使用
         <a href="https://github.com/DazoTrove/TroveTools.NET/">TroveTools.NET</a>等工具
-    )"
+    )")
 )
-MainGui.Add("Button", "w200 vModCfgsPathBtn", "ModCfgs文件夹")
-MainGui.Add("Link", "w200", Format("说明: Cfgs用于保存某些Mod的配置信息,一般位于<a href=`"file:///{1}\Trove\ModCfgs\`">%AppData%\Trove\ModCfgs\</a>中", A_AppData))
-MainGui.Add("Text", "w200", "Mod使用教程: 后缀为.tmod的文件存放在Mods文件夹, 后缀为.cfg的文件存放在ModCfgs文件夹, 放置后重启游戏生效")
-MainGui.Add("Link", "w200", "附: 官方邮箱<a href=`"mailto:support@gamigo.com`">support@gamigo.com</a>(通过此邮箱询问交易问题、账号问题等内容,注意使用英文描述")
-MainGui.Add("Link", "w200 cRed", "
+MainGui.Add("Button", "w200 vModCfgsPathBtn", t("ModCfgs文件夹"))
+MainGui.Add("Link", "w200", Format(t("说明: Cfgs用于保存某些Mod的配置信息,一般位于<a href=`"file:///{1}\Trove\ModCfgs\`">%AppData%\Trove\ModCfgs\</a>中"), A_AppData))
+MainGui.Add("Text", "w200", t("Mod使用教程: 后缀为.tmod的文件存放在Mods文件夹, 后缀为.cfg的文件存放在ModCfgs文件夹, 放置后重启游戏生效"))
+MainGui.Add("Link", "w200", t("附: 官方邮箱<a href=`"mailto:support@gamigo.com`">support@gamigo.com</a>(通过此邮箱询问交易问题、账号问题等内容,注意使用英文描述"))
+MainGui.Add("Link", "w200 cRed", t("
     (
         推荐: 
         > <a href="https://github.com/Sly0511/RenewedTroveTools/">RenewedTroveTools</a>工具
@@ -172,83 +286,83 @@ MainGui.Add("Link", "w200 cRed", "
 
         > <a href="https://qm.qq.com/q/mu0FmpznQm">Trove ToolBox</a>工具
         管理你的游戏登录, 还有多开窗口自动排列、崩溃重启、防掉线等功能
-    )"
+    )")
 )
-MainGui.Add("Button", "y+10 w200 h40 vUseLogPathBtn", "物品栏使用日志文件夹")
-MainGui.Add("Button", "y+10 w200 h40 vConfigFileBtn", "打开配置文件")
+MainGui.Add("Button", "y+10 w200 h40 vUseLogPathBtn", t("物品栏使用日志文件夹"))
+MainGui.Add("Button", "y+10 w200 h40 vConfigFileBtn", t("打开配置文件"))
 
 ; 面板内容
-MainGui["Tab"].UseTab("面板")
-MainGui.Add("Button", "x+50 y+10 w50 Section vResetBtn", "重置")
-MainGui.Add("Button", "ys w50 vRefreshBtn", "刷新")
-MainGui.Add("Button", "ys x+50 w70 vStartBtn", "启动")
-MainGui.Add("Text", "xs w70 Section", "玩家列表:")
+MainGui["Tab"].UseTab(t("面板"))
+MainGui.Add("Button", "x+50 y+10 w50 Section vResetBtn", t("重置"))
+MainGui.Add("Button", "ys w50 vRefreshBtn", t("刷新"))
+MainGui.Add("Button", "ys x+50 w70 vStartBtn", t("启动"))
+MainGui.Add("Text", "xs w70 Section", t("玩家列表:"))
 MainGui.Add("DropDownList", "ys w150 vSelectGame")
-MainGui.Add("Text", "xs w70 Section", "脚本动作:")
-MainGui.Add("DropDownList", "ys w150 vSelectAction", ["自动按键", "钓鱼"])
-MainGui.Add("GroupBox", "xs-40 y+20 w310 r9 Section", "自动按键配置区")
-MainGui.Add("Text", "xp+10 yp+30 Section", "频率(毫秒):")
+MainGui.Add("Text", "xs w70 Section", t("脚本动作:"))
+MainGui.Add("DropDownList", "ys w150 vSelectAction", [t("自动按键"), t("钓鱼")])
+MainGui.Add("GroupBox", "xs-40 y+20 w310 r9 Section", t("自动按键配置区"))
+MainGui.Add("Text", "xp+10 yp+30 Section", t("频率(毫秒):"))
 MainGui.Add("Edit", "ys w120 vInterval")
-MainGui.Add("ListView", "xs w290 Section NoSortHdr Checked -Multi vHotKeyBox", ["热键", "持续时间", "间隔时间", "次数"])
-MainGui.Add("CheckBox", "xs Section w140 vAutoBtn_Key_Click_LEFT", "自动左击")
-MainGui.Add("CheckBox", "ys w140 vAutoBtn_Key_Click_RIGHT", "自动右击")
-MainGui.Add("CheckBox", "xs Section w200 vAutoBtn_NoTop", "前台时禁用")
-MainGui.Add("GroupBox", "xs-10 ys+40 w310 r7 Section", "功能区")
+MainGui.Add("ListView", "xs w290 Section NoSortHdr Checked -Multi vHotKeyBox", [t("热键"), t("持续时间"), t("间隔时间"), t("次数")])
+MainGui.Add("CheckBox", "xs Section w140 vAutoBtn_Key_Click_LEFT", t("自动左击"))
+MainGui.Add("CheckBox", "ys w140 vAutoBtn_Key_Click_RIGHT", t("自动右击"))
+MainGui.Add("CheckBox", "xs Section w200 vAutoBtn_NoTop", t("前台时禁用"))
+MainGui.Add("GroupBox", "xs-10 ys+40 w310 r7 Section", t("功能区"))
 for key, value in Map(
-    "Animation", "隐藏特效",
-    "Attack", "自动攻击",
-    "Breakblocks", "打破障碍",
-    "ByPass", "绕过",
-    "ClipCam", "视角遮挡",
-    "Dismount", "保持骑乘",
-    "Health", "自动复活",
-    "LockCam", "视角固定",
-    "Map", "地图放大",
-    "Mining", "快速挖矿",
-    "MiningGeode", "快速挖矿(晶洞)",
-    "NoClip", "穿墙",
-    "UseLog", "物品栏计数",
-    "Zoom", "视野放大",
+    "Animation", t("隐藏特效"),
+    "Attack", t("自动攻击"),
+    "Breakblocks", t("打破障碍"),
+    "ByPass", t("绕过"),
+    "ClipCam", t("视角遮挡"),
+    "Dismount", t("保持骑乘"),
+    "Health", t("自动复活"),
+    "LockCam", t("视角固定"),
+    "Map", t("地图放大"),
+    "Mining", t("快速挖矿"),
+    "MiningGeode", t("快速挖矿(晶洞)"),
+    "NoClip", t("穿墙"),
+    "UseLog", t("物品栏计数"),
+    "Zoom", t("视野放大"),
 )
     MainGui.Add("CheckBox", (Mod(A_Index, 2) ? ((A_Index == 1 ? "xp+10 yp+30" : "xs") " Section") : "ys") " w140 v" key, value)
-MainGui.Add("GroupBox", "xs-10 ys+40 w310 r4.2 Section", "跟随目标       正则表达式 逗号分割")
+MainGui.Add("GroupBox", "xs-10 ys+40 w310 r4.2 Section", t("跟随目标") "       " t("正则表达式 逗号隔开"))
 MainGui.Add("CheckBox", "xp+80 yp vFollowTarget")
-MainGui.Add("Text", "xs+10 ys+30 Section", "玩家列表:")
+MainGui.Add("Text", "xs+10 ys+30 Section", t("玩家列表:"))
 MainGui.Add("Edit", "ys w205 vFollowTarget_PlayerName")
-MainGui.Add("Text", "xs ys+30 Section", "实体列表:")
+MainGui.Add("Text", "xs ys+30 Section", t("实体列表:"))
 MainGui.Add("Edit", "ys w205 vFollowTarget_TargetName")
-MainGui.Add("CheckBox", "xs w90 Section vFollowTarget_TargetBoss", "跟踪Boss")
-MainGui.Add("CheckBox", "ys w90 vFollowTarget_TargetList", "全局名单")
-MainGui.Add("CheckBox", "ys w90 vFollowTarget_ScanAll", "扫图模式")
-MainGui.Add("GroupBox", "xs-10 ys+40 w310 r2 Section", "矢量移动       WASD/Shift/Space移动")
+MainGui.Add("CheckBox", "xs w90 Section vFollowTarget_TargetBoss", t("跟踪Boss"))
+MainGui.Add("CheckBox", "ys w90 vFollowTarget_TargetList", t("全局名单"))
+MainGui.Add("CheckBox", "ys w90 vFollowTarget_ScanAll", t("扫图模式"))
+MainGui.Add("GroupBox", "xs-10 ys+40 w310 r2 Section", t("矢量移动") "       " t("WASD/Shift/Space移动"))
 MainGui.Add("CheckBox", "xp+80 yp vSpeedUp")
-MainGui.Add("Text", "xs+10 ys+30 Section", "加速倍率:")
+MainGui.Add("Text", "xs+10 ys+30 Section", t("加速倍率:"))
 MainGui.Add("Edit", "ys w205 vSpeedUp_SpeedUpRate")
-MainGui.Add("GroupBox", "xs-10 ys+50 w310 r3 Section", "自动瞄准")
+MainGui.Add("GroupBox", "xs-10 ys+50 w310 r3 Section", t("自动瞄准"))
 MainGui.Add("CheckBox", "xp+80 yp vAutoAim")
-MainGui.Add("Text", "xs+10 ys+30 Section", "瞄准范围:")
+MainGui.Add("Text", "xs+10 ys+30 Section", t("瞄准范围:"))
 MainGui.Add("Edit", "ys w205 vAutoAim_AimRange")
-MainGui.Add("CheckBox", "xs w90 Section vAutoAim_TargetBoss", "锁定Boss")
-MainGui.Add("CheckBox", "ys w90 vAutoAim_TargetNormal", "锁定小怪")
-MainGui.Add("CheckBox", "ys w90 vAutoAim_TargetPlant", "锁定植物")
-MainGui.Add("Text", "xs+40 ys+50 cRed", "任何脚本都有风险, 请慎用!")
+MainGui.Add("CheckBox", "xs w90 Section vAutoAim_TargetBoss", t("锁定Boss"))
+MainGui.Add("CheckBox", "ys w90 vAutoAim_TargetNormal", t("锁定小怪"))
+MainGui.Add("CheckBox", "ys w90 vAutoAim_TargetPlant", t("锁定植物"))
+MainGui.Add("Text", "xs+40 ys+50 cRed", t("任何脚本都有风险, 请慎用!"))
 
 ; 其他功能内容
-MainGui["Tab"].UseTab("其他功能")
-MainGui.Add("GroupBox", "xs-10 y+10 w310 r3.5 Section", "崩溃相关")
-MainGui.Add("GroupBox", "xs+10 ys+30 w290 r2 Section", "自动刷新")
+MainGui["Tab"].UseTab(t("其他功能"))
+MainGui.Add("GroupBox", "xs-10 y+10 w310 r3.5 Section", t("崩溃相关"))
+MainGui.Add("GroupBox", "xs+10 ys+30 w290 r2 Section", t("自动刷新"))
 MainGui.Add("CheckBox", "xp+110 yp vAutoRefresh")
-MainGui.Add("Text", "xs+10 ys+30 w100 Section", "刷新间隔(ms):")
+MainGui.Add("Text", "xs+10 ys+30 w100 Section", t("刷新间隔(ms):"))
 MainGui.Add("Edit", "ys w140 vRefreshTime", config.data["RefreshTime"]["Value"])
-MainGui.Add("GroupBox", "xs-20 y+40 w310 r13 Section", "传送相关")
-MainGui.Add("GroupBox", "xs+10 ys+30 w290 r3 Section", "当前玩家传送")
+MainGui.Add("GroupBox", "xs-20 y+40 w310 r13 Section", t("传送相关"))
+MainGui.Add("GroupBox", "xs+10 ys+30 w290 r3 Section", t("当前玩家传送"))
 MainGui.Add("CheckBox", "xp+110 yp vTP")
-MainGui.Add("Text", "xs+10 ys+30 w90 Section", "传送距离:")
+MainGui.Add("Text", "xs+10 ys+30 w90 Section", t("传送距离:"))
 MainGui.Add("Edit", "ys w150 vDistanceTP", config.data["TP"]["Distance"])
-MainGui.Add("Text", "xs w90 Section", "传送热键:")
+MainGui.Add("Text", "xs w90 Section", t("传送热键:"))
 MainGui.Add("HotKey", "ys w150 vHotKeyTP", config.data["TP"]["HotKey"])
-MainGui.Add("GroupBox", "xs-10 ys+40 w290 r7.2 Section", "指定坐标传送")
-MainGui.Add("Text", "xs+10 ys+30 w90 Section", "玩家名:")
+MainGui.Add("GroupBox", "xs-10 ys+40 w290 r7.2 Section", t("指定坐标传送"))
+MainGui.Add("Text", "xs+10 ys+30 w90 Section", t("玩家名:"))
 MainGui.Add("Edit", "ys w150 vTPPlayerName")
 MainGui.Add("Text", "xs w30 Section", "X:")
 MainGui.Add("Edit", "ys w210 vTPtoX", 0)
@@ -256,86 +370,89 @@ MainGui.Add("Text", "xs w30 Section", "Y:")
 MainGui.Add("Edit", "ys w210 vTPtoY", 0)
 MainGui.Add("Text", "xs w30 Section", "Z:")
 MainGui.Add("Edit", "ys w210 vTPtoZ", 0)
-MainGui.Add("Button", "xs w250 vTPtoXYZBtn", "传送")
-MainGui.Add("GroupBox", "xs-20 y+30 w310 r15.5 Section", "目标扫描相关")
-MainGui.Add("CheckBox", "xs+10 ys+30 Section vTop_AutoAim", "当前玩家静默攻击瞄准(鼠标左键)")
-MainGui.Add("CheckBox", "xs w270 vTop_WhichTarget", "当前玩家扫描目标信息(鼠标中键)")
-MainGui.Add("Text", "xs Section", "扫描范围:")
+MainGui.Add("Button", "xs w250 vTPtoXYZBtn", t("传送"))
+MainGui.Add("GroupBox", "xs-20 y+30 w310 r15.5 Section", t("目标扫描相关"))
+MainGui.Add("CheckBox", "xs+10 ys+30 Section vTop_AutoAim", t("当前玩家静默攻击瞄准(鼠标左键)"))
+MainGui.Add("CheckBox", "xs w270 vTop_WhichTarget", t("当前玩家扫描目标信息(鼠标中键)"))
+MainGui.Add("Text", "xs Section", t("扫描范围:"))
 MainGui.Add("Edit", "ys w170 vTop_AutoAim_AimRange", 45)
-MainGui.Add("CheckBox", "xs w85 Section checked vTop_AutoAim_TargetBoss", "锁定Boss")
-MainGui.Add("CheckBox", "ys w80 vTop_AutoAim_TargetNormal", "锁定小怪")
-MainGui.Add("CheckBox", "ys w80 vTop_AutoAim_TargetPlant", "锁定植物")
-MainGui.Add("GroupBox", "xs ys+40 w290 r4 Section", "目标名单     正则表达式 逗号隔开")
+MainGui.Add("CheckBox", "xs w85 Section checked vTop_AutoAim_TargetBoss", t("锁定Boss"))
+MainGui.Add("CheckBox", "ys w80 vTop_AutoAim_TargetNormal", t("锁定小怪"))
+MainGui.Add("CheckBox", "ys w80 vTop_AutoAim_TargetPlant", t("锁定植物"))
+MainGui.Add("GroupBox", "xs ys+40 w290 r4 Section", t("目标名单") "     " t("正则表达式 逗号隔开"))
 MainGui.Add("Edit", "xs+10 ys+30 w260 h80 vTargetListAutoAim", config.data["AutoAim"]["TargetList"])
-MainGui.Add("GroupBox", "xs w290 r4 Section", "非目标名单   正则表达式 逗号隔开")
+MainGui.Add("GroupBox", "xs w290 r4 Section", t("非目标名单") "   " t("正则表达式 逗号隔开"))
 MainGui.Add("Edit", "xs+10 ys+30 w260 h80 vNoTargetListAutoAim", config.data["AutoAim"]["NoTargetList"])
-MainGui.Add("Text", "xs+60 y+35", "部分内容保存后生效")
+MainGui.Add("Text", "xs+60 y+35", t("部分内容保存后生效"))
 
 ; 设置内容
-MainGui["Tab"].UseTab("设置")
-MainGui.Add("Text", "x+40 y+10 w100 Section", "游戏标题:")
+MainGui["Tab"].UseTab(t("设置"))
+MainGui.Add("Text", "x+40 y+10 w100 Section", t("游戏标题:"))
 MainGui.Add("Edit", "ys w150 vGameTitle", config.data["Global"]["GameTitle"])
+MainGui.Add("Text", "xs w100 Section", t("语言:"))
+MainGui.Add("ComboBox", "ys w150 vLanguage", _Language.SupportLanguage)
+MainGui["Language"].Text := config.data["Global"]["Language"]
 for key, value in Map(
-    "Animation", "隐藏特效",
-    "Attack", "自动攻击",
-    "Breakblocks", "打破障碍",
-    "ByPass", "绕过",
-    "ClipCam", "视角遮挡",
-    "Dismount", "保持骑乘",
-    "Fish", "钓鱼",
-    "LockCam", "视角固定",
-    "Map", "地图放大",
-    "Mining", "快速挖矿",
-    "MiningGeode", "快速挖矿(晶洞)",
-    "NoClip", "穿墙",
-    "Player", "玩家",
-    "World", "世界",
-    "Zoom", "视野放大",
+    "Animation", t("隐藏特效"),
+    "Attack", t("自动攻击"),
+    "Breakblocks", t("打破障碍"),
+    "ByPass", t("绕过"),
+    "ClipCam", t("视角遮挡"),
+    "Dismount", t("保持骑乘"),
+    "Fish", t("钓鱼"),
+    "LockCam", t("视角固定"),
+    "Map", t("地图放大"),
+    "Mining", t("快速挖矿"),
+    "MiningGeode", t("快速挖矿(晶洞)"),
+    "NoClip", t("穿墙"),
+    "Player", t("玩家"),
+    "World", t("世界"),
+    "Zoom", t("视野放大"),
 ) {
-    MainGui.Add("Text", "xs w100 Section", value "地址:")
+    MainGui.Add("Text", "xs w100 Section", value t("地址:"))
     MainGui.Add("Edit", "ys w150 v" key "Address", config.data["Address"][key])
 }
-MainGui.Add("Text", "xs w100 Section", "交互按键:")
+MainGui.Add("Text", "xs w100 Section", t("交互按键:"))
 MainGui.Add("HotKey", "ys w150 vPressKey", config.data["Key"]["Press"])
-MainGui.Add("Text", "xs w100 Section", "钓鱼按键:")
+MainGui.Add("Text", "xs w100 Section", t("钓鱼按键:"))
 MainGui.Add("HotKey", "ys w150 vFishKey", config.data["Key"]["Fish"])
-MainGui.Add("Text", "xs w100 Section", "攻击扫描(ms):")
+MainGui.Add("Text", "xs w100 Section", t("攻击扫描(ms):"))
 MainGui.Add("Edit", "ys w150 vAttackTime", config.data["AttackTime"]["Value"])
-MainGui.Add("Text", "xs w100 Section", "血量扫描(ms):")
+MainGui.Add("Text", "xs w100 Section", t("血量扫描(ms):"))
 MainGui.Add("Edit", "ys w150 vHealthTime", config.data["HealthTime"]["Value"])
-MainGui.Add("Text", "xs w100 Section", "物品扫描(ms):")
+MainGui.Add("Text", "xs w100 Section", t("物品扫描(ms):"))
 MainGui.Add("Edit", "ys w150 vUseLogTime", config.data["UseLogTime"]["Value"])
-MainGui.Add("Text", "xs w100 Section", "步进距离:")
+MainGui.Add("Text", "xs w100 Section", t("步进距离:"))
 MainGui.Add("Edit", "ys w150 vStepTP", config.data["TP"]["Step"])
-MainGui.Add("Text", "xs w100 Section", "传送频率(ms):")
+MainGui.Add("Text", "xs w100 Section", t("传送频率(ms):"))
 MainGui.Add("Edit", "ys w150 vDelayTP", config.data["TP"]["Delay"])
-MainGui.Add("Text", "xs w100 Section", "加速频率(ms):")
+MainGui.Add("Text", "xs w100 Section", t("加速频率(ms):"))
 MainGui.Add("Edit", "ys w150 vDelaySpeedUp", config.data["SpeedUp"]["Delay"])
-MainGui.Add("Text", "xs w100 Section", "自瞄频率(ms):")
+MainGui.Add("Text", "xs w100 Section", t("自瞄频率(ms):"))
 MainGui.Add("Edit", "ys w150 vDelayAutoAim", config.data["AutoAim"]["Delay"])
-MainGui.Add("Text", "xs w100 Section", "跟随白名单:")
+MainGui.Add("Text", "xs w100 Section", t("跟随白名单:"))
 MainGui.Add("Edit", "ys w150 r1 vWhiteListTP", config.data["TP"]["WhiteList"])
-MainGui.Add("Text", "xs w100 Section", "镜像源:")
+MainGui.Add("Text", "xs w100 Section", t("镜像源:"))
 MainGui.Add("Edit", "ys w150 r1 vMirror", config.data["Global"]["Mirror"])
-MainGui.Add("Button", "xs w80 Section vSaveBtn", "保存")
-MainGui.Add("Button", "ys w80 vUpdateFromInternetBtn", "联网更新")
-MainGui.Add("Button", "ys w80 vUpdateFromLocalBtn", "本地更新")
+MainGui.Add("Button", "xs w80 Section vSaveBtn", t("保存"))
+MainGui.Add("Button", "ys w80 vUpdateFromInternetBtn", t("联网更新"))
+MainGui.Add("Button", "ys w80 vUpdateFromLocalBtn", t("本地更新"))
 
 ; 关于内容
-MainGui["Tab"].UseTab("关于")
+MainGui["Tab"].UseTab(t("关于"))
 MainGui.Add("ActiveX", "w150 h150 x+30 y+100 Center",
     "mshtml:<img src='https://cdn.jsdelivr.net/gh/Angels-D/Angels-D.github.io/medias/avatar.jpg' style='width:150px;'/>")
-MainGui.Add("Text", , "作者: とても残念だ(AnglesD)")
-MainGui.Add("Text", "cRed", "本软件完全开源免费, 仅供学习使用！")
-MainGui.Add("Link", , Format("
+MainGui.Add("Text", , t("作者: とても残念だ(AnglesD)"))
+MainGui.Add("Text", "cRed", t("本软件完全开源免费, 仅供学习使用！"))
+MainGui.Add("Link", , Format(t("
     (
         许可协议: <a href="https://www.gnu.org/licenses/gpl-3.0.zh-cn.html/">GPL-3.0 license</a>`n
         博客: <a href="https://Angels-D.github.io/">https://Angels-D.github.io</a>`n
         源码: <a href="https://github.com/Angels-D/TroveAuto">Angels-D/TroveAuto On Github</a>`n
         应用版本: {1}`n
-    )", config.data["Global"]["AppVersion"])
+    )"), config.data["Global"]["AppVersion"])
 )
-MainGui.Add("Button", "y+30 w200 h60 vDownloadBtn", "最新版脚本下载")
+MainGui.Add("Button", "y+30 w200 h60 vDownloadBtn", t("最新版脚本下载"))
 
 ; 绑定交互
 MainGui.OnEvent("Close", Close, -1)
@@ -382,13 +499,13 @@ MainGui["Top_WhichTarget"].OnEvent("Click", Top_WhichTarget)
 
 ; 托盘图标
 A_TrayMenu.Delete()
-A_TrayMenu.Add("显示", (ItemName, ItemPos, MyMenu) => (MainGui.Show()))
-A_TrayMenu.Add("重新启动", (ItemName, ItemPos, MyMenu) => (Game.Reset(), Reload()))
-A_TrayMenu.Add("退出", (ItemName, ItemPos, MyMenu) => (Game.Reset(), ExitApp()))
+A_TrayMenu.Add(t("显示"), (ItemName, ItemPos, MyMenu) => (MainGui.Show()))
+A_TrayMenu.Add(t("重新启动"), (ItemName, ItemPos, MyMenu) => (Game.Reset(), Reload()))
+A_TrayMenu.Add(t("退出"), (ItemName, ItemPos, MyMenu) => (Game.Reset(), ExitApp()))
 
 ; 交互函数
 Close(thisGui) {
-    Result := MsgBox("是: 关闭脚本`n否: 最小化到托盘", , 3)
+    Result := MsgBox(t("是: 关闭脚本`n否: 最小化到托盘"), , 3)
     switch Result {
         case "Yes":
             Game.Reset()
@@ -425,33 +542,33 @@ GetGamePath(GuiCtrlObj, Info) {
         Save()
     }
     catch
-        MsgBox("请运行游戏或登陆器以检测路径")
+        MsgBox(t("请运行游戏或登陆器以检测路径"))
 }
 GameStart(GuiCtrlObj := unset, Info := unset) {
     try Run(Format("{1}\GlyphClient.exe", config.data["Global"]["GamePath"]))
     catch
-        MsgBox("游戏启动失败, 请检查游戏路径")
+        MsgBox(t("游戏启动失败, 请检查游戏路径"))
 }
 OpenModsPath(GuiCtrlObj, Info) {
     try Run(Format("explore {1}\Games\Trove\Live\mods", config.data["Global"]["GamePath"]))
     catch
-        MsgBox("Mods文件夹打开失败, 请检查游戏路径")
+        MsgBox(t("Mods文件夹打开失败, 请检查游戏路径"))
 }
 OpenModCfgsPath(GuiCtrlObj, Info) {
     try Run(Format("explore {1}\Trove\ModCfgs\", A_AppData))
     catch
-        MsgBox("ModCfgs文件夹打开失败, 请检查文件夹是否存在")
+        MsgBox(t("ModCfgs文件夹打开失败, 请检查文件夹是否存在"))
 }
 OpenUseLogPath(GuiCtrlObj, Info) {
     DirCreate("UseLog")
     try Run("explore UseLog\")
     catch
-        MsgBox("日志文件夹打开失败, 请检查文件夹是否存在")
+        MsgBox(t("日志文件夹打开失败, 请检查文件夹是否存在"))
 }
 ConfigFile(GuiCtrlObj, Info) {
     try Run("config.ini")
     catch
-        MsgBox("配置文件打开失败, 请先保存配置以生成")
+        MsgBox(t("配置文件打开失败, 请先保存配置以生成"))
 }
 Reset(GuiCtrlObj := unset, Info := unset) {
     Game.Reset()
@@ -496,7 +613,7 @@ UIReset() {
 Start(GuiCtrlObj, Info) {
     theGame := Game.Lists[MainGui["SelectGame"].Text]
     if (theGame.running) {
-        MainGui["StartBtn"].Text := "启动"
+        MainGui["StartBtn"].Text := t("启动")
         for key in ["SelectAction", "Interval"]
             MainGui[key].Enabled := true
         theGame.running := false
@@ -511,15 +628,15 @@ Start(GuiCtrlObj, Info) {
     }
     else {
         if not MainGui["Interval"].Value {
-            MsgBox("请设置频率")
+            MsgBox(t("请设置频率"))
             return
         }
-        MainGui["StartBtn"].Text := "关闭"
+        MainGui["StartBtn"].Text := t("关闭")
         for key in ["SelectAction", "Interval"]
             MainGui[key].Enabled := false
         theGame.running := true
         switch MainGui["SelectAction"].Text {
-            case "钓鱼":
+            case t("钓鱼"):
                 theGame.AutoFish()
             default:
                 for key in ["HotKeyBox", "AutoBtn_Key_Click_LEFT", "AutoBtn_Key_Click_RIGHT", "AutoBtn_NoTop"]
@@ -530,16 +647,30 @@ Start(GuiCtrlObj, Info) {
 }
 Save(GuiCtrlObj := unset, Info := unset) {
     for sect, data in config.data {
-        if (sect == "Address_Offset" or sect == "Features_Change" or sect == "Address_Offset_Signature")
+        if (InStr(sect, "Language_", true) == 1
+            or sect == "Address_Offset"
+            or sect == "Features_Change"
+            or sect == "Address_Offset_Signature")
             Continue
         for key in data {
-            try value := MainGui[key sect].Value
-            catch
-                try value := MainGui[key == "Value" ? sect : key].Value
+            try {
+                if MainGui[key sect].Type == "ComboBox"
+                    value := MainGui[key sect].Text
+                else
+                    value := MainGui[key sect].Value
+            }
+            catch {
+                try {
+                    if MainGui[key == "Value" ? sect : key].Type == "ComboBox"
+                        value := MainGui[key == "Value" ? sect : key].Text
+                    else
+                        value := MainGui[key == "Value" ? sect : key].Value
+                }
                 catch
                     value := config.data[sect][key]
+            }
             if ( not value and key != "GamePath" and key != "WhiteList") {
-                MsgBox("配置项不能为空")
+                MsgBox(t("配置项不能为空: ") sect ">>" key " " MainGui[key == "Value" ? sect : key].Type)
                 return
             }
             config.data[sect][key] := value
@@ -552,19 +683,19 @@ UpdateFromInternet(GuiCtrlObj, Info) {
     Source := config.data["Global"]["Source"] "releases/latest/download/config.ini"
     Mirror := config.data["Global"]["Mirror"] Source
     if (config.Update(Mirror) Or config.Update(Source)) {
-        MainGui.Add("Text", "x+50 w100 Section", "游戏标题:")
+        MainGui.Add("Text", "x+50 w100 Section", t("游戏标题:"))
         MainGui["GameTitle"].Text := config.data["Global"]["GameTitle"]
         for sect in ["Address", "Key"]
             for key, value in config.data[sect]
                 MainGui[key sect].Text := config.data[sect][key]
         Save()
     }
-    else MsgBox("更新失败, 请检查网络连接")
+    else MsgBox(t("更新失败, 请检查网络连接"))
 }
 UpdateFromLocal(GuiCtrlObj, Info) {
     try GameID := WinGetID("ahk_exe " config.data["Global"]["GameTitle"])
     catch {
-        MsgBox("请先启动游戏, 再进行扫描")
+        MsgBox(t("请先启动游戏, 再进行扫描"))
         return
     }
     BaseAddress := GetProcessBaseAddress(GameID, -6)
@@ -586,25 +717,25 @@ UpdateFromLocal(GuiCtrlObj, Info) {
         else
             MainGui[key "Address"].Text := "0x7FFFFFFF"
     }
-    Msgbox("检测完毕, 确认无误后请手动保存")
+    Msgbox(t("检测完毕, 确认无误后请手动保存"))
 }
 DownloadExe(GuiCtrlObj, Info) {
     Source := config.data["Global"]["Source"] "releases/latest/download/TroveAuto.exe"
     Mirror := config.data["Global"]["Mirror"] Source
-    SelectedFile := FileSelect(18, "Trove辅助.exe", "保存路径", "可执行文件 (*.exe)")
+    SelectedFile := FileSelect(18, t("Trove辅助.exe"), t("保存路径"), t("可执行文件 (*.exe)"))
     if not SelectedFile
         return
     try Download(Mirror, SelectedFile)
     catch
         try Download(Source, SelectedFile)
         catch
-            MsgBox("下载失败, 请检查网络连接")
-        else MsgBox("应用下载成功, 请打开最新版本")
-    else MsgBox("应用下载成功, 请打开最新版本")
+            MsgBox(t("下载失败, 请检查网络连接"))
+        else MsgBox(t("应用下载成功, 请打开最新版本"))
+    else MsgBox(t("应用下载成功, 请打开最新版本"))
 }
 SelectGame(GuiCtrlObj, Info) {
     MainGui["SelectAction"].Text := Game.Lists[GuiCtrlObj.Text].action
-    MainGui["StartBtn"].Text := Game.Lists[GuiCtrlObj.Text].running ? "关闭" : "启动"
+    MainGui["StartBtn"].Text := Game.Lists[GuiCtrlObj.Text].running ? t("关闭") : t("启动")
     for key in ["SelectAction", "Interval"]
         MainGui[key].Enabled := !Game.Lists[GuiCtrlObj.Text].running
     MainGui["StartBtn"].Enabled := true
@@ -637,12 +768,12 @@ SelectAction(GuiCtrlObj, Info := unset) {
     for key in ["Key_Click_LEFT", "Key_Click_RIGHT", "NoTop"]
         MainGui["AutoBtn_" key].Value := theGame.setting["AutoBtn"][key]
     switch GuiCtrlObj.Text {
-        case "自动按键":
+        case t("自动按键"):
             MainGui["Interval"].Value := theGame.setting["AutoBtn"]["interval"]
             if (!theGame.running)
                 for key in ["HotKeyBox", "AutoBtn_Key_Click_LEFT", "AutoBtn_Key_Click_RIGHT", "AutoBtn_NoTop"]
                     MainGui[key].Enabled := true
-        case "钓鱼":
+        case t("钓鱼"):
             MainGui["Interval"].Value := theGame.setting["Fish"]["interval"]
     }
 }
@@ -657,12 +788,12 @@ AutoRefresh(GuiCtrlObj, Info) {
 TP(GuiCtrlObj, Info) {
     if (GuiCtrlObj.Value)
         Hotkey(MainGui["HotKeyTP"].Value, (*) {
+            Send(MainGui["HotKeyTP"].Value)
             try
                 if (WinGetProcessName("A") == config.data["Global"]["GameTitle"]) {
                     FunctionOn(WingetPID("A"), "SetByPass", "1", true)
                     FunctionOn(WingetPID("A"), "Tp2Forward", MainGui["DistanceTP"].Value "|" MainGui["DelayTP"].Value, true)
                 }
-            Send(MainGui["HotKeyTP"].Value)
         }, "On I1")
     else
         Hotkey(MainGui["HotKeyTP"].Value, , "Off")
@@ -735,7 +866,7 @@ Top_WhichTarget(GuiCtrlObj, Info) {
                     result := StrSplit(StrGet(Mvalue, "utf-8"), ',')
                     if (result.Length >= 7) {
                         A_Clipboard := result[1]
-                        ToolTip(Format("名称(见剪贴板): {1}`n等级: {2} 血量: {3} 距离: {4}`n坐标(XYZ): {5},{6},{7}"
+                        ToolTip(Format(t("名称(见剪贴板): {1}`n等级: {2} 血量: {3} 距离: {4}`n坐标(XYZ): {5},{6},{7}")
                             , result[1], result[2], result[3], result[4], result[5], result[6], result[7]))
                         SetTimer(() => ToolTip(), -3000)
                     }
@@ -752,9 +883,9 @@ Top_WhichTarget(GuiCtrlObj, Info) {
 Interval(GuiCtrlObj, Info) {
     theGame := Game.Lists[MainGui["SelectGame"].Text]
     switch MainGui["SelectAction"].Text {
-        case "自动按键":
+        case t("自动按键"):
             theGame.setting["AutoBtn"]["interval"] := GuiCtrlObj.value
-        case "钓鱼":
+        case t("钓鱼"):
             theGame.setting["Fish"]["interval"] := GuiCtrlObj.value
     }
 }
@@ -769,11 +900,11 @@ AutoBtn_NoTop(GuiCtrlObj, Info) {
 }
 HotKeyMenu(GuiCtrlObj, Item, IsRightClick, X, Y) {
     HotKeyBoxMenu := Menu()
-    HotKeyBoxMenu.Add("添加", (ItemName, ItemPos, MyMenu) {
+    HotKeyBoxMenu.Add(t("添加"), (ItemName, ItemPos, MyMenu) {
         HotKeyEdit(GuiCtrlObj, Item, true)
     })
     if (Item)
-        HotKeyBoxMenu.Add("删除", (ItemName, ItemPos, MyMenu) {
+        HotKeyBoxMenu.Add(t("删除"), (ItemName, ItemPos, MyMenu) {
             GuiCtrlObj.Delete(Item)
             Game.Lists[MainGui["SelectGame"].Text].setting["AutoBtn"]["keys"].RemoveAt(Item)
         })
@@ -782,19 +913,19 @@ HotKeyMenu(GuiCtrlObj, Item, IsRightClick, X, Y) {
 HotKeyEdit(GuiCtrlObj, Item, isAdd := false) {
     MainGui.Opt("+Disabled")
     HotKeyBoxEdit := Gui("-DPIScale OwnDialogs Owner" MainGui.Hwnd)
-    HotKeyBoxEdit.Add("Text", "w100", "热键:")
+    HotKeyBoxEdit.Add("Text", "w100", t("热键:"))
     HotKeyBoxEdit.Add("Edit", "ys w100 vHotKeyBox_Hotkey", Item ? GuiCtrlObj.GetText(Item, 1) : "")
-    HotKeyBoxEdit.Add("Text", "xs w100 Section", "持续时间(毫秒):")
+    HotKeyBoxEdit.Add("Text", "xs w100 Section", t("持续时间(毫秒):"))
     HotKeyBoxEdit.Add("Edit", "ys w100 Number vHotKeyBox_HoldTime")
     HotKeyBoxEdit.Add("UpDown", "Range0-10000 0x80", Item ? GuiCtrlObj.GetText(Item, 2) : 0)
-    HotKeyBoxEdit.Add("Text", "xs w100 Section", "间隔时间(毫秒):")
+    HotKeyBoxEdit.Add("Text", "xs w100 Section", t("间隔时间(毫秒):"))
     HotKeyBoxEdit.Add("Edit", "ys w100 Number vHotKeyBox_Interval")
     HotKeyBoxEdit.Add("UpDown", "Range0-10000 0x80", Item ? GuiCtrlObj.GetText(Item, 3) : 100)
-    HotKeyBoxEdit.Add("Text", "xs w100 Section", "次数:")
+    HotKeyBoxEdit.Add("Text", "xs w100 Section", t("次数:"))
     HotKeyBoxEdit.Add("Edit", "ys w100 Number vHotKeyBox_Count")
     HotKeyBoxEdit.Add("UpDown", "Range1-1000 0x80", Item ? GuiCtrlObj.GetText(Item, 4) : 1)
-    HotKeyBoxEdit.Add("Button", "xs Section vHotKeyBox_Save", "保存")
-    HotKeyBoxEdit.Add("Button", "ys vHotKeyBox_Cancel", "取消")
+    HotKeyBoxEdit.Add("Button", "xs Section vHotKeyBox_Save", t("保存"))
+    HotKeyBoxEdit.Add("Button", "ys vHotKeyBox_Cancel", t("取消"))
     HotKeyBoxEdit["HotKeyBox_Save"].OnEvent("Click",
         (*) {
         theGame := Game.Lists[MainGui["SelectGame"].Text]
@@ -830,7 +961,7 @@ FollowTarget(GuiCtrlObj, Info) {
     if GuiCtrlObj.Value {
         if not MainGui["FollowTarget_PlayerName"].Value and not MainGui["FollowTarget_TargetName"].Value
             and not MainGui["FollowTarget_TargetBoss"].Value and not MainGui["FollowTarget_TargetList"].Value {
-            MsgBox("目标不能为空")
+            MsgBox(t("目标不能为空"))
             GuiCtrlObj.Value := false
             return
         }
@@ -838,7 +969,7 @@ FollowTarget(GuiCtrlObj, Info) {
             for name in StrSplit(MainGui["FollowTarget_PlayerName"].Value, ",")
                 if not InStr(config.data["TP"]["WhiteList"]
                     , Format("<{1}:{2}>", name, StrCrypto(name)), true) {
-                    MsgBox("玩家" name "未允许跟随, 请配置跟随白名单")
+                    MsgBox(t("玩家") name t("未允许跟随, 请配置跟随白名单"))
                     GuiCtrlObj.Value := false
                     return
                 }
@@ -853,7 +984,7 @@ FollowTarget(GuiCtrlObj, Info) {
 }
 AutoAim(GuiCtrlObj, Info) {
     if GuiCtrlObj.Value and MainGui["AutoAim_AimRange"].Value == "" {
-        MsgBox("配置不能为空")
+        MsgBox(t("配置不能为空"))
         GuiCtrlObj.Value := false
         return
     }
@@ -865,7 +996,7 @@ AutoAim(GuiCtrlObj, Info) {
 }
 SpeedUp(GuiCtrlObj, Info) {
     if GuiCtrlObj.Value and MainGui["SpeedUp_SpeedUpRate"].Value == "" {
-        MsgBox("配置不能为空")
+        MsgBox(t("配置不能为空"))
         GuiCtrlObj.Value := false
         return
     }
@@ -905,6 +1036,81 @@ StrCrypto(src, decode := false) {
 
 ; 核心类
 
+; Language
+class _Language {
+    __New(config) {
+        language := config.data["Global"]["Language"]
+        this.data := config.data
+        this.language := language
+    }
+
+    Translate(text) {
+        if this.language == _Language.DefaultLanguage
+            return text
+        for key, value in _Language.SpecialChar
+            text := StrReplace(text, key, value, true)
+        if not this.data.has("Language_" this.language)
+            this.data["Language_" this.language] := Map()
+        if not this.data["Language_" this.language].has(text)
+            this.data["Language_" this.language][text] := text
+        text := this.data["Language_" this.language][text]
+        for key, value in _Language.SpecialChar
+            text := StrReplace(text, value, key, true)
+        return text
+    }
+
+    static SupportLanguage := []
+
+    static DefaultLanguage := "Chinese"
+
+    static SpecialChar := Map(
+        "=", "@1@",
+        "`n", "@2@",
+        "`'", "@3@",
+        "`"", "@4@",
+    )
+
+    static LCID := Map(
+        "7804", "Chinese",  ; zh
+        "0004", "Chinese (Simplified)",  ; zh-Hans
+        "0804", "Chinese (Simplified, China)",  ; zh-CN
+        "1004", "Chinese (Simplified, Singapore)",  ; zh-SG
+        "7C04", "Chinese (Traditional)",  ; zh-Hant
+        "0C04", "Chinese (Traditional, Hong Kong SAR)",  ; zh-HK
+        "1404", "Chinese (Traditional, Macao SAR)",  ; zh-MO
+        "0404", "Chinese (Traditional, Taiwan)",  ; zh-TW
+        "0009", "English",  ; en
+        "0C09", "English (Australia)",  ; en-AU
+        "2809", "English (Belize)",  ; en-BZ
+        "1009", "English (Canada)",  ; en-CA
+        "2409", "English (Caribbean)",  ; en-029
+        "3C09", "English (Hong Kong SAR)",  ; en-HK
+        "4009", "English (India)",  ; en-IN
+        "3809", "English (Indonesia)",  ; en-ID
+        "1809", "English (Ireland)",  ; en-IE
+        "2009", "English (Jamaica)",  ; en-JM
+        "4409", "English (Malaysia)",  ; en-MY
+        "1409", "English (New Zealand)",  ; en-NZ
+        "3409", "English (Philippines)",  ; en-PH
+        "4809", "English (Singapore)",  ; en-SG
+        "1C09", "English (South Africa)",  ; en-ZA
+        "2C09", "English (Trinidad & Tobago)",  ; en-TT
+        "4C09", "English (United Arab Emirates)",  ; en-AE
+        "0809", "English (United Kingdom)",  ; en-GB
+        "0409", "English (United States)",  ; en-US
+        "3009", "English (Zimbabwe)",  ; en-ZW
+    )
+
+    static GetLanguage(ID := A_Language) {
+        language := _Language.LCID[ID]
+        if InStr(language, "Chinese")
+            language := "Chinese"
+        if InStr(language, "English")
+            language := "English"
+        return language
+    }
+}
+
 ; Config Class
 class _Config {
     __New(path, data) {
@@ -932,12 +1138,36 @@ class _Config {
         path := IsSet(path) ? path : this.path
         if ((NewConfigVersion := IniRead(path, "Global", "ConfigVersion", this.data["Global"]["ConfigVersion"])) <
             (OldConfigVersion := this.data["Global"]["ConfigVersion"])) {
-            MsgBox(Format("警告: 配置文件非最新版本 {1} => {2}", OldConfigVersion, NewConfigVersion))
+            MsgBox(Format(t("警告: 配置文件非最新版本 {1} => {2}"), OldConfigVersion, NewConfigVersion))
         }
+
         for sect, data in this.data
             for key, value in data
                 if key != "AppVersion"
                     this.data[sect][key] := IniRead(path, sect, key, this.data[sect][key])
+
+        for language in StrSplit(IniRead(path, , , ""), "`n")
+            if InStr(language, "Language_", true) == 1
+                for line in StrSplit(IniRead(path, language, , ""), "`n") {
+                    data := StrSplit(line, "=", , 2)
+                    if data.Length < 2
+                        continue
+                    if not this.data.has(language)
+                        this.data[language] := Map()
+                    this.data[language][data[1]] := data[2]
+                }
+
+        hasDefault := false
+        for language in this.data
+            if InStr(language, "Language_", true) == 1 {
+                lang := StrReplace(language, "Language_")
+                if (lang == _Language.DefaultLanguage)
+                    hasDefault := true
+                _Language.SupportLanguage.Push(lang)
+            }
+        if ( not hasDefault)
+            _Language.SupportLanguage.Push(_Language.DefaultLanguage)
+
         this.UpdateDllConfig()
     }
     Save(path := unset) {
@@ -954,10 +1184,10 @@ class _Config {
                 NewAppVersion := IniRead(TempPath, "Global", "AppVersion")
                 OldAppVersion := this.data["Global"]["AppVersion"]
                 this.Load(TempPath)
-                MsgBox(Format("配置版本 {1} => {2} 已完成{3}", OldConfigVersion, NewConfigVersion,
-                    NewAppVersion > OldAppVersion ? Format("`n警告: 程序本体存在最新版本 {1} => {2}", OldAppVersion, NewAppVersion) : ""))
+                MsgBox(Format(t("配置版本 {1} => {2} 已完成{3}"), OldConfigVersion, NewConfigVersion,
+                    NewAppVersion > OldAppVersion ? Format(t("`n警告: 程序本体存在最新版本 {1} => {2}"), OldAppVersion, NewAppVersion) : ""))
             }
-            else MsgBox("当前已是最新版本")
+            else MsgBox(t("当前已是最新版本"))
         }
         catch
             return false
@@ -978,8 +1208,8 @@ class Game {
     }
     static Lists := Map()
     static ActionsMap := Map(
-        "钓鱼", "AutoFish",
-        "自动按键", "AutoBtn",
+        t("钓鱼"), "AutoFish",
+        t("自动按键"), "AutoBtn",
     )
     static ScriptAHK := "
     (
@@ -1185,7 +1415,7 @@ class Game {
         }
         {1}
     )"
-    action := "自动按键"
+    action := t("自动按键")
     running := false
     threads := Map()
     setting := Map(
@@ -1275,7 +1505,7 @@ class Game {
                         theGame.GetBase(key)
                         if theGame.running {
                             switch theGame.action {
-                                case "钓鱼":
+                                case t("钓鱼"):
                                     theGame.AutoFish()
                                 default:
                                     theGame.AutoBtn()
@@ -1482,18 +1712,19 @@ class Game {
 
 Reset()
 MainGui.Show()
+Save()
 Persistent
 
-#HotIf WinActive("Trove辅助")
+#HotIf WinActive(t("Trove辅助"))
 ::wwssadadbaba::
 {
     if (InStr(A_Clipboard, "whosyourdaddy")) {
         MainGui["FollowTarget_ScanAll"].Visible := true
         config.data["Global"]["Cheat"] := "whosyourdaddy"
         Save()
-        MsgBox("轻度使用！")
+        MsgBox(t("轻度使用！"))
     }
     else
-        MsgBox("谁是你爸爸( •̀ ω •́ )y")
+        MsgBox(t("谁是你爸爸( •̀ ω •́ )y"))
 }
 #HotIf
