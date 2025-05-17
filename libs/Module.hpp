@@ -127,6 +127,7 @@ namespace Module
          {"Game::Player::Data::itemTSignature", &Game::Player::Data::itemTSignature},
          {"Game::Player::Data::nameOffsets", &Game::Player::Data::nameOffsets},
          {"Game::Player::Data::healthOffsets", &Game::Player::Data::healthOffsets},
+         {"Game::Player::Data::drawDistanceOffsets", &Game::Player::Data::drawDistanceOffsets},
          {"Game::Player::Data::itemROffsets", &Game::Player::Data::itemROffsets},
          {"Game::Player::Data::itemTOffsets", &Game::Player::Data::itemTOffsets},
          {"Game::Player::Camera::offsets", &Game::Player::Camera::offsets},

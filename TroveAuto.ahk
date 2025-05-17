@@ -80,6 +80,7 @@ config := _Config(
         ),
         "Address_Offset", Map(
             "Name", "0x0,0x28,0x1D0,0x0",
+            "Player_DrawDistance", "0x14,0x28",
             "Player_Health", "0x0,0x28,0x1A4,0x80",
             "Player_Coord_X", "0x0,0x28,0xC4,0x4,0x80",
             "Player_Coord_Y", "0x0,0x28,0xC4,0x4,0x84",
@@ -309,10 +310,11 @@ MainGui.Add("ListView", "xs w290 Section NoSortHdr Checked -Multi vHotKeyBox", [
 MainGui.Add("CheckBox", "xs Section w140 vAutoBtn_Key_Click_LEFT", t("自动左击"))
 MainGui.Add("CheckBox", "ys w140 vAutoBtn_Key_Click_RIGHT", t("自动右击"))
 MainGui.Add("CheckBox", "xs Section w200 vAutoBtn_NoTop", t("前台时禁用"))
-MainGui.Add("GroupBox", "xs-10 ys+40 w310 r7 Section", t("功能区"))
+MainGui.Add("GroupBox", "xs-10 ys+40 w310 r7.5 Section", t("功能区"))
 for key, value in Map(
     "Animation", t("隐藏特效"),
     "Attack", t("自动攻击"),
+    "BlindMode", t("瞎子模式"),
     "Breakblocks", t("打破障碍"),
     "ByPass", t("绕过"),
     "ClipCam", t("视角遮挡"),
@@ -489,7 +491,7 @@ for key in ["FollowTarget_PlayerName", "FollowTarget_TargetName", "FollowTarget_
     catch
         MainGui[key].OnEvent("Click", SomeUiSetChangeEvent)
 }
-for key in ["Animation", "Attack", "Breakblocks", "ByPass", "ClipCam", "Dismount"
+for key in ["Animation", "Attack", "BlindMode", "Breakblocks", "ByPass", "ClipCam", "Dismount"
     , "Health", "LockCam", "Map", "Mining", "MiningGeode", "NoClip", "UseLog", "Zoom"]
     MainGui[key].OnEvent("Click", Features)
 MainGui["AutoRefresh"].OnEvent("Click", AutoRefresh)
@@ -589,7 +591,7 @@ Refresh(GuiCtrlObj := unset, Info := unset) {
         UIReset()
 }
 UIReset() {
-    for key in ["Animation", "Attack", "Breakblocks", "ByPass", "ClipCam", "Dismount"
+    for key in ["Animation", "Attack", "BlindMode", "Breakblocks", "ByPass", "ClipCam", "Dismount"
         , "Health", "LockCam", "Map", "Mining", "MiningGeode", "NoClip", "UseLog", "Zoom"
         , "AutoBtn_Key_Click_LEFT", "AutoBtn_Key_Click_RIGHT", "AutoBtn_NoTop", "HotKeyBox"
         , "Interval", "SelectAction", "StartBtn", "FollowTarget", "FollowTarget_PlayerName"
@@ -597,7 +599,7 @@ UIReset() {
         , "SpeedUp", "SpeedUp_SpeedUpRate", "AutoAim", "AutoAim_AimRange"
         , "AutoAim_TargetBoss", "AutoAim_TargetNormal", "AutoAim_TargetPlant"]
         MainGui[key].Enabled := false
-    for key in ["Animation", "Attack", "Breakblocks", "ByPass", "ClipCam", "Dismount"
+    for key in ["Animation", "Attack", "BlindMode", "Breakblocks", "ByPass", "ClipCam", "Dismount"
         , "Health", "LockCam", "Map", "Mining", "MiningGeode", "NoClip", "UseLog", "Zoom"
         , "AutoBtn_Key_Click_LEFT", "AutoBtn_Key_Click_RIGHT", "AutoBtn_NoTop"
         , "Interval", "SelectAction", "FollowTarget", "FollowTarget_PlayerName"
@@ -757,7 +759,7 @@ SelectAction(GuiCtrlObj, Info := unset) {
             }
         }
     }
-    for key in ["Animation", "Attack", "Breakblocks", "ByPass", "ClipCam", "Dismount"
+    for key in ["Animation", "BlindMode", "Attack", "Breakblocks", "ByPass", "ClipCam", "Dismount"
         , "Health", "LockCam", "Map", "Mining", "MiningGeode", "NoClip", "UseLog", "Zoom"] {
         MainGui[key].Enabled := true
         MainGui[key].Value := theGame.setting["Features"][key]
@@ -1472,7 +1474,7 @@ class Game {
         if (this.name == "")
             return
 
-        for key in ["Animation", "Attack", "Breakblocks", "ByPass", "ClipCam", "Dismount"
+        for key in ["Animation", "Attack", "BlindMode", "Breakblocks", "ByPass", "ClipCam", "Dismount"
             , "Health", "LockCam", "Map", "Mining", "MiningGeode", "NoClip", "UseLog", "Zoom"]
             this.setting["Features"][key] := false
         this.FeaturesAttackFunc := ObjBindMethod(this, "Features_Attack")
@@ -1661,6 +1663,12 @@ class Game {
         switch Name {
             case "Attack":
                 SetTimer(this.FeaturesAttackFunc, Value ? config.data["AttackTime"]["Value"] : 0)
+                return
+            case "BlindMode":
+                offsets := StrSplit(config.data["Address_Offset"]["Player_DrawDistance"], ",")
+                address := this.BaseAddress + config.data["Address"]["Player"] + offsets.RemoveAt(1)
+                this.WriteMemory(this.GetAddressOffset(address, offsets), Value ? 0 : 210, false, "Float", 4)
+                return
             case "Health":
                 SetTimer(this.FeaturesHealthFunc, Value ? config.data["HealthTime"]["Value"] : 0)
                 return

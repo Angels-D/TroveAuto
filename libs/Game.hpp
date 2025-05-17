@@ -228,12 +228,14 @@ public:
         {
             static Offsets nameOffsets;
             static Offsets healthOffsets;
+            static Offsets drawDistanceOffsets;
             static Offsets itemROffsets;
             static Offsets itemTOffsets;
             static Signature itemRSignature;
             static Signature itemTSignature;
             Object<std::string> name;
             Object<double> health;
+            Object<float> drawDistance;
             Object itemR, itemT;
             Bag bag;
             Camera camera;
@@ -287,6 +289,7 @@ Game::Signature Game::Player::Data::itemRSignature = {-0x180, "FE FF FF FF 00 00
 Game::Signature Game::Player::Data::itemTSignature = {-0x180, "FE FF FF FF 00 00 00 00 65 CF XX XX 0C 00 00 00 55 CF"};
 Memory::Offsets Game::Player::Data::nameOffsets = {0x0, 0x28, 0x1D0, 0x0};
 Memory::Offsets Game::Player::Data::healthOffsets = {0x0, 0x28, 0x1A4, 0x80};
+Memory::Offsets Game::Player::Data::drawDistanceOffsets = {0x14, 0x28};
 Memory::Offsets Game::Player::Data::itemROffsets = {};
 Memory::Offsets Game::Player::Data::itemTOffsets = {};
 Memory::Offsets Game::Player::Camera::offsets = {0x4, 0x0};
@@ -687,6 +690,7 @@ Game::Player::Player(const Object &obj)
     : Object(obj, offsets, signature),
       data({{*this, Data::nameOffsets},
             {*this, Data::healthOffsets},
+            {*this, Data::drawDistanceOffsets},
             {*this, Data::itemROffsets, Data::itemRSignature},
             {*this, Data::itemTOffsets, Data::itemTSignature},
             {*this},
@@ -701,6 +705,8 @@ Game::Player &Game::Player::UpdateAddress()
     Object::UpdateAddress();
     data.name.UpdateBaseAddress(address);
     data.health.UpdateBaseAddress(address);
+    data.drawDistance.UpdateBaseAddress(baseAddress);
+    data.drawDistance.offsets.front() += offsets.front();
     data.itemR.UpdateBaseAddress(address);
     data.itemT.UpdateBaseAddress(address);
     data.bag.UpdateBaseAddress(address);
@@ -713,6 +719,7 @@ Game::Player &Game::Player::UpdateData()
 {
     data.name.UpdateAddress();
     data.health.UpdateAddress();
+    data.drawDistance.UpdateAddress();
     data.itemR.UpdateAddress();
     data.itemT.UpdateAddress();
     data.bag.UpdateAddress();
