@@ -24,4 +24,4 @@ StrCrypto(src, decode := false) {
 }
 
 name := ""
-MsgBox(Format("<{1}:{2}>", name, StrCrypto(name)))
+MsgBox(A_Clipboard := Format("<{1}:{2}>", name, StrCrypto(name)))

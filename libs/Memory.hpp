@@ -801,10 +801,12 @@ Memory::Address Memory::GetModuleAddress(const std::string &moduleName, MODULEEN
     do
     {
 #ifdef UNICODE
-        if (WCHARToString(me.szModule) == moduleName)
+        std::string szModule = WCHARToString(me.szModule);
 #else
-        if (me.szModule == moduleName)
+        std::string szModule = me.szModule;
 #endif
+        szModule.front() = toupper(szModule.front());
+        if (moduleName == szModule)
         {
             CloseHandle(hSnapshot);
             return reinterpret_cast<uintptr_t>(me.modBaseAddr);

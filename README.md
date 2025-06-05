@@ -10,6 +10,7 @@
 
   - 自动按键时干扰用户输入, 并行按键越多越容易卡键
   - 热键与UI变化概率导致崩溃
+  - `瞎子模式`功能失效，寻址方式待更新
 - 脚本功能
 
   > - 各功能的CE参考
@@ -77,14 +78,14 @@
       - Chocolate: `+ 0xE08`
       - Plasma: `+ 0x6CC`
 
-|     | Feature&nbsp;&nbsp;&nbsp;&nbsp; |     | Feature&nbsp;&nbsp;&nbsp;&nbsp; |
-| --- | ------------------------------- | --- | ------------------------------- |
-| ✅ | Auto Keypress                    | ✅ | Multi-instance Support          |
-| ✅ | Auto Addressing                  | ✅ | Auto Resurrection               |
-| ✅ | Vector Movement                  | ✅ | Auto Attack                     |
-| ✅ | Persistent Mount                 | ✅ | Barrier Break                   |
-| ✅ | Map Zoom                         | ✅ | FOV Adjustment                  |
-| ✅ | Fast Mining                      | ✅ | Inventory Counter               |
-| ✅ | Coordinate Teleport              | ✅ | Wall Clipping                   |
-| ✅ | Target Following                 | ✅ | X-ray Vision                    |
-| ✅ | Anti-gravity                     | ✅ | Auto Aim                        |
+|    | Feature&nbsp;&nbsp;&nbsp;&nbsp; |    | Feature&nbsp;&nbsp;&nbsp;&nbsp; |
+| -- | ------------------------------- | -- | ------------------------------- |
+| ✅ | Auto Keypress                   | ✅ | Multi-instance Support          |
+| ✅ | Auto Addressing                 | ✅ | Auto Resurrection               |
+| ✅ | Vector Movement                 | ✅ | Auto Attack                     |
+| ✅ | Persistent Mount                | ✅ | Barrier Break                   |
+| ✅ | Map Zoom                        | ✅ | FOV Adjustment                  |
+| ✅ | Fast Mining                     | ✅ | Inventory Counter               |
+| ✅ | Coordinate Teleport             | ✅ | Wall Clipping                   |
+| ✅ | Target Following                | ✅ | X-ray Vision                    |
+| ✅ | Anti-gravity                    | ✅ | Auto Aim                        |
