@@ -1,6 +1,6 @@
 ;@Ahk2Exe-UpdateManifest 2
 ;@Ahk2Exe-SetName TroveAuto
-;@Ahk2Exe-SetProductVersion 2.4.13
+;@Ahk2Exe-SetProductVersion 2.4.14
 ;@Ahk2Exe-SetCopyright GPL-3.0 license
 ;@Ahk2Exe-SetLanguage Chinese_PRC
 ;@Ahk2Exe-SetMainIcon TroveAuto.ico
@@ -30,8 +30,8 @@ config := _Config(
         "Global", Map(
             "GameTitle", "Trove.exe",
             "GamePath", "",
-            "ConfigVersion", "20250514010000",
-            "AppVersion", "20250514010000",
+            "ConfigVersion", "20250623102000",
+            "AppVersion", "20250623102000",
             "Source", "https://github.com/Angels-D/TroveAuto/",
             "Mirror", "https://github.moeyy.xyz/",
             "StrCrypto", "y(Hn,(}I+2209Zd^s5(E%vfpoKh.I=",
@@ -62,21 +62,21 @@ config := _Config(
             "Fish", "f",
         ),
         "Address", Map(
-            "Animation", "0x82A255",
-            "Attack", "0x9BCE78",
-            "Breakblocks", "0xB357D3",
-            "ByPass", "0x19EF26",
-            "ClipCam", "0x93FBDA",
-            "Dismount", "0x43D3FE",
-            "Fish", "0x11CD654",
-            "LockCam", "0xB05335",
-            "Map", "0xA07B4D",
-            "Mining", "0xABC078",
-            "MiningGeode", "0x952E57",
-            "NoClip", "0x6E1B62",
-            "Player", "0x11F9424",
-            "World", "0x11FBBD0",
-            "Zoom", "0x93DB16",
+            "Animation", "0x82A735",
+            "Attack", "0x98F4B8",
+            "Breakblocks", "0xB88DA3",
+            "ByPass", "0x196CA6",
+            "ClipCam", "0xA508AA",
+            "Dismount", "0x36B32E",
+            "Fish", "0x11F6C6C",
+            "LockCam", "0xC727E5",
+            "Map", "0xA0D69D",
+            "Mining", "0xA412F8",
+            "MiningGeode", "0xA32CC7",
+            "NoClip", "0x6E6FA2",
+            "Player", "0x11FAD74",
+            "World", "0x11F8514",
+            "Zoom", "0xA4E7E6",
         ),
         "Address_Offset", Map(
             "Name", "0x0,0x28,0x1D0,0x0",
