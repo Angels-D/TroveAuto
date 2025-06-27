@@ -6,6 +6,17 @@
 
 ### Chinese
 
+- 构建
+  1. 准备编译环境：**v2版AutoHotKey_H**、**Ahk2Exe**、**C++ MinGW-w64**
+  2. 下载源代码：`git clone https://github.com/Angels-D/TroveAuto.git && cd TroveAuto`
+  3. 编译DLL依赖：`g++ -shared -static -Os -Wall -o Module.dll -x c++ ./libs/Module.hpp`
+  4. 编译ahk脚本：`<Ahk2Exe路径>/Ahk2Exe.exe /compress 2 /base <AHK_Hv2路径>/AutoHotkey64.exe /in ./TroveAuto.ahk`
+     > - `/compress 2` 使用UPX进行代码压缩
+     > - 注意文件字符编码格式
+     > - 编译ahk前注意目录下需要存在`Module.dll`文件
+  5. (可选)使用单文件打包工具将`TroveAuto.exe`和`Module.dll`打包成一个可执行文件
+     > - 打包工具请自行查找
+
 - 已知问题
 
   - 自动按键时干扰用户输入, 并行按键越多越容易卡键
@@ -50,10 +61,22 @@
 
 ### English
 
+- Build
+  1. Prepare the build environment: **AutoHotKey_H v2**, **Ahk2Exe**, **C++ MinGW-w64**
+  2. Download the source code: `git clone https://github.com/Angels-D/TroveAuto.git && cd TroveAuto`
+  3. Compile the DLL dependency: `g++ -shared -static -Os -Wall -o Module.dll -x c++ ./libs/Module.hpp`
+  4. Compile the AHK script: `<Ahk2Exe path>/Ahk2Exe.exe /compress 2 /base <AHK_Hv2 path>/AutoHotkey64.exe /in ./TroveAuto.ahk`
+     > - `/compress 2` uses UPX for code compression
+     > - Note the file character encoding format
+     > - Before compiling the AHK script, ensure the `Module.dll` file exists in the directory
+  5. (Optional) Use a single-file packing tool to pack `TroveAuto.exe` and `Module.dll` into a single executable file
+     > - Find a packing tool by yourself
+
 - Known Issues
 
   - Auto-keypress may interfere with user input. More concurrent keypresses increase the likelihood of key jamming.
   - Hotkey combinations and UI changes may probabilistically cause crashes.
+  - `Blind Mode` function is invalid, and the addressing method needs to be updated
 - Script Features
 
   > - CE References for Features
