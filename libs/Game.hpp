@@ -264,7 +264,7 @@ public:
 
 std::string Game::moduleName = "Trove.exe";
 Game::Signature Game::World::signature = {10, "55 8B EC 83 7D 08 04 75 10 A1 XX XX XX XX 85 C0 74 07 C6 80 59 01 00 00 01 5D C2 04 00"};
-Memory::Offsets Game::World::offsets = {0x11F8514, 0x0};
+Memory::Offsets Game::World::offsets = {0x10984B0, 0x0};
 Memory::Offsets Game::World::Data::playerCountOffsets = {0xFC, 0x2C};
 Memory::Offsets Game::World::NodeInfo::offsets = {0x7C};
 Memory::Offsets Game::World::NodeInfo::Data::baseAddressOffsets = {0x0};
@@ -284,7 +284,7 @@ Memory::Offsets Game::World::Player::Data::xOffsets = {0xC4, 0x4, 0x80};
 Memory::Offsets Game::World::Player::Data::yOffsets = {0xC4, 0x4, 0x84};
 Memory::Offsets Game::World::Player::Data::zOffsets = {0xC4, 0x4, 0x88};
 Game::Signature Game::Player::signature = {0x14, "55 8B EC 83 E4 F8 83 EC 08 F3 0F 2A 45 10 56 8B F1 57 8B 3D"};
-Memory::Offsets Game::Player::offsets = {0x11FAD74, 0x0};
+Memory::Offsets Game::Player::offsets = {0x1098438, 0x0};
 Game::Signature Game::Player::Data::itemRSignature = {-0x180, "FE FF FF FF 00 00 00 00 65 CF XX XX 0C 00 00 00 55 CF"};
 Game::Signature Game::Player::Data::itemTSignature = {-0x180, "FE FF FF FF 00 00 00 00 65 CF XX XX 0C 00 00 00 55 CF"};
 Memory::Offsets Game::Player::Data::nameOffsets = {0x0, 0x28, 0x1D0, 0x0};
@@ -306,7 +306,7 @@ Memory::Offsets Game::Player::Coord::Data::xVelOffsets = {0xB0};
 Memory::Offsets Game::Player::Coord::Data::yVelOffsets = {0xB4};
 Memory::Offsets Game::Player::Coord::Data::zVelOffsets = {0xB8};
 Game::Signature Game::Player::Fish::signature = {0x0, "10 14 XX XX 00 00 00 00 FF 00 00 00 00"};
-Memory::Offsets Game::Player::Fish::offsets = {0x11F6C6C, 0x68, 0x0};
+Memory::Offsets Game::Player::Fish::offsets = {0x10947A4, 0x68, 0x0};
 Memory::Offsets Game::Player::Fish::Data::waterTakeOffsets = {0xE4, 0x3C4};
 Memory::Offsets Game::Player::Fish::Data::lavaTakeOffsets = {0xE4, 0x898};
 Memory::Offsets Game::Player::Fish::Data::chocoTakeOffsets = {0xE4, 0x62C};

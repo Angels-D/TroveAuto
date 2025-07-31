@@ -62,21 +62,21 @@ config := _Config(
             "Fish", "f",
         ),
         "Address", Map(
-            "Animation", "0x82A735",
-            "Attack", "0x98F4B8",
-            "Breakblocks", "0xB88DA3",
-            "ByPass", "0x196CA6",
-            "ClipCam", "0xA508AA",
-            "Dismount", "0x36B32E",
-            "Fish", "0x11F6C6C",
-            "LockCam", "0xC727E5",
-            "Map", "0xA0D69D",
-            "Mining", "0xA412F8",
-            "MiningGeode", "0xA32CC7",
-            "NoClip", "0x6E6FA2",
-            "Player", "0x11FAD74",
-            "World", "0x11F8514",
-            "Zoom", "0xA4E7E6",
+            "Animation", "0x74B065",
+            "Attack", "0xB18278",
+            "Breakblocks", "0x965523",
+            "ByPass", "0x1AC696",
+            "ClipCam", "0xA7B51A",
+            "Dismount", "0x340D7E",
+            "Fish", "0x10947A4",
+            "LockCam", "0x968655",
+            "Map", "0xA0ABBD",
+            "Mining", "0xA7C348",
+            "MiningGeode", "0x8844F7",
+            "NoClip", "0x63F042",
+            "Player", "0x1098438",
+            "World", "0x10984B0",
+            "Zoom", "0xA79496",
         ),
         "Address_Offset", Map(
             "Name", "0x0,0x28,0x1D0,0x0",
@@ -1110,7 +1110,7 @@ class _Language {
     )
 
     static GetLanguage(ID := A_Language) {
-        language := _Language.LCID[ID]
+        language := this.LCID.Get(ID, this.DefaultLanguage)
         if InStr(language, "Chinese")
             language := "Chinese"
         if InStr(language, "English")
