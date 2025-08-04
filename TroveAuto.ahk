@@ -1655,7 +1655,7 @@ class Game {
                 this.BaseAddress + config.data["Address"]["Player"]
                 , StrSplit(config.data["Address_Offset"]["Player_Health"], ","))
             , "Double", 8)) {
-            this.NatualPress("E")
+            this.NatualPress(config.data["Key"]["Press"])
             Sleep(5000)
         }
     }
