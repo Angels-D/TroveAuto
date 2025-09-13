@@ -2,7 +2,7 @@
  *    -> Auther: Angels-D
  *
  * LastChange
- *    -> 2025/04/16 04:40
+ *    -> 2025/09/13 19:30
  *    -> 1.0.0
  *
  * Build
@@ -76,84 +76,96 @@ namespace Module
     static uint32_t tpStep = 4;
     static uint32_t mapWidth = 4300;
     static uint32_t entityScand = 100;
+    static uint32_t entityTimeout = 30000;
     static float maxY = 400, minY = -45;
     static std::pair<float, float> aimOffset = {1.25, 0.25};
 
-    static std::map<std::string, void *> configMap =
-        {{"Module::bossLevel", &Module::bossLevel},
-         {"Module::tpStep", &Module::tpStep},
-         {"Module::mapWidth", &Module::mapWidth},
-         {"Module::entityScand", &Module::entityScand},
-         {"Module::maxY", &Module::maxY},
-         {"Module::minY", &Module::minY},
-         {"Module::aimOffset", &Module::aimOffset},
-         {"Module::Feature::hideAnimation", &Module::Feature::hideAnimation},
-         {"Module::Feature::autoAttack", &Module::Feature::autoAttack},
-         {"Module::Feature::breakBlocks", &Module::Feature::breakBlocks},
-         {"Module::Feature::byPass", &Module::Feature::byPass},
-         {"Module::Feature::clipCam", &Module::Feature::clipCam},
-         {"Module::Feature::disMount", &Module::Feature::disMount},
-         {"Module::Feature::lockCam", &Module::Feature::lockCam},
-         {"Module::Feature::unlockMapLimit", &Module::Feature::unlockMapLimit},
-         {"Module::Feature::quickMining", &Module::Feature::quickMining},
-         {"Module::Feature::quickMiningGeode", &Module::Feature::quickMiningGeode},
-         {"Module::Feature::noGravity", &Module::Feature::noGravity},
-         {"Module::Feature::noClip", &Module::Feature::noClip},
-         {"Module::Feature::unlockZoomLimit", &Module::Feature::unlockZoomLimit},
-         {"Game::moduleName", &Game::moduleName},
-         {"Game::World::signature", &Game::World::signature},
-         {"Game::World::offsets", &Game::World::offsets},
-         {"Game::World::Data::playerCountOffsets", &Game::World::Data::playerCountOffsets},
-         {"Game::World::NodeInfo::offsets", &Game::World::NodeInfo::offsets},
-         {"Game::World::NodeInfo::Data::baseAddressOffsets", &Game::World::NodeInfo::Data::baseAddressOffsets},
-         {"Game::World::NodeInfo::Data::stepOffsets", &Game::World::NodeInfo::Data::stepOffsets},
-         {"Game::World::NodeInfo::Data::sizeOffsets", &Game::World::NodeInfo::Data::sizeOffsets},
-         {"Game::World::Entity::offsets", &Game::World::Entity::offsets},
-         {"Game::World::Entity::Data::levelOffsets", &Game::World::Entity::Data::levelOffsets},
-         {"Game::World::Entity::Data::nameOffsets", &Game::World::Entity::Data::nameOffsets},
-         {"Game::World::Entity::Data::isDeathOffsets", &Game::World::Entity::Data::isDeathOffsets},
-         {"Game::World::Entity::Data::healthOffsets", &Game::World::Entity::Data::healthOffsets},
-         {"Game::World::Entity::Data::xOffsets", &Game::World::Entity::Data::xOffsets},
-         {"Game::World::Entity::Data::yOffsets", &Game::World::Entity::Data::yOffsets},
-         {"Game::World::Entity::Data::zOffsets", &Game::World::Entity::Data::zOffsets},
-         {"Game::World::Player::offsets", &Game::World::Player::offsets},
-         {"Game::World::Player::Data::nameOffsets", &Game::World::Player::Data::nameOffsets},
-         {"Game::World::Player::Data::xOffsets", &Game::World::Player::Data::xOffsets},
-         {"Game::World::Player::Data::yOffsets", &Game::World::Player::Data::yOffsets},
-         {"Game::World::Player::Data::zOffsets", &Game::World::Player::Data::zOffsets},
-         {"Game::Player::signature", &Game::Player::signature},
-         {"Game::Player::offsets", &Game::Player::offsets},
-         {"Game::Player::Data::itemRSignature", &Game::Player::Data::itemRSignature},
-         {"Game::Player::Data::itemTSignature", &Game::Player::Data::itemTSignature},
-         {"Game::Player::Data::nameOffsets", &Game::Player::Data::nameOffsets},
-         {"Game::Player::Data::healthOffsets", &Game::Player::Data::healthOffsets},
-         {"Game::Player::Data::drawDistanceOffsets", &Game::Player::Data::drawDistanceOffsets},
-         {"Game::Player::Data::itemROffsets", &Game::Player::Data::itemROffsets},
-         {"Game::Player::Data::itemTOffsets", &Game::Player::Data::itemTOffsets},
-         {"Game::Player::Camera::offsets", &Game::Player::Camera::offsets},
-         {"Game::Player::Camera::Data::xPerOffsets", &Game::Player::Camera::Data::xPerOffsets},
-         {"Game::Player::Camera::Data::yPerOffsets", &Game::Player::Camera::Data::yPerOffsets},
-         {"Game::Player::Camera::Data::zPerOffsets", &Game::Player::Camera::Data::zPerOffsets},
-         {"Game::Player::Camera::Data::vOffsets", &Game::Player::Camera::Data::vOffsets},
-         {"Game::Player::Camera::Data::hOffsets", &Game::Player::Camera::Data::hOffsets},
-         {"Game::Player::Coord::offsets", &Game::Player::Coord::offsets},
-         {"Game::Player::Coord::Data::xOffsets", &Game::Player::Coord::Data::xOffsets},
-         {"Game::Player::Coord::Data::yOffsets", &Game::Player::Coord::Data::yOffsets},
-         {"Game::Player::Coord::Data::zOffsets", &Game::Player::Coord::Data::zOffsets},
-         {"Game::Player::Coord::Data::xVelOffsets", &Game::Player::Coord::Data::xVelOffsets},
-         {"Game::Player::Coord::Data::yVelOffsets", &Game::Player::Coord::Data::yVelOffsets},
-         {"Game::Player::Coord::Data::zVelOffsets", &Game::Player::Coord::Data::zVelOffsets},
-         {"Game::Player::Fish::signature", &Game::Player::Fish::signature},
-         {"Game::Player::Fish::offsets", &Game::Player::Fish::offsets},
-         {"Game::Player::Fish::Data::waterTakeOffsets", &Game::Player::Fish::Data::waterTakeOffsets},
-         {"Game::Player::Fish::Data::lavaTakeOffsets", &Game::Player::Fish::Data::lavaTakeOffsets},
-         {"Game::Player::Fish::Data::chocoTakeOffsets", &Game::Player::Fish::Data::chocoTakeOffsets},
-         {"Game::Player::Fish::Data::plasmaTakeOffsets", &Game::Player::Fish::Data::plasmaTakeOffsets},
-         {"Game::Player::Fish::Data::waterStatusOffsets", &Game::Player::Fish::Data::waterStatusOffsets},
-         {"Game::Player::Fish::Data::lavaStatusOffsets", &Game::Player::Fish::Data::lavaStatusOffsets},
-         {"Game::Player::Fish::Data::chocoStatusOffsets", &Game::Player::Fish::Data::chocoStatusOffsets},
-         {"Game::Player::Fish::Data::plasmaStatusOffsets", &Game::Player::Fish::Data::plasmaStatusOffsets},
-         {"Game::Player::Bag::offset", &Game::Player::Bag::offsets}};
+    struct Target
+    {
+        std::string name;
+        float x, y, z;
+        uint32_t level;
+        double health;
+        bool operator==(const Target &target);
+    };
+
+    static std::map<std::string, void *>
+        configMap =
+            {{"Module::bossLevel", &Module::bossLevel},
+             {"Module::tpStep", &Module::tpStep},
+             {"Module::mapWidth", &Module::mapWidth},
+             {"Module::entityScand", &Module::entityScand},
+             {"Module::entityTimeout", &Module::entityTimeout},
+             {"Module::maxY", &Module::maxY},
+             {"Module::minY", &Module::minY},
+             {"Module::aimOffset", &Module::aimOffset},
+             {"Module::Feature::hideAnimation", &Module::Feature::hideAnimation},
+             {"Module::Feature::autoAttack", &Module::Feature::autoAttack},
+             {"Module::Feature::breakBlocks", &Module::Feature::breakBlocks},
+             {"Module::Feature::byPass", &Module::Feature::byPass},
+             {"Module::Feature::clipCam", &Module::Feature::clipCam},
+             {"Module::Feature::disMount", &Module::Feature::disMount},
+             {"Module::Feature::lockCam", &Module::Feature::lockCam},
+             {"Module::Feature::unlockMapLimit", &Module::Feature::unlockMapLimit},
+             {"Module::Feature::quickMining", &Module::Feature::quickMining},
+             {"Module::Feature::quickMiningGeode", &Module::Feature::quickMiningGeode},
+             {"Module::Feature::noGravity", &Module::Feature::noGravity},
+             {"Module::Feature::noClip", &Module::Feature::noClip},
+             {"Module::Feature::unlockZoomLimit", &Module::Feature::unlockZoomLimit},
+             {"Game::moduleName", &Game::moduleName},
+             {"Game::World::signature", &Game::World::signature},
+             {"Game::World::offsets", &Game::World::offsets},
+             {"Game::World::Data::playerCountOffsets", &Game::World::Data::playerCountOffsets},
+             {"Game::World::NodeInfo::offsets", &Game::World::NodeInfo::offsets},
+             {"Game::World::NodeInfo::Data::baseAddressOffsets", &Game::World::NodeInfo::Data::baseAddressOffsets},
+             {"Game::World::NodeInfo::Data::stepOffsets", &Game::World::NodeInfo::Data::stepOffsets},
+             {"Game::World::NodeInfo::Data::sizeOffsets", &Game::World::NodeInfo::Data::sizeOffsets},
+             {"Game::World::Entity::offsets", &Game::World::Entity::offsets},
+             {"Game::World::Entity::Data::levelOffsets", &Game::World::Entity::Data::levelOffsets},
+             {"Game::World::Entity::Data::nameOffsets", &Game::World::Entity::Data::nameOffsets},
+             {"Game::World::Entity::Data::isDeathOffsets", &Game::World::Entity::Data::isDeathOffsets},
+             {"Game::World::Entity::Data::healthOffsets", &Game::World::Entity::Data::healthOffsets},
+             {"Game::World::Entity::Data::xOffsets", &Game::World::Entity::Data::xOffsets},
+             {"Game::World::Entity::Data::yOffsets", &Game::World::Entity::Data::yOffsets},
+             {"Game::World::Entity::Data::zOffsets", &Game::World::Entity::Data::zOffsets},
+             {"Game::World::Player::offsets", &Game::World::Player::offsets},
+             {"Game::World::Player::Data::nameOffsets", &Game::World::Player::Data::nameOffsets},
+             {"Game::World::Player::Data::xOffsets", &Game::World::Player::Data::xOffsets},
+             {"Game::World::Player::Data::yOffsets", &Game::World::Player::Data::yOffsets},
+             {"Game::World::Player::Data::zOffsets", &Game::World::Player::Data::zOffsets},
+             {"Game::Player::signature", &Game::Player::signature},
+             {"Game::Player::offsets", &Game::Player::offsets},
+             {"Game::Player::Data::itemRSignature", &Game::Player::Data::itemRSignature},
+             {"Game::Player::Data::itemTSignature", &Game::Player::Data::itemTSignature},
+             {"Game::Player::Data::nameOffsets", &Game::Player::Data::nameOffsets},
+             {"Game::Player::Data::healthOffsets", &Game::Player::Data::healthOffsets},
+             {"Game::Player::Data::drawDistanceOffsets", &Game::Player::Data::drawDistanceOffsets},
+             {"Game::Player::Data::itemROffsets", &Game::Player::Data::itemROffsets},
+             {"Game::Player::Data::itemTOffsets", &Game::Player::Data::itemTOffsets},
+             {"Game::Player::Camera::offsets", &Game::Player::Camera::offsets},
+             {"Game::Player::Camera::Data::xPerOffsets", &Game::Player::Camera::Data::xPerOffsets},
+             {"Game::Player::Camera::Data::yPerOffsets", &Game::Player::Camera::Data::yPerOffsets},
+             {"Game::Player::Camera::Data::zPerOffsets", &Game::Player::Camera::Data::zPerOffsets},
+             {"Game::Player::Camera::Data::vOffsets", &Game::Player::Camera::Data::vOffsets},
+             {"Game::Player::Camera::Data::hOffsets", &Game::Player::Camera::Data::hOffsets},
+             {"Game::Player::Coord::offsets", &Game::Player::Coord::offsets},
+             {"Game::Player::Coord::Data::xOffsets", &Game::Player::Coord::Data::xOffsets},
+             {"Game::Player::Coord::Data::yOffsets", &Game::Player::Coord::Data::yOffsets},
+             {"Game::Player::Coord::Data::zOffsets", &Game::Player::Coord::Data::zOffsets},
+             {"Game::Player::Coord::Data::xVelOffsets", &Game::Player::Coord::Data::xVelOffsets},
+             {"Game::Player::Coord::Data::yVelOffsets", &Game::Player::Coord::Data::yVelOffsets},
+             {"Game::Player::Coord::Data::zVelOffsets", &Game::Player::Coord::Data::zVelOffsets},
+             {"Game::Player::Fish::signature", &Game::Player::Fish::signature},
+             {"Game::Player::Fish::offsets", &Game::Player::Fish::offsets},
+             {"Game::Player::Fish::Data::waterTakeOffsets", &Game::Player::Fish::Data::waterTakeOffsets},
+             {"Game::Player::Fish::Data::lavaTakeOffsets", &Game::Player::Fish::Data::lavaTakeOffsets},
+             {"Game::Player::Fish::Data::chocoTakeOffsets", &Game::Player::Fish::Data::chocoTakeOffsets},
+             {"Game::Player::Fish::Data::plasmaTakeOffsets", &Game::Player::Fish::Data::plasmaTakeOffsets},
+             {"Game::Player::Fish::Data::waterStatusOffsets", &Game::Player::Fish::Data::waterStatusOffsets},
+             {"Game::Player::Fish::Data::lavaStatusOffsets", &Game::Player::Fish::Data::lavaStatusOffsets},
+             {"Game::Player::Fish::Data::chocoStatusOffsets", &Game::Player::Fish::Data::chocoStatusOffsets},
+             {"Game::Player::Fish::Data::plasmaStatusOffsets", &Game::Player::Fish::Data::plasmaStatusOffsets},
+             {"Game::Player::Bag::offset", &Game::Player::Bag::offsets}};
 
     static std::map<std::pair<int, std::string>, std::atomic<bool>> functionRunMap;
 
@@ -170,7 +182,7 @@ namespace Module
     void FollowTarget(const Memory::DWORD &pid, const std::vector<std::string> &players = {}, const std::vector<std::string> &targets = {}, const std::vector<std::string> &noTargets = {}, const bool &targetBoss = false, const bool &scanAll = false, const float &speed = 50, const uint32_t &delay = 50);
 
     std::unique_ptr<Game::World::Player> FindPlayer(Game &game, const std::vector<std::string> &targets);
-    std::unique_ptr<Game::World::Entity> FindTarget(Game &game, const bool &targetBoss = true, const bool &targetPlant = false, const bool &targetNormal = false, const std::vector<std::string> &targets = {}, const std::vector<std::string> &noTargets = {}, const uint32_t &range = 45);
+    std::unique_ptr<Game::World::Entity> FindTarget(Game &game, const bool &targetBoss = true, const bool &targetPlant = false, const bool &targetNormal = false, const std::vector<std::string> &targets = {}, const std::vector<std::string> &noTargets = {}, const uint32_t &range = 45, const std::vector<Target> &blackTargetList = {});
 
     void GetNextPoint(float &x, float &z, std::unordered_set<std::string> &visitedPoints);
 };
@@ -238,52 +250,52 @@ std::pair<float, float> CalculateAngles(const float &ax, const float &ay, const 
 namespace Module
 {
     Feature Feature::hideAnimation = {
-        {0x74B065},
+        {0x74DF95},
         {0x4C},
         {0x44},
         {0x3, "F3 0F 11 44 24 24 F3 0F 58 84 24 80 00 00 00 50 F3 0F 11 43 24 E8 XX XX XX XX 8D 44 24 34 50"}};
     Feature Feature::autoAttack = {
-        {0xB18278},
+        {0xB28678},
         {0xF0},
         {0xF1},
         {0x1, "DF F1 DD D8 72 1F"}};
     Feature Feature::breakBlocks = {
-        {0x965523},
+        {0x8E9913},
         {0x01},
         {0x00},
         {0x3, "80 7F XX 00 0F 84 XX XX XX XX 8B 4B 08 E8 XX XX XX XX FF 75 0C 8B 4D 10 8B F0 FF 75 08 8B 45 14 83 EC 0C 8B 3E 8B D4 6A 01 89 0A 8B CE 89 42 04 8B 45 18"}};
     Feature Feature::byPass = {
-        {0x1AC696},
+        {0x1E0626},
         {0x47},
         {0x67},
         {0x1, "DC 67 68 C6"}};
     Feature Feature::clipCam = {
-        {0xA7B51A},
+        {0x8D453A},
         {0x90, 0x90, 0x90},
         {0x0F, 0x29, 0x01},
         {0x0, "0F 29 01 C7 41 34 00 00 00 00 0F"}};
     Feature Feature::disMount = {
-        {0x340D7E},
+        {0x33CA8E},
         {0xEB},
         {0x74},
         {0x0, "74 XX 8B 07 8B CF 6A 00 6A 00 FF 50"}};
     Feature Feature::lockCam = {
-        {0x968655},
+        {0x8E2C45},
         {0xEB},
         {0x74},
         {0x0, "74 05 8B 01 FF 50 0C 8B E5"}};
     Feature Feature::unlockMapLimit = {
-        {0xA0ABBD},
+        {0x8926AD},
         {0xEB},
         {0x77},
         {0x0, "77 XX B8 XX XX XX XX F3 0F 10 08 F3 0F 11 89 XX XX XX XX 8B 89"}};
     Feature Feature::quickMining = {
-        {0xA7C348},
+        {0xAD2948},
         {0xF0},
         {0xF1},
         {0x1, "DF F1 DD D8 72 61"}};
     Feature Feature::quickMiningGeode = {
-        {0x8844F7},
+        {0xB12FB7},
         {0xF0},
         {0xF1},
         {0x1, "DF F1 DD D8 72 35 8D"}};
@@ -345,16 +357,24 @@ namespace Module
             dd 00 28 C4 04
      */
     Feature Feature::noClip = {
-        {0x63F042},
+        {0x646B72},
         {0xE8, 0xFF, 0xFF, 0xFF, 0xFF, 0x90},
         {0x8B, 0x43, 0x14, 0x83, 0xC4, 0x8},
         {-0x5A3, "74 31 FF 73 14 8B 47 04 2B 07"},
         {0x58, 0x83, 0xC4, 0x08, 0x50, 0x8B, 0x43, 0x14, 0x53, 0x51, 0x83, 0xEC, 0x30, 0xF3, 0x0F, 0x7F, 0x44, 0x24, 0x20, 0xF3, 0x0F, 0x7F, 0x4C, 0x24, 0x10, 0xF3, 0x0F, 0x7F, 0x14, 0x24, 0xBB, 0xE0, 0xE6, 0x30, 0x1D, 0xB9, 0x00, 0x00, 0x00, 0x00, 0x03, 0x1C, 0x8D, 0xFF, 0xFF, 0xFF, 0xFF, 0x8B, 0x1B, 0x83, 0xFB, 0x00, 0x0F, 0x84, 0x32, 0x00, 0x00, 0x00, 0x41, 0x83, 0xF9, 0x04, 0x7C, 0xE8, 0x0F, 0x10, 0x83, 0x80, 0x00, 0x00, 0x00, 0x0F, 0x28, 0xC8, 0x0F, 0xC2, 0xCC, 0x02, 0x0F, 0x28, 0xD5, 0x0F, 0xC2, 0xD0, 0x02, 0x66, 0x0F, 0xDB, 0xCA, 0x0F, 0x50, 0xC9, 0x83, 0xE1, 0x07, 0x83, 0xF9, 0x07, 0x0F, 0x85, 0x04, 0x00, 0x00, 0x00, 0xC6, 0x40, 0x01, 0x00, 0xF3, 0x0F, 0x6F, 0x14, 0x24, 0xF3, 0x0F, 0x6F, 0x4C, 0x24, 0x10, 0xF3, 0x0F, 0x6F, 0x44, 0x24, 0x20, 0x83, 0xC4, 0x30, 0x59, 0x5B, 0xC3, 0x00, 0x00, 0x00, 0x00, 0x28, 0x00, 0x00, 0x00, 0xC4, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00}};
     Feature Feature::unlockZoomLimit = {
-        {0xA79496},
+        {0x8D2476},
         {0x57},
         {0x5F},
         {0x3, "F3 0F 11 5F 2C"}};
+
+    bool Target::operator==(const Target &target)
+    {
+        return this->name == target.name &&
+               this->level == target.level &&
+               std::abs(this->health - target.health) < 10 &&
+               CalculateDistance(this->x, this->y, this->z, target.x, target.y, target.z) < 5;
+    }
 
     void SetFeature(const Feature &feature, const Memory::DWORD &pid, const bool &on)
     {
@@ -570,8 +590,10 @@ namespace Module
         };
         float x = 0, y = 0, z = 0, targetX = 0;
         float targetY = 0, targetZ = 0, dist = 0, lastDist = 9999;
-        uint32_t step = 0;
-        auto MoveEvent = [&game, &x, &y, &z, &dist, &lastDist, &step, &delay, &speed](
+        Target oldTarget;
+        std::vector<Target> blackTargetList;
+        std::chrono::steady_clock::time_point findTime, moveTime;
+        auto MoveEvent = [&game, &x, &y, &z, &dist, &lastDist, &moveTime, &delay, &speed](
                              const float &targetX, float targetY, const float &targetZ)
         {
             x = game.data.player.data.coord.data.x.UpdateData().data;
@@ -582,10 +604,17 @@ namespace Module
             game.data.player.data.coord.data.zVel.UpdateAddress() = 0;
             if ((dist = CalculateDistance(x, y, z, targetX, targetY, targetZ)) <= 1 || std::isnan(dist))
                 return;
-            if (step % (250 / delay) == 0)
+            auto now = std::chrono::steady_clock::now();
+            if (std::chrono::duration_cast<std::chrono::milliseconds>(now - moveTime)
+                    .count() >= delay * 20)
+            {
+                moveTime = std::chrono::steady_clock::now();
                 lastDist = dist;
-            step = (step + 1) % (1000 / delay);
-            if (step % (500 / delay) == 0 && tpStep && abs(lastDist - dist) < tpStep)
+            }
+
+            if (std::chrono::duration_cast<std::chrono::milliseconds>(now - moveTime)
+                        .count() >= delay * 10 &&
+                tpStep && abs(lastDist - dist) < tpStep)
                 Tp2Target(game.pid, targetX, targetY, targetZ, delay, abs(lastDist - dist) < 1 ? 10 : 1);
             else
             {
@@ -599,10 +628,12 @@ namespace Module
         {
             std::unique_ptr<Game::World::Player> player = nullptr;
             std::unique_ptr<Game::World::Entity> target = nullptr;
+
             UpdateAddress();
             if (scanAll)
             {
-                step = dist = 0;
+                moveTime = std::chrono::steady_clock::now();
+                dist = 0;
                 lastDist = 9999;
                 GetNextPoint(
                     targetX = game.data.player.data.coord.data.x.UpdateData().data,
@@ -616,13 +647,23 @@ namespace Module
                 if (scanAll)
                     MoveEvent(targetX, targetY = std::clamp((std::max)(targetY, game.data.player.data.coord.data.y.UpdateData().data), minY, maxY), targetZ);
                 player = FindPlayer(game, players);
-                target = FindTarget(game, targetBoss, false, false, targets, noTargets, 9999);
+                target = FindTarget(game, targetBoss, false, false, targets, noTargets, 9999, blackTargetList);
             } while (!player && !target && scanAll &&
                      dist > 1 && functionRunMap[{pid, "FollowTarget"}].load());
             if (!player && !target)
                 continue;
-            step = dist = 0;
+            else if (target)
+            {
+                oldTarget.name = target->data.name.data;
+                oldTarget.level = target->data.level.data;
+                oldTarget.health = target->data.health.data;
+                oldTarget.x = target->data.x.data;
+                oldTarget.y = target->data.y.data;
+                oldTarget.z = target->data.z.data;
+            }
+            dist = 0;
             lastDist = 9999;
+            moveTime = findTime = std::chrono::steady_clock::now();
             while (functionRunMap[{pid, "FollowTarget"}].load())
             {
                 std::this_thread::sleep_for(std::chrono::milliseconds(delay));
@@ -635,12 +676,19 @@ namespace Module
                 {
                     if (!target->data.isDeath.UpdateData().data)
                         break;
-                    if ((step % 100) == 0 ||
+                    auto now = std::chrono::steady_clock::now();
+                    if (std::chrono::duration_cast<std::chrono::milliseconds>(now - findTime).count() >= entityTimeout)
+                    {
+                        blackTargetList.push_back(oldTarget);
+                        break;
+                    }
+                    if (std::chrono::duration_cast<std::chrono::milliseconds>(now - findTime).count() * 5 >= entityTimeout ||
                         target->data.health.UpdateData().data < 1 ||
                         (targetX < 1 && targetY < 1 && targetZ < 1))
                     {
                         const auto &entitys = game.data.world.UpdateAddress().UpdateData().data.entitys;
-                        if (std::find(entitys.begin(), entitys.end(), *target) == entitys.end())
+                        const auto &findEntity = std::find(entitys.begin(), entitys.end(), *target);
+                        if (findEntity == entitys.end() || oldTarget.name != target->data.name.UpdateData(128).data)
                             break;
                     }
                 }
@@ -665,7 +713,7 @@ namespace Module
         return nullptr;
     }
 
-    std::unique_ptr<Game::World::Entity> FindTarget(Game &game, const bool &targetBoss, const bool &targetPlant, const bool &targetNormal, const std::vector<std::string> &targets, const std::vector<std::string> &noTargets, const uint32_t &range)
+    std::unique_ptr<Game::World::Entity> FindTarget(Game &game, const bool &targetBoss, const bool &targetPlant, const bool &targetNormal, const std::vector<std::string> &targets, const std::vector<std::string> &noTargets, const uint32_t &range, const std::vector<Target> &blackTargetList)
     {
         auto &entitys = game.data.world.UpdateAddress().UpdateData().data.entitys;
         std::vector<std::regex> targetRegexs, noTargetRegexs;
@@ -695,14 +743,29 @@ namespace Module
                      entity.data.z.UpdateData().data)) > range ||
                 dist >= bestDist)
                 continue;
-            auto name = entity.data.name.UpdateData(128).data;
+            Target currentTarget;
+            currentTarget.name = entity.data.name.UpdateData(128).data;
+            currentTarget.level = entity.data.level.UpdateData().data;
+            currentTarget.health = entity.data.health.UpdateData().data;
+            currentTarget.x = entity.data.x.data;
+            currentTarget.y = entity.data.y.data;
+            currentTarget.z = entity.data.z.data;
+            bool isBlacked = false;
+            for (auto blackTarget : blackTargetList)
+                if (currentTarget == blackTarget)
+                {
+                    isBlacked = true;
+                    break;
+                }
+            if (isBlacked)
+                continue;
             size_t i = 0;
-            while (i < noTargetRegexs.size() && !std::regex_match(name, noTargetRegexs[i]))
+            while (i < noTargetRegexs.size() && !std::regex_match(currentTarget.name, noTargetRegexs[i]))
                 i++;
             if (i < noTargetRegexs.size())
                 continue;
             i = 0;
-            while (i <= bestIndex && i < targetRegexs.size() && !std::regex_match(name, targetRegexs[i]))
+            while (i <= bestIndex && i < targetRegexs.size() && !std::regex_match(currentTarget.name, targetRegexs[i]))
                 i++;
             if (i > bestIndex)
                 continue;
@@ -713,21 +776,21 @@ namespace Module
                 result = std::make_unique<Game::World::Entity>(entity);
                 continue;
             }
-            if (targetPlant && std::regex_match(name, std::regex(".*plant.*")))
+            if (targetPlant && std::regex_match(currentTarget.name, std::regex(".*plant.*")))
             {
                 bestDist = dist;
                 bestIndex = i;
                 result = std::make_unique<Game::World::Entity>(entity);
                 continue;
             }
-            if (std::regex_match(name, std::regex(".*npc.*")))
+            if (std::regex_match(currentTarget.name, std::regex(".*npc.*")))
             {
                 i++;
                 if (i > bestIndex)
                     continue;
                 if (targetBoss &&
-                    (entity.data.level.UpdateData().data >= bossLevel ||
-                     std::regex_match(name, std::regex(".*boss.*"))))
+                    (currentTarget.level >= bossLevel ||
+                     std::regex_match(currentTarget.name, std::regex(".*boss.*"))))
                 {
                     bestDist = dist;
                     bestIndex = i;
@@ -828,18 +891,16 @@ void UpdateConfig(const char *key, const char *value)
     if (_value.empty() ||
         Module::configMap.find(_key) == Module::configMap.end())
         return;
-    if (_value.size() >= 1 &&
-        (_key == "Module::bossLevel" ||
-         _key == "Module::tpStep" ||
-         _key == "Module::mapWidth" ||
-         _key == "Module::entityScand"))
-        Module::bossLevel = std::stoul(_value[0]);
-    else if (_value.size() >= 1 &&
-             (_key == "Module::maxY" ||
-              _key == "Module::minY"))
-        Module::bossLevel = std::stof(_value[0]);
-    else if (_value.size() >= 2 &&
-             _key == "Module::aimOffset")
+    if (_value.size() >= 1 && (_key == "Module::bossLevel" ||
+                               _key == "Module::tpStep" ||
+                               _key == "Module::mapWidth" ||
+                               _key == "Module::entityScand" ||
+                               _key == "Module::entityTimeout"))
+        *(uint32_t *)Module::configMap[_key] = std::stoul(_value[0]);
+    if (_value.size() >= 1 && (_key == "Module::maxY" ||
+                               _key == "Module::minY"))
+        *(float *)Module::configMap[_key] = std::stof(_value[0]);
+    else if (_value.size() >= 2 && _key == "Module::aimOffset")
         Module::aimOffset = {std::stof(_value[0]), std::stof(_value[1])};
     else if (_key.find("ffsets") != std::string::npos)
     {

@@ -25,6 +25,7 @@ const std::vector<std::string> noTargetAutoAim = {
 
 const std::vector<std::string> targetFollow = []
 {auto tmp = targetAutoAim;tmp.insert(tmp.end(),{
+    ".*viking_npc.*",                  // 稀有NPC
     ".*quest.*trigger.*",              // 任意开关
 });return tmp; }();
 
@@ -52,11 +53,14 @@ void FindTarget(const bool &targetBoss = true,
         game.data.player.data.camera.data.v.UpdateAddress();
         game.data.player.data.camera.data.h.UpdateAddress();
     };
+    Module::Target oldTarget;
+    std::vector<Module::Target> blackTargetList;
+    std::chrono::steady_clock::time_point findTime;
     while (findTarget.load())
     {
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
         UpdateAddress();
-        target = Module::FindTarget(game, targetBoss, targetPlant, targetNormal, targets, noTargets, range);
+        target = Module::FindTarget(game, targetBoss, targetPlant, targetNormal, targets, noTargets, range, blackTargetList);
         if (!target)
         {
             printf("Finding ...\r");
@@ -68,7 +72,15 @@ void FindTarget(const bool &targetBoss = true,
                target->data.y.UpdateData().data,
                target->data.z.UpdateData().data,
                target->data.name.UpdateData(128).data.c_str());
-        uint32_t step = 0;
+
+        oldTarget.name = target->data.name.data;
+        oldTarget.level = target->data.level.data;
+        oldTarget.health = target->data.health.data;
+        oldTarget.x = target->data.x.data;
+        oldTarget.y = target->data.y.data;
+        oldTarget.z = target->data.z.data;
+
+        findTime = std::chrono::steady_clock::now();
         while (CalculateDistance(
                    game.data.player.data.coord.data.x.UpdateData().data,
                    game.data.player.data.coord.data.y.UpdateData().data + Module::aimOffset.first,
@@ -85,7 +97,15 @@ void FindTarget(const bool &targetBoss = true,
                                      game.data.player.data.coord.data.z.data,
                                      target->data.x.data, 0, target->data.z.data),
                    std::clamp(health, 0.0, 999999999999999.0));
-            if (((step = (step + 1) % 100) == 0) ||
+            auto now = std::chrono::steady_clock::now();
+            if (std::chrono::duration_cast<std::chrono::milliseconds>(now - findTime).count() >= Module::entityTimeout)
+            {
+                blackTargetList.push_back(oldTarget);
+                break;
+            }
+
+            if (std::chrono::duration_cast<std::chrono::milliseconds>(now - findTime).count() * 5 >= Module::entityTimeout ||
+                target->data.health.UpdateData().data < 1 ||
                 health < 1 ||
                 (target->data.x.data < 1 && target->data.y.data < 1 && target->data.z.data < 1))
             {
