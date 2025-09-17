@@ -9,7 +9,7 @@
 - 构建
   1. 准备编译环境：**v2版AutoHotKey_H**、**Ahk2Exe**、**C++ MinGW-w64**
   2. 下载源代码：`git clone https://github.com/Angels-D/TroveAuto.git && cd TroveAuto`
-  3. 编译DLL依赖：`g++ -shared -static -Os -Wall -o Module.dll -x c++ ./libs/Module.hpp`
+  3. 编译DLL依赖：`g++ -shared -static -Os -Wall -lgdi32 -o Module.dll -x c++ ./libs/Module.hpp`
   4. 编译ahk脚本：`<Ahk2Exe路径>/Ahk2Exe.exe /compress 2 /base <AHK_Hv2路径>/AutoHotkey64.exe /in ./TroveAuto.ahk`
      > - `/compress 2` 使用UPX进行代码压缩
      > - 注意文件字符编码格式
@@ -21,7 +21,6 @@
 
   - 自动按键时干扰用户输入, 并行按键越多越容易卡键
   - 热键与UI变化概率导致崩溃
-  - `瞎子模式`功能失效，寻址方式待更新
 - 脚本功能
 
   > - 各功能的CE参考
@@ -50,7 +49,7 @@
   | -- | ---------------------------- | -- | ---------------------------- |
   | ✅ | 自动按键                     | ✅ | 游戏多开                     |
   | ✅ | 自动寻址                     | ✅ | 自动复活                     |
-  | ✅ |自动攻击                      | ✅ | 保持骑乘                     |
+  | ✅ | 自动攻击                     | ✅ | 保持骑乘                     |
   | ✅ | 打破障碍                     | ✅ | 地图放大                     |
   | ✅ | 视野调整                     | ✅ | 快速挖矿                     |
   | ✅ | 物品栏计数                   | ✅ | 坐标传送                     |
@@ -63,7 +62,7 @@
 - Build
   1. Prepare the build environment: **AutoHotKey_H v2**, **Ahk2Exe**, **C++ MinGW-w64**
   2. Download the source code: `git clone https://github.com/Angels-D/TroveAuto.git && cd TroveAuto`
-  3. Compile the DLL dependency: `g++ -shared -static -Os -Wall -o Module.dll -x c++ ./libs/Module.hpp`
+  3. Compile the DLL dependency: `g++ -shared -static -Os -Wall -lgdi32 -o Module.dll -x c++ ./libs/Module.hpp`
   4. Compile the AHK script: `<Ahk2Exe path>/Ahk2Exe.exe /compress 2 /base <AHK_Hv2 path>/AutoHotkey64.exe /in ./TroveAuto.ahk`
      > - `/compress 2` uses UPX for code compression
      > - Note the file character encoding format
@@ -75,7 +74,6 @@
 
   - Auto-keypress may interfere with user input. More concurrent keypresses increase the likelihood of key jamming.
   - Hotkey combinations and UI changes may probabilistically cause crashes.
-  - `Blind Mode` function is invalid, and the addressing method needs to be updated
 - Script Features
 
   > - CE References for Features

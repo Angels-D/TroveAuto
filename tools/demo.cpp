@@ -1,4 +1,4 @@
-// g++ ./tools/demo.cpp -static -Os -Wall -o demo.exe && sudo ./demo.exe
+// g++ ./tools/demo.cpp -static -Os -Wall -lgdi32 -o demo.exe && sudo ./demo.exe
 
 #include "../libs/Module.hpp"
 
@@ -9,15 +9,14 @@ const std::vector<std::string> targetAutoAim = {
 };
 
 const std::vector<std::string> noTargetAutoAim = {
-    ".*chest_quest_worldboss.*", // 利维坦奖励箱
-    // radiantprism                    // 天空光辉碎片
-    ".*clam_depths_fire_boss.*",       // 深渊蛤蜊
-    ".*goodkarma.*",                   // 善业NPC
+    // ".*chest_quest_worldboss.*",       // 利维坦奖励箱
+    "radiantprism",                    // 天空光辉碎片
     ".*quest_spawn_trigger_radiant.*", // 天空黑暗之心开关
-    ".*pet.*",                         // 任意宠物
-    ".*portal.*",                      // 传送门
-    ".*abilities.*",                   // 任意投射物
-    ".*placeable.*",                   // 任意放置物
+    ".*goodkarma.*", // 善业NPC
+    ".*pet.*",       // 任意宠物
+    ".*portal.*",    // 传送门
+    ".*abilities.*", // 任意投射物
+    ".*placeable.*", // 任意放置物
     // 其他未知项
     ".*services.*",
     ".*client.*",

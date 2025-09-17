@@ -1,5 +1,5 @@
 /* Memory
- *    -> Author: Angels-D & Deepseek
+ *    -> Author: Angels-D & AI
  *
  * AobScan
  *    -> Author: wanttobeno
@@ -530,9 +530,10 @@ Memory::~Memory()
 
 std::string WCHARToString(const WCHAR *wideStr)
 {
-    // 使用 std::wstring_convert 进行转换
-    std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
-    return converter.to_bytes(wideStr);
+    int len = WideCharToMultiByte(CP_UTF8, 0, wideStr, -1, nullptr, 0, nullptr, nullptr);
+    std::string str(len, 0);
+    WideCharToMultiByte(CP_UTF8, 0, wideStr, -1, &str[0], len, nullptr, nullptr);
+    return str;
 }
 
 std::vector<uint32_t> Memory::GetProcessPid(const std::string &name)

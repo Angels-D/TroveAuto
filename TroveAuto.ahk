@@ -1,6 +1,6 @@
 ;@Ahk2Exe-UpdateManifest 2
 ;@Ahk2Exe-SetName TroveAuto
-;@Ahk2Exe-SetProductVersion 2.4.15
+;@Ahk2Exe-SetProductVersion 2.4.16
 ;@Ahk2Exe-SetCopyright GPL-3.0 license
 ;@Ahk2Exe-SetLanguage Chinese_PRC
 ;@Ahk2Exe-SetMainIcon TroveAuto.ico
@@ -30,10 +30,11 @@ config := _Config(
         "Global", Map(
             "GameTitle", "Trove.exe",
             "GamePath", "",
-            "ConfigVersion", "20250913193000",
-            "AppVersion", "20250913193000",
+            "ConfigVersion", "20250917134000",
+            "AppVersion", "20250917134000",
             "Source", "https://github.com/Angels-D/TroveAuto/",
             "Mirror", "https://github.moeyy.xyz/",
+            "StopInHub", true,
             "StrCrypto", "y(Hn,(}I+2209Zd^s5(E%vfpoKh.I=",
             "Cheat", "Enter 你的30条命秘籍",
             "Language", _Language.GetLanguage(),
@@ -82,12 +83,13 @@ config := _Config(
             "MiningGeode", "0xB12FB7",
             "NoClip", "0x646B72",
             "Player", "0x109E51C",
+            "Setting", "0x871ACB",
             "World", "0x109E574",
             "Zoom", "0x8D2476",
         ),
         "Address_Offset", Map(
-            "Name", "0x0,0x28,0x1D0,0x0",
-            "Player_DrawDistance", "0x14,0x28",
+            "Setting_DrawDistance", "0x0,0x28",
+            "Player_Name", "0x0,0x28,0x1D0,0x0",
             "Player_Health", "0x0,0x28,0x1A4,0x80",
             "Player_Coord_X", "0x0,0x28,0xC4,0x4,0x80",
             "Player_Coord_Y", "0x0,0x28,0xC4,0x4,0x84",
@@ -118,6 +120,7 @@ config := _Config(
         "Features_Change", Map(
             "Animation", "0x4C,0x44",
             "Attack", "0xF0,0xF1",
+            "BlindMode", "0,210",
             "Breakblocks", "0x01,0x00",
             "ByPass", "0x47,0x67",
             "ClipCam", "0x909090,0x0F2901",
@@ -143,6 +146,7 @@ config := _Config(
             "MiningGeode", "1,DF F1 DD D8 72 35 8D",
             "NoClip", "-1443, 74 31 FF 73 14 8B 47 04 2B 07",
             "Player", "20,55 8B EC 83 E4 F8 83 EC 08 F3 0F 2A 45 10 56 8B F1 57 8B 3D",
+            "Setting", "5,FF 52 0C 8B 0D XX XX XX XX 8B F8",
             "World", "10,55 8B EC 83 7D 08 04 75 10 A1 XX XX XX XX 85 C0 74 07 C6 80 59 01 00 00 01 5D C2 04 00",
             "Zoom", "3,F3 0F 11 5F 2C",
             "Use_R", "-384,FE FF FF FF 00 00 00 00 65 CF XX XX 0C 00 00 00 55 CF",
@@ -261,6 +265,7 @@ config := _Config(
             "瞄准偏移:", "Aim Offset:",
             "跟随最高限制:", "Follow highest limit:",
             "跟随最低限制:", "Follow lowest limit:",
+            "跟随目标回到主城时停止部分功能@2@(手动重新打开)", "Stop certain functions when following the target back to the main city.@2@(Manually reopen)",
             "请在设置中保存", "Please save in settings",
             "附: 官方邮箱<a href@1@@4@mailto:support@gamigo.com@4@>support@gamigo.com</a>(通过此邮箱询问交易问题、账号问题等内容,注意使用英文描述", "Note: Official Email<a href@1@@4@mailto:support@gamigo.com@4@>support@gamigo.com</a>(Use this email to inquire about transaction issues, account problems, etc. Please use English for communication.)",
             "隐藏特效", "Hide Effects",
@@ -398,7 +403,7 @@ MainGui.Add("CheckBox", "xs+10 ys+30 Section vTop_AutoAim", t("当前玩家静�
 MainGui.Add("CheckBox", "xs w270 vTop_WhichTarget", t("当前玩家扫描目标信息(鼠标中键)"))
 MainGui.Add("Text", "xs Section", t("扫描范围:"))
 MainGui.Add("Edit", "ys w170 vTop_AutoAim_AimRange", 45)
-MainGui.Add("CheckBox", "xs w85 Section checked vTop_AutoAim_TargetBoss", t("锁定Boss"))
+MainGui.Add("CheckBox", "xs w85 Section Checked vTop_AutoAim_TargetBoss", t("锁定Boss"))
 MainGui.Add("CheckBox", "ys w80 vTop_AutoAim_TargetNormal", t("锁定小怪"))
 MainGui.Add("CheckBox", "ys w80 vTop_AutoAim_TargetPlant", t("锁定植物"))
 MainGui.Add("GroupBox", "xs ys+40 w290 r4 Section", t("目标名单") "     " t("正则表达式 逗号隔开"))
@@ -428,6 +433,7 @@ for key, value in Map(
     "MiningGeode", t("快速挖矿(晶洞)"),
     "NoClip", t("穿墙"),
     "Player", t("玩家"),
+    "Setting", t("设置"),
     "World", t("世界"),
     "Zoom", t("视野放大"),
 ) {
@@ -476,6 +482,7 @@ MainGui.Add("Text", "xs w100 Section", t("跟随最高限制:"))
 MainGui.Add("Edit", "ys w150 vHeighRangeMaxYAutoAim", config.data["AutoAim"]["HeighRangeMaxY"])
 MainGui.Add("Text", "xs w100 Section", t("跟随最低限制:"))
 MainGui.Add("Edit", "ys w150 vHeighRangeMinYAutoAim", config.data["AutoAim"]["HeighRangeMinY"])
+MainGui.Add("CheckBox", "xs w250 vStopInHub Checked" config.data["Global"]["StopInHub"], t("跟随目标回到主城时停止部分功能`n(手动重新打开)"))
 MainGui.Add("Text", "xs+60 y+35", t("请在设置中保存"))
 
 ; 关于内容
@@ -709,7 +716,7 @@ Save(GuiCtrlObj := unset, Info := unset) {
                 catch
                     value := config.data[sect][key]
             }
-            if ( not value and key != "GamePath" and key != "WhiteList") {
+            if (value == "" and key != "GamePath" and key != "WhiteList") {
                 MsgBox(t("配置项不能为空: ") sect ">>" key " " MainGui[key == "Value" ? sect : key].Type)
                 return
             }
@@ -1169,6 +1176,7 @@ class _Config {
         UpdateConfig("Module::aimOffset", this.data["AutoAim"]["AimOffset"])
         UpdateConfig("Module::maxY", this.data["AutoAim"]["HeighRangeMaxY"])
         UpdateConfig("Module::minY", this.data["AutoAim"]["HeighRangeMinY"])
+        UpdateConfig("Module::stopInHub", String(this.data["Global"]["StopInHub"]))
         UpdateConfig("Module::tpStep", this.data["TP"]["Step"])
         UpdateConfig("Module::Feature::hideAnimation", this.data["Address"]["Animation"] "|-|-|-")
         UpdateConfig("Module::Feature::autoAttack", this.data["Address"]["Attack"] "|-|-|-")
@@ -1521,7 +1529,6 @@ class Game {
         for key in ["Animation", "Attack", "BlindMode", "Breakblocks", "ByPass", "ClipCam", "Dismount"
             , "Health", "LockCam", "Map", "Mining", "MiningGeode", "NoClip", "UseLog", "Zoom"]
             this.setting["Features"][key] := false
-        this.FeaturesAttackFunc := ObjBindMethod(this, "Features_Attack")
         this.FeaturesHealthFunc := ObjBindMethod(this, "Features_Health")
 
         named := Format("<{1}:{2}>", this.name, StrCrypto(this.name))
@@ -1621,156 +1628,148 @@ class Game {
                 targetList := this.setting["FollowTarget"]["TargetName"] "," config.data["AutoAim"]["TargetList"]
             else
                 targetList := StrLen(this.setting["FollowTarget"]["TargetName"]) == 0 ? " " : this.setting["FollowTarget"]["TargetName"]
-        FunctionOn(this.pid, "FollowTarget",
-            Format("{1}|{2}|{3}|{4}|{5}|{6}|{7}"
-                , StrLen(this.setting["FollowTarget"]["PlayerName"]) == 0 ?
-                    " " : this.setting["FollowTarget"]["PlayerName"]
-                , targetList
-                , this.setting["FollowTarget"]["TargetList"] ? config.data["AutoAim"]["NoTargetList"] : " "
-                , this.setting["FollowTarget"]["TargetBoss"]
-                , this.setting["FollowTarget"]["ScanAll"]
-                , this.setting["SpeedUp"]["SpeedUpRate"]
-                , config.data["TP"]["Delay"])
-            , false)
+            FunctionOn(this.pid, "FollowTarget",
+                Format("{1}|{2}|{3}|{4}|{5}|{6}|{7}"
+                    , StrLen(this.setting["FollowTarget"]["PlayerName"]) == 0 ?
+                        " " : this.setting["FollowTarget"]["PlayerName"]
+                    , targetList
+                    , this.setting["FollowTarget"]["TargetList"] ? config.data["AutoAim"]["NoTargetList"] : " "
+                    , this.setting["FollowTarget"]["TargetBoss"]
+                    , this.setting["FollowTarget"]["ScanAll"]
+                    , this.setting["SpeedUp"]["SpeedUpRate"]
+                    , config.data["TP"]["Delay"])
+                , false)
+        }
+        else
+            FunctionOff(this.pid, "FollowTarget")
     }
-    else
-        FunctionOff(this.pid, "FollowTarget")
-}
-AutoAim() {
-    if (this.setting["AutoAim"]["On"])
-        FunctionOn(this.pid, "AutoAim", Format("{1}|{2}|{3}|{4}|{5}|{6}|{7}"
-            , this.setting["AutoAim"]["TargetBoss"]
-            , this.setting["AutoAim"]["TargetPlant"]
-            , this.setting["AutoAim"]["TargetNormal"]
-            , config.data["AutoAim"]["TargetList"]
-            , config.data["AutoAim"]["NoTargetList"]
-            , this.setting["AutoAim"]["AimRange"]
-            , config.data["AutoAim"]["Delay"]), false)
-    else
-        FunctionOff(this.pid, "AutoAim")
-}
-SpeedUp() {
-    OffsetsCoordXYZ := Format("[{1}],[{2}],[{3}]"
-        , config.data["Address_Offset"]["Player_Coord_X"]
-        , config.data["Address_Offset"]["Player_Coord_Y"]
-        , config.data["Address_Offset"]["Player_Coord_Z"]
-    )
-    OffsetsCoordXYZVel := Format("[{1}],[{2}],[{3}]"
-        , config.data["Address_Offset"]["Player_Coord_XVel"]
-        , config.data["Address_Offset"]["Player_Coord_YVel"]
-        , config.data["Address_Offset"]["Player_Coord_ZVel"]
-    )
-    OffsetsCamXYZPer := Format("[{1}],[{2}],[{3}]"
-        , config.data["Address_Offset"]["Player_Cam_XPer"]
-        , config.data["Address_Offset"]["Player_Cam_YPer"]
-        , config.data["Address_Offset"]["Player_Cam_ZPer"]
-    )
-    try this.threads["SpeedUp"]["STOP"] := true
-    if (this.setting["SpeedUp"]["On"])
-        this.threads["SpeedUp"] := Worker(Format(Game.ScriptAHK
-            , Format('{1}({2},{3},{4},[{5}],[{6}],[{7}],{8},{9})'
-                , "SpeedUp", this.pid, this.ProcessHandle
-                , this.BaseAddress + config.data["Address"]["Player"]
-                , OffsetsCoordXYZ, OffsetsCoordXYZVel, OffsetsCamXYZPer
-                , this.setting["SpeedUp"]["SpeedUpRate"], config.data["SpeedUp"]["Delay"])))
-}
-StopAll(keepStatus := false) {
-    running := this.running
-    this.running := false
-    for key in this.setting["Features"]
-        this.Features(key, false)
-    for key in this.threads
-        try this.threads[key]["STOP"] := true
-    CloseHandle(this.ProcessHandle)
-    if keepStatus
-        this.running := running
-    else
-        FunctionOff(this.pid, 0)
-}
-Features_Attack() {
-    this.WriteMemory(
-        this.BaseAddress + config.data["Address"]["Attack"],
-        StrSplit(config.data["Features_Change"]["Attack"], ",")[1]
-    )
-    Sleep(300)
-    this.WriteMemory(
-        this.BaseAddress + config.data["Address"]["Attack"],
-        StrSplit(config.data["Features_Change"]["Attack"], ",")[2]
-    )
-}
-Features_Health() {
-    if ( not this.ReadMemory(
-        this.GetAddressOffset(
-            this.BaseAddress + config.data["Address"]["Player"]
-            , StrSplit(config.data["Address_Offset"]["Player_Health"], ","))
-        , "Double", 8)) {
-        this.NatualPress(config.data["Key"]["Press"])
-        Sleep(5000)
+    AutoAim() {
+        if (this.setting["AutoAim"]["On"])
+            FunctionOn(this.pid, "AutoAim", Format("{1}|{2}|{3}|{4}|{5}|{6}|{7}"
+                , this.setting["AutoAim"]["TargetBoss"]
+                , this.setting["AutoAim"]["TargetPlant"]
+                , this.setting["AutoAim"]["TargetNormal"]
+                , config.data["AutoAim"]["TargetList"]
+                , config.data["AutoAim"]["NoTargetList"]
+                , this.setting["AutoAim"]["AimRange"]
+                , config.data["AutoAim"]["Delay"]), false)
+        else
+            FunctionOff(this.pid, "AutoAim")
     }
-}
-Features(Name, Value) {
-    switch Name {
-        case "Attack":
-            SetTimer(this.FeaturesAttackFunc, Value ? config.data["AttackTime"]["Value"] : 0)
-            return
-        case "BlindMode":
-            offsets := StrSplit(config.data["Address_Offset"]["Player_DrawDistance"], ",")
-            address := this.BaseAddress + config.data["Address"]["Player"] + offsets.RemoveAt(1)
-            this.WriteMemory(this.GetAddressOffset(address, offsets), Value ? 0 : 210, false, "Float", 4)
-            return
-        case "Health":
-            SetTimer(this.FeaturesHealthFunc, Value ? config.data["HealthTime"]["Value"] : 0)
-            return
-        case "NoClip":
-            FunctionOn(this.pid, "SetNoClip", String(Value), true)
-            return
-        case "UseLog":
-            try this.threads["Log"]["STOP"] := true
-            if (Value) {
-                this.threads["Log"] := Worker(Format(Game.ScriptAHK, Format('{1}({2},"{3}",{4},{5},{6},"{7}","{8}")'
-                    , "UseLog", this.pid, this.name, this.BaseAddress, this.ProcessHandle, config.data["UseLogTime"]["Value"], config.data["Address_Offset_Signature"]["Use_R"], config.data["Address_Offset_Signature"]["Use_T"])))
-            }
-            return
+    SpeedUp() {
+        OffsetsCoordXYZ := Format("[{1}],[{2}],[{3}]"
+            , config.data["Address_Offset"]["Player_Coord_X"]
+            , config.data["Address_Offset"]["Player_Coord_Y"]
+            , config.data["Address_Offset"]["Player_Coord_Z"]
+        )
+        OffsetsCoordXYZVel := Format("[{1}],[{2}],[{3}]"
+            , config.data["Address_Offset"]["Player_Coord_XVel"]
+            , config.data["Address_Offset"]["Player_Coord_YVel"]
+            , config.data["Address_Offset"]["Player_Coord_ZVel"]
+        )
+        OffsetsCamXYZPer := Format("[{1}],[{2}],[{3}]"
+            , config.data["Address_Offset"]["Player_Cam_XPer"]
+            , config.data["Address_Offset"]["Player_Cam_YPer"]
+            , config.data["Address_Offset"]["Player_Cam_ZPer"]
+        )
+        try this.threads["SpeedUp"]["STOP"] := true
+        if (this.setting["SpeedUp"]["On"])
+            this.threads["SpeedUp"] := Worker(Format(Game.ScriptAHK
+                , Format('{1}({2},{3},{4},[{5}],[{6}],[{7}],{8},{9})'
+                    , "SpeedUp", this.pid, this.ProcessHandle
+                    , this.BaseAddress + config.data["Address"]["Player"]
+                    , OffsetsCoordXYZ, OffsetsCoordXYZVel, OffsetsCamXYZPer
+                    , this.setting["SpeedUp"]["SpeedUpRate"], config.data["SpeedUp"]["Delay"])))
     }
-    this.WriteMemory(
-        this.BaseAddress + config.data["Address"][Name],
-        StrSplit(config.data["Features_Change"][Name], ",")[Value ? 1 : 2]
-    )
-}
-GetName(Address) {
-    Address := this.GetAddressOffset(Address, StrSplit(config.data["Address_Offset"]["Name"], ","))
-    return this.ReadMemory(Address, "utf-8", 16, false)
-}
-GetAddressOffset(Maddress, Offset) {
-    Address := this.ReadMemory(Maddress, "UInt")
-    loop Offset.Length - 1
-        Address := this.ReadMemory(Address + Offset[A_Index], "UInt")
-    return Address + Offset[-1]
-}
-ReadMemory(Maddress, Readtype := "Int", Len := 4, isNumber := True) {
-    Mvalue := Buffer(Len, 0)
-    ReadProcessMemory(this.ProcessHandle, Maddress, Mvalue, Mvalue.Size)
-    return isNumber ? NumGet(Mvalue, Readtype) : StrGet(Mvalue, Readtype)
-}
-WriteMemory(Maddress, Value, IsBinary := True, Writetype := "Int", Len := 4, IsNumber := True) {
-    if (IsBinary) {
-        Mvalue := Buffer((StrLen(Value) - 2) // 2)
-        loop Mvalue.Size
-            NumPut("UChar", "0x" SubStr(Value, 1 + A_Index * 2, 2), Mvalue, A_Index - 1)
+    StopAll(keepStatus := false) {
+        running := this.running
+        this.running := false
+        for key in this.setting["Features"]
+            this.Features(key, false)
+        for key in this.threads
+            try this.threads[key]["STOP"] := true
+        CloseHandle(this.ProcessHandle)
+        if keepStatus
+            this.running := running
+        else
+            FunctionOff(this.pid, 0)
+    }
+    Features_Health() {
+        if ( not this.ReadMemory(
+            this.GetAddressOffset(
+                this.BaseAddress + config.data["Address"]["Player"]
+                , StrSplit(config.data["Address_Offset"]["Player_Health"], ","))
+            , "Double", 8)) {
+            this.NatualPress(config.data["Key"]["Press"])
+            Sleep(5000)
+        }
+    }
+    Features(Name, Value) {
+        switch Name {
+            case "Attack":
+                if (Value)
+                    FunctionOn(this.pid, "SetAutoAttack", "300|" config.data["AttackTime"]["Value"], false)
+                else
+                    FunctionOff(this.pid, "SetAutoAttack")
+                return
+            case "BlindMode":
+                address := this.BaseAddress + config.data["Address"]["Setting"]
+                this.WriteMemory(this.GetAddressOffset(address, StrSplit(config.data["Address_Offset"]["Setting_DrawDistance"], ","))
+                    , StrSplit(config.data["Features_Change"][Name], ",")[Value ? 1 : 2], false, "Float", 4)
+                return
+            case "Health":
+                SetTimer(this.FeaturesHealthFunc, Value ? config.data["HealthTime"]["Value"] : 0)
+                return
+            case "NoClip":
+                FunctionOn(this.pid, "SetNoClip", String(Value), true)
+                return
+            case "UseLog":
+                try this.threads["Log"]["STOP"] := true
+                if (Value) {
+                    this.threads["Log"] := Worker(Format(Game.ScriptAHK, Format('{1}({2},"{3}",{4},{5},{6},"{7}","{8}")'
+                        , "UseLog", this.pid, this.name, this.BaseAddress, this.ProcessHandle, config.data["UseLogTime"]["Value"], config.data["Address_Offset_Signature"]["Use_R"], config.data["Address_Offset_Signature"]["Use_T"])))
+                }
+                return
+        }
+        this.WriteMemory(
+            this.BaseAddress + config.data["Address"][Name],
+            StrSplit(config.data["Features_Change"][Name], ",")[Value ? 1 : 2]
+        )
+    }
+    GetName(Address) {
+        Address := this.GetAddressOffset(Address, StrSplit(config.data["Address_Offset"]["Player_Name"], ","))
+        return this.ReadMemory(Address, "utf-8", 16, false)
+    }
+    GetAddressOffset(Maddress, Offset) {
+        Address := this.ReadMemory(Maddress, "UInt")
+        loop Offset.Length - 1
+            Address := this.ReadMemory(Address + Offset[A_Index], "UInt")
+        return Address + Offset[-1]
+    }
+    ReadMemory(Maddress, Readtype := "Int", Len := 4, isNumber := True) {
+        Mvalue := Buffer(Len, 0)
+        ReadProcessMemory(this.ProcessHandle, Maddress, Mvalue, Mvalue.Size)
+        return isNumber ? NumGet(Mvalue, Readtype) : StrGet(Mvalue, Readtype)
+    }
+    WriteMemory(Maddress, Value, IsBinary := True, Writetype := "Int", Len := 4, IsNumber := True) {
+        if (IsBinary) {
+            Mvalue := Buffer((StrLen(Value) - 2) // 2)
+            loop Mvalue.Size
+                NumPut("UChar", "0x" SubStr(Value, 1 + A_Index * 2, 2), Mvalue, A_Index - 1)
+            WriteProcessMemory(this.ProcessHandle, Maddress, Mvalue, Mvalue.Size)
+            return
+        }
+        Mvalue := Buffer(Len, 0)
+        IsNumber ? NumPut(Writetype, Value, Mvalue) : StrPut(Value, Mvalue, Mvalue.Size, Writetype)
         WriteProcessMemory(this.ProcessHandle, Maddress, Mvalue, Mvalue.Size)
-        return
     }
-    Mvalue := Buffer(Len, 0)
-    IsNumber ? NumPut(Writetype, Value, Mvalue) : StrPut(Value, Mvalue, Mvalue.Size, Writetype)
-    WriteProcessMemory(this.ProcessHandle, Maddress, Mvalue, Mvalue.Size)
-}
-NatualPress(npbtn, holdtime := 0) {
-    try {
-        ControlSend("{Blind}" "{" Format("VK{:X}", GetKeyVK(npbtn)) " down" "}", , "ahk_pid " this.pid)
-        Sleep(Random(66, 122) + holdtime)
-        ControlSend("{Blind}" "{" Format("VK{:X}", GetKeyVK(npbtn)) " up" "}", , "ahk_pid " this.pid)
+    NatualPress(npbtn, holdtime := 0) {
+        try {
+            ControlSend("{Blind}" "{" Format("VK{:X}", GetKeyVK(npbtn)) " down" "}", , "ahk_pid " this.pid)
+            Sleep(Random(66, 122) + holdtime)
+            ControlSend("{Blind}" "{" Format("VK{:X}", GetKeyVK(npbtn)) " up" "}", , "ahk_pid " this.pid)
+        }
     }
-}
 }
 
 Reset()

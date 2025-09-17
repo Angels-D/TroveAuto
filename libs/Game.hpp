@@ -1,5 +1,5 @@
 /* Memory
- *    -> Auther: Angels-D & Deepseek
+ *    -> Author: Angels-D & AI
  *
  * Game
  *    -> Author: Angels-D

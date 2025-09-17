@@ -1,12 +1,12 @@
 /* Module
- *    -> Auther: Angels-D
+ *    -> Author: Angels-D
  *
  * LastChange
- *    -> 2025/09/13 19:30
+ *    -> 2025/09/16 18:30
  *    -> 1.0.0
  *
  * Build
- *    -> g++ -shared -static -Os -Wall -o Module.dll -x c++ ./libs/Module.hpp
+ *    -> g++ -shared -static -Os -Wall -lgdi32 -o Module.dll -x c++ ./libs/Module.hpp
  */
 
 /* 地址寻址
@@ -44,6 +44,7 @@
 #include <queue>
 #include <unordered_set>
 
+#include "Declaration.hpp"
 // #include "WindowInput.hpp"
 #include "Game.hpp"
 
@@ -78,6 +79,7 @@ namespace Module
     static uint32_t entityScand = 100;
     static uint32_t entityTimeout = 30000;
     static float maxY = 400, minY = -45;
+    static bool stopInHub = true;
     static std::pair<float, float> aimOffset = {1.25, 0.25};
 
     struct Target
@@ -98,6 +100,7 @@ namespace Module
              {"Module::entityTimeout", &Module::entityTimeout},
              {"Module::maxY", &Module::maxY},
              {"Module::minY", &Module::minY},
+             {"Module::stopInHub", &Module::stopInHub},
              {"Module::aimOffset", &Module::aimOffset},
              {"Module::Feature::hideAnimation", &Module::Feature::hideAnimation},
              {"Module::Feature::autoAttack", &Module::Feature::autoAttack},
@@ -185,6 +188,8 @@ namespace Module
     std::unique_ptr<Game::World::Entity> FindTarget(Game &game, const bool &targetBoss = true, const bool &targetPlant = false, const bool &targetNormal = false, const std::vector<std::string> &targets = {}, const std::vector<std::string> &noTargets = {}, const uint32_t &range = 45, const std::vector<Target> &blackTargetList = {});
 
     void GetNextPoint(float &x, float &z, std::unordered_set<std::string> &visitedPoints);
+
+    void StopAll(const Memory::DWORD &pid);
 };
 
 extern "C"
@@ -372,8 +377,8 @@ namespace Module
     {
         return this->name == target.name &&
                this->level == target.level &&
-               std::abs(this->health - target.health) < 10 &&
-               CalculateDistance(this->x, this->y, this->z, target.x, target.y, target.z) < 5;
+               !(std::abs(this->health - target.health) > 10) &&
+               !(CalculateDistance(this->x, this->y, this->z, target.x, target.y, target.z) > 5);
     }
 
     void SetFeature(const Feature &feature, const Memory::DWORD &pid, const bool &on)
@@ -602,7 +607,7 @@ namespace Module
             game.data.player.data.coord.data.xVel.UpdateAddress() = 0;
             game.data.player.data.coord.data.yVel.UpdateAddress() = 0;
             game.data.player.data.coord.data.zVel.UpdateAddress() = 0;
-            if ((dist = CalculateDistance(x, y, z, targetX, targetY, targetZ)) <= 1 || std::isnan(dist))
+            if (!((dist = CalculateDistance(x, y, z, targetX, targetY, targetZ)) > 1))
                 return;
             auto now = std::chrono::steady_clock::now();
             if (std::chrono::duration_cast<std::chrono::milliseconds>(now - moveTime)
@@ -741,10 +746,12 @@ namespace Module
                      entity.data.x.UpdateData().data,
                      entity.data.y.UpdateData().data,
                      entity.data.z.UpdateData().data)) > range ||
-                dist >= bestDist)
+                !(dist < bestDist))
                 continue;
             Target currentTarget;
             currentTarget.name = entity.data.name.UpdateData(128).data;
+            if (stopInHub && currentTarget.name == "placeable/sign/static/hub_building_landing_interactive")
+                StopAll(game.pid);
             currentTarget.level = entity.data.level.UpdateData().data;
             currentTarget.health = entity.data.health.UpdateData().data;
             currentTarget.x = entity.data.x.data;
@@ -882,6 +889,12 @@ namespace Module
         visitedPoints.clear();
         visitedPoints.insert(getKey(x, z));
     }
+    void StopAll(const Memory::DWORD &pid)
+    {
+        FunctionOn(pid, "SetNoClip", "0", true);
+        FunctionOn(pid, "SetByPass", "0", true);
+        FunctionOff(pid);
+    }
 }
 
 void UpdateConfig(const char *key, const char *value)
@@ -897,8 +910,10 @@ void UpdateConfig(const char *key, const char *value)
                                _key == "Module::entityScand" ||
                                _key == "Module::entityTimeout"))
         *(uint32_t *)Module::configMap[_key] = std::stoul(_value[0]);
-    if (_value.size() >= 1 && (_key == "Module::maxY" ||
-                               _key == "Module::minY"))
+    else if (_value.size() >= 1 && _key == "Module::stopInHub")
+        *(bool *)Module::configMap[_key] = std::stoi(_value[0]);
+    else if (_value.size() >= 1 && (_key == "Module::maxY" ||
+                                    _key == "Module::minY"))
         *(float *)Module::configMap[_key] = std::stof(_value[0]);
     else if (_value.size() >= 2 && _key == "Module::aimOffset")
         Module::aimOffset = {std::stof(_value[0]), std::stof(_value[1])};

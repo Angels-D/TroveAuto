@@ -1,5 +1,5 @@
 /* WindowInput
- *    -> Auther: Angels-D
+ *    -> Author: Angels-D
  *
  * LastChange
  *    -> 2025/04/16 04:40
