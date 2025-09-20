@@ -1,4 +1,4 @@
-// g++ ./tools/demo.cpp -static -Os -Wall -lgdi32 -o demo.exe && sudo ./demo.exe
+// g++ -static -Os -Wall -o demo.exe ./tools/demo.cpp -lgdi32 && sudo ./demo.exe
 
 #include "../libs/Module.hpp"
 
@@ -12,11 +12,11 @@ const std::vector<std::string> noTargetAutoAim = {
     // ".*chest_quest_worldboss.*",       // 利维坦奖励箱
     "radiantprism",                    // 天空光辉碎片
     ".*quest_spawn_trigger_radiant.*", // 天空黑暗之心开关
-    ".*goodkarma.*", // 善业NPC
-    ".*pet.*",       // 任意宠物
-    ".*portal.*",    // 传送门
-    ".*abilities.*", // 任意投射物
-    ".*placeable.*", // 任意放置物
+    ".*goodkarma.*",                   // 善业NPC
+    ".*pet.*",                         // 任意宠物
+    ".*portal.*",                      // 传送门
+    ".*abilities.*",                   // 任意投射物
+    ".*placeable.*",                   // 任意放置物
     // 其他未知项
     ".*services.*",
     ".*client.*",
@@ -174,10 +174,9 @@ void AutoScan()
         9999);
     atexit([]()
            {
-     FunctionOn(pid, "SetNoClip", "0", true);
-     FunctionOn(pid, "SetByPass", "0", true);
-     FunctionOff(pid, "SetAutoAttack"); 
-     findTarget.store(false); });
+     Module::StopAll(pid);
+     findTarget.store(false); 
+    std::this_thread::sleep_for(std::chrono::milliseconds(300)); });
     getchar();
 }
 
